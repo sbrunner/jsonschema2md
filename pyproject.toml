@@ -29,7 +29,7 @@ classifiers = [
 jsonschema2md = 'jsonschema2md2:main'
 
 [tool.poetry.dependencies]
-python = "^3.7.2"
+python = ">=3.8,<4.0"
 importlib_metadata = { version = "6.6.0", python = "<3.8" }
 PyYAML = "6.0.1"
 
@@ -38,6 +38,7 @@ prospector = { version = "1.9.0", extras = ["with_bandit", "with_mypy", "with_py
 pytest = "7.3.2"
 pytest-cov = "2.12.1"
 pydocstyle = "5.1.1"
+zipp = "3.19.1"
 
 [build-system]
 requires = [
