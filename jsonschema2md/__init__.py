@@ -73,6 +73,8 @@ class Parser:
         if add_type:
             if "type" in obj:
                 description_line.append(f"Must be of type *{obj['type']}*.")
+        if "pattern" in obj:
+            description_line.append(f"Must match pattern: `{obj['pattern']}`.")
         if "minimum" in obj:
             description_line.append(f"Minimum: `{obj['minimum']}`.")
         if "exclusiveMinimum" in obj:
