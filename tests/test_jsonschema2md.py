@@ -31,6 +31,8 @@ class TestDraft201909defs:
             },
         },
         "properties": {
+            "taste": {"type": "string", "description": "How does it taste?", "default": "good",
+                      "pattern": "^[a-z]*$"},
             "fruits": {"type": "array", "items": {"type": "string"}},
             "vegetables": {"type": "array", "items": {"$ref": "#/$defs/veggie"}},
         },
@@ -76,6 +78,7 @@ class TestDraft201909defs:
             "- **Unevaluated Properties** *(object)*: Anything else you want to add. Cannot contain additional properties.\n",
             "  - **`^extraInfo[\\w]*$`** *(string)*: Anything else I might like to say.\n",
             "## Properties\n\n",
+            "- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$`. Default: `\"good\"`.\n",
             "- **`fruits`** *(array, required)*\n",
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
