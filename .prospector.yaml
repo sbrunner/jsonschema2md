@@ -3,7 +3,6 @@ inherits:
   - utils:no-design-checks
   - duplicated
   - utils:fix
-  - utils:unsafe
 mypy:
   options:
     python-version: '3.9'

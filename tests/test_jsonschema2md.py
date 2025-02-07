@@ -4,6 +4,8 @@ import jsonschema2md
 
 
 class TestDraft201909defs:
+    """Test."""
+
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft/2019-09/schema",
@@ -65,14 +67,15 @@ class TestDraft201909defs:
     }
 
     def test_parse_schema(self):
+        """Test."""
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
-            "## Unevaluated Properties\n" "\n",
+            "## Unevaluated Properties\n\n",
             "- **Unevaluated Properties** *(object)*: Anything else you want to add. Cannot contain additional properties.\n",
             "  - **`^extraInfo[\\w]*$`** *(string)*: Anything else I might like to say.\n",
             "## Properties\n\n",
@@ -105,6 +108,8 @@ class TestDraft201909defs:
 
 
 class TestParser:
+    """Test."""
+
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -154,6 +159,7 @@ class TestParser:
     }
 
     def test_construct_description_line(self):
+        """Test."""
         test_cases = [
             {"input": {}, "add_type": False, "expected_output": ""},
             {
@@ -204,8 +210,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": Number of vegetables. Exclusive minimum: `0`. "
-                    "Exclusive maximum: `1000`. Default: `1`."
+                    ": Number of vegetables. Exclusive minimum: `0`. Exclusive maximum: `1000`. Default: `1`."
                 ),
             },
             {
@@ -217,7 +222,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. Cannot contain additional properties. " "Default: `[]`."
+                    ": List of vegetables. Cannot contain additional properties. Default: `[]`."
                 ),
             },
             {
@@ -229,7 +234,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. " "Length must be at least 1. " 'Default: `["Carrot"]`.'
+                    ': List of vegetables. Length must be at least 1. Default: `["Carrot"]`.'
                 ),
             },
             {
@@ -241,7 +246,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. " "Length must be at most 10. " 'Default: `["Carrot"]`.'
+                    ': List of vegetables. Length must be at most 10. Default: `["Carrot"]`.'
                 ),
             },
             {
@@ -285,17 +290,19 @@ class TestParser:
             assert case["expected_output"] == observed_output
 
     def test_parse_object(self):
+        """Test."""
         parser = jsonschema2md.Parser()
         expected_output = ["- **`fruits`** *(array)*\n", "  - **Items** *(string)*\n"]
         assert expected_output == parser._parse_object(self.test_schema["properties"]["fruits"], "fruits")
 
     def test_parse_schema(self):
+        """Test."""
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
             "## Properties\n\n",
             "- **`fruits`** *(array)*\n",
@@ -326,12 +333,13 @@ class TestParser:
         assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_schema_examples_yaml(self):
+        """Test."""
         parser = jsonschema2md.Parser(examples_as_yaml=True)
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
             "## Properties\n\n",
             "- **`fruits`** *(array)*\n",
@@ -349,6 +357,7 @@ class TestParser:
         assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_top_level_pattern_properties(self):
+        """Test."""
         parser = jsonschema2md.Parser()
 
         test_schema = {
@@ -366,15 +375,16 @@ class TestParser:
         }
 
         expected_output = [
-            "# JSON Schema\n" "\n",
-            "*Diet preferences*\n" "\n",
-            "## Pattern Properties\n" "\n",
+            "# JSON Schema\n\n",
+            "*Diet preferences*\n\n",
+            "## Pattern Properties\n\n",
             "- **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
         ]
 
         assert expected_output == parser.parse_schema(test_schema)
 
     def test_parse_top_level_items(self):
+        """Test."""
         parser = jsonschema2md.Parser()
 
         test_schema = {
@@ -397,9 +407,9 @@ class TestParser:
         }
 
         expected_output = [
-            "# Fruits\n" "\n",
-            "*Fruits I like*\n" "\n",
-            "## Items\n" "\n",
+            "# Fruits\n\n",
+            "*Fruits I like*\n\n",
+            "## Items\n\n",
             "- **Items** *(object)*: A list of fruits.\n",
             "  - **`name`** *(string)*: The name of the fruit.\n",
             "  - **`sweet`** *(boolean)*: Whether it is sweet or not.\n",
@@ -408,6 +418,7 @@ class TestParser:
         assert expected_output == parser.parse_schema(test_schema)
 
     def test_schema_composition_keywords(self):
+        """Test."""
         parser = jsonschema2md.Parser()
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
