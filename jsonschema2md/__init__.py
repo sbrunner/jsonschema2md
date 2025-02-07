@@ -196,7 +196,7 @@ class Parser:
             required_str = ", required" if required else ""
             obj_type = f" *({obj['type']}{optional_format}{required_str})*" if "type" in obj else ""
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
-        anchor = f"<a id=\"{quote('/'.join(path))}\"></a>" if path else ""
+        anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
         output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
 
         # Recursively parse subschemas following schema composition keywords

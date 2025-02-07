@@ -69,10 +69,10 @@ class TestDraft201909defs:
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
-            "## Unevaluated Properties\n" "\n",
+            "## Unevaluated Properties\n\n",
             "- **Unevaluated Properties** *(object)*: Anything else you want to add. Cannot contain additional properties.\n",
             "  - **`^extraInfo[\\w]*$`** *(string)*: Anything else I might like to say.\n",
             "## Properties\n\n",
@@ -204,8 +204,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": Number of vegetables. Exclusive minimum: `0`. "
-                    "Exclusive maximum: `1000`. Default: `1`."
+                    ": Number of vegetables. Exclusive minimum: `0`. Exclusive maximum: `1000`. Default: `1`."
                 ),
             },
             {
@@ -217,7 +216,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. Cannot contain additional properties. " "Default: `[]`."
+                    ": List of vegetables. Cannot contain additional properties. Default: `[]`."
                 ),
             },
             {
@@ -229,7 +228,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. " "Length must be at least 1. " 'Default: `["Carrot"]`.'
+                    ': List of vegetables. Length must be at least 1. Default: `["Carrot"]`.'
                 ),
             },
             {
@@ -241,7 +240,7 @@ class TestParser:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. " "Length must be at most 10. " 'Default: `["Carrot"]`.'
+                    ': List of vegetables. Length must be at most 10. Default: `["Carrot"]`.'
                 ),
             },
             {
@@ -294,8 +293,8 @@ class TestParser:
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
             "## Properties\n\n",
             "- **`fruits`** *(array)*\n",
@@ -330,8 +329,8 @@ class TestParser:
         expected_output = [
             "# JSON Schema\n\n",
             "*Vegetable preferences*\n\n",
-            "## Additional Properties\n" "\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may " "like.\n",
+            "## Additional Properties\n\n",
+            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
             "## Properties\n\n",
             "- **`fruits`** *(array)*\n",
@@ -366,9 +365,9 @@ class TestParser:
         }
 
         expected_output = [
-            "# JSON Schema\n" "\n",
-            "*Diet preferences*\n" "\n",
-            "## Pattern Properties\n" "\n",
+            "# JSON Schema\n\n",
+            "*Diet preferences*\n\n",
+            "## Pattern Properties\n\n",
             "- **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
         ]
 
@@ -397,9 +396,9 @@ class TestParser:
         }
 
         expected_output = [
-            "# Fruits\n" "\n",
-            "*Fruits I like*\n" "\n",
-            "## Items\n" "\n",
+            "# Fruits\n\n",
+            "*Fruits I like*\n\n",
+            "## Items\n\n",
             "- **Items** *(object)*: A list of fruits.\n",
             "  - **`name`** *(string)*: The name of the fruit.\n",
             "  - **`sweet`** *(boolean)*: Whether it is sweet or not.\n",
