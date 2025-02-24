@@ -18,7 +18,7 @@ class TestDraft201909defs:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         },
         "unevaluatedProperties": {
@@ -29,13 +29,18 @@ class TestDraft201909defs:
                 "^extraInfo[\\w]*$": {
                     "type": "string",
                     "description": "Anything else I might like to say.",
-                }
+                },
             },
         },
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
-            "vegetables": {"type": "array", "items": {"$ref": "#/$defs/veggie"}},
-            "taste": {"type": "string", "description": "How does it taste?", "default": "good", "pattern": "^[a-z]*$"},
+            "vegetables": {"type": "array", "uniqueItems": True, "items": {"$ref": "#/$defs/veggie"}},
+            "taste": {
+                "type": "string",
+                "description": "How does it taste?",
+                "default": "good",
+                "pattern": "^[a-z]*$",
+            },
         },
         "required": ["fruits"],
         "$defs": {
@@ -51,6 +56,7 @@ class TestDraft201909defs:
                     },
                     "veggieLike": {
                         "type": "boolean",
+                        "deprecated": True,
                         "description": "Do I like this vegetable?",
                     },
                     "expiresAt": {
@@ -59,13 +65,13 @@ class TestDraft201909defs:
                         "description": "When does the veggie expires",
                     },
                 },
-            }
+            },
         },
         "examples": [
             {
                 "fruits": ["apple", "orange"],
                 "vegetables": [{"veggieName": "cabbage", "veggieLike": True}],
-            }
+            },
         ],
     }
 
@@ -84,13 +90,13 @@ class TestDraft201909defs:
             "## Properties\n\n",
             "- **`fruits`** *(array, required)*\n",
             "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*\n",
+            "- **`vegetables`** *(array)*: Items must be unique.\n",
             "  - **Items**: Refer to *[#/$defs/veggie](#%24defs/veggie)*.\n",
-            "- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `\"good\"`.\n",
+            '- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `"good"`.\n',
             "## Definitions\n\n",
             '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable. Length must be between 1 and 100 (inclusive).\n",
-            "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
+            "  - **`veggieLike`** *(boolean, required, deprecated)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
             "  ```json\n"
@@ -126,7 +132,7 @@ class TestParser:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         },
         "properties": {
@@ -152,13 +158,13 @@ class TestParser:
                         "description": "When does the veggie expires",
                     },
                 },
-            }
+            },
         },
         "examples": [
             {
                 "fruits": ["apple", "orange"],
                 "vegetables": [{"veggieName": "cabbage", "veggieLike": True}],
-            }
+            },
         ],
     }
 
@@ -289,7 +295,7 @@ class TestParser:
 
         for case in test_cases:
             observed_output = " ".join(
-                parser._construct_description_line(case["input"], add_type=case["add_type"])
+                parser._construct_description_line(case["input"], add_type=case["add_type"]),
             )
             assert case["expected_output"] == observed_output
 
@@ -374,7 +380,7 @@ class TestParser:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         }
 
@@ -434,7 +440,7 @@ class TestParser:
                     "allOf": [
                         {"type": "number"},
                         {"type": "integer"},
-                    ]
+                    ],
                 },
                 "any_of_example": {"anyOf": [{"type": "string"}, {"type": "number", "minimum": 0}]},
                 "one_of_example": {
