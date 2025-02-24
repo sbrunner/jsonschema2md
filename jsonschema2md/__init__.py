@@ -60,7 +60,7 @@ class Parser:
         else:
             raise ValueError(
                 f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed."
+                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
             )
 
     def _construct_description_line(self, obj: dict[str, Any], add_type: bool = False) -> Sequence[str]:
@@ -72,6 +72,10 @@ class Parser:
             description_line.append(f"{obj['description']}{ending}")
         if add_type and "type" in obj:
             description_line.append(f"Must be of type *{obj['type']}*.")
+        if "contentEncoding" in obj:
+            description_line.append(f"Content encoding: `{obj['contentEncoding']}`.")
+        if "contentMediaType" in obj:
+            description_line.append(f"Content media type: `{obj['contentMediaType']}`.")
         if "minimum" in obj:
             description_line.append(f"Minimum: `{obj['minimum']}`.")
         if "exclusiveMinimum" in obj:
@@ -91,6 +95,52 @@ class Parser:
             else:
                 length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
             description_line.append(length_description)
+        if "multipleOf" in obj:
+            description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
+
+        if "minLength" in obj or "maxLength" in obj:
+            length_description = "Length must be "
+            if "minLength" in obj and "maxLength" not in obj:
+                length_description += f"at least {obj['minLength']}."
+            elif "maxLength" in obj and "minLength" not in obj:
+                length_description += f"at most {obj['maxLength']}."
+            elif obj["minLength"] == obj["maxLength"]:
+                length_description += f"equal to {obj['minLength']}."
+            else:
+                length_description += f"between {obj['minLength']} and {obj['maxLength']} (inclusive)."
+            description_line.append(length_description)
+        if "pattern" in obj:
+            link = f"https://regexr.com/?expression={quote(obj['pattern'])}"
+            description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
+        if obj.get("uniqueItems"):
+            description_line.append("Items must be unique.")
+        if "minContains" in obj or "maxContains" in obj:
+            contains_description = "Contains schema must be matched"
+            if "minContains" in obj and "maxContains" not in obj:
+                contains_description += f" at least {obj['minContains']} times."
+            elif "maxContains" in obj and "minContains" not in obj:
+                contains_description += f" at most {obj['maxContains']} times."
+            elif obj["minContains"] == obj["maxContains"]:
+                contains_description += f" exactly {obj['minContains']} times."
+            else:
+                contains_description += (
+                    f" between {obj['minContains']} and {obj['maxContains']} times (inclusive)."
+                )
+
+            description_line.append(contains_description)
+        if "maxProperties" in obj or "minProperties" in obj:
+            properties_description = "Number of properties must be "
+            if "minProperties" in obj and "maxProperties" not in obj:
+                properties_description += f"at least {obj['minProperties']}."
+            elif "maxProperties" in obj and "minProperties" not in obj:
+                properties_description += f"at most {obj['maxProperties']}."
+            elif obj["minProperties"] == obj["maxProperties"]:
+                properties_description += f"equal to {obj['minProperties']}."
+            else:
+                properties_description += (
+                    f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
+                )
+            description_line.append(properties_description)
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
         if "const" in obj:
@@ -113,7 +163,10 @@ class Parser:
         return description_line
 
     def _construct_examples(
-        self, obj: dict[str, Any], indent_level: int = 0, add_header: bool = True
+        self,
+        obj: dict[str, Any],
+        indent_level: int = 0,
+        add_header: bool = True,
     ) -> Sequence[str]:
         def dump_json_with_line_head(obj: dict[str, Any], line_head: str, **kwargs: Any) -> str:
             result = [line_head + line for line in io.StringIO(json.dumps(obj, **kwargs)).readlines()]
@@ -140,7 +193,7 @@ class Parser:
                     dump_fn = dump_json_with_line_head
                 example_str = dump_fn(example, line_head=example_indentation, indent=4)
                 example_lines.append(
-                    f"{example_indentation}```{lang}\n{example_str}\n{example_indentation}```\n\n"
+                    f"{example_indentation}```{lang}\n{example_str}\n{example_indentation}```\n\n",
                 )
         return example_lines
 
@@ -153,6 +206,7 @@ class Parser:
         indent_level: int = 0,
         path: Optional[list[str]] = None,
         required: bool = False,
+        dependent_required: Optional[list[str]] = None,
     ) -> list[str]:
         """Parse JSON object and its items, definitions, and properties recursively."""
         if not output_lines:
@@ -183,7 +237,7 @@ class Parser:
             map(
                 lambda line: line.replace("\n\n", "<br>" + indentation_items),
                 description_line_base,
-            )
+            ),
         )
 
         # Add full line to output
@@ -194,7 +248,20 @@ class Parser:
             name_formatted = ""
         else:
             required_str = ", required" if required else ""
-            obj_type = f" *({obj['type']}{optional_format}{required_str})*" if "type" in obj else ""
+            deprecated_str = ", deprecated" if obj.get("deprecated") else ""
+            readonly_str = ", read-only" if obj.get("readOnly") else ""
+            writeonly_str = ", write-only" if obj.get("writeOnly") else ""
+            if dependent_required and not required:
+                dependent_required_code = [f"`{k}`" for k in dependent_required]
+                if len(dependent_required_code) == 1:
+                    required_str += f", required <sub><sup>if {dependent_required_code[0]} is set</sup></sub>"
+                else:
+                    required_str += f", required <sub><sup>if {', '.join(dependent_required_code[:-1])}, or {dependent_required_code[-1]} is set</sup></sub>"
+            obj_type = (
+                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
+                if "type" in obj
+                else ""
+            )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
         anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
         output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
@@ -218,7 +285,7 @@ class Parser:
                     )
 
         # Recursively add items and definitions
-        for property_name in ["items", "definitions", "$defs"]:
+        for property_name in ["items", "contains", "definitions", "$defs"]:
             if property_name in obj:
                 output_lines = self._parse_object(
                     obj[property_name],
@@ -250,6 +317,9 @@ class Parser:
                         output_lines=output_lines,
                         indent_level=indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
+                        dependent_required=[
+                            k for k, v in obj.get("dependentRequired", {}).items() if obj_property_name in v
+                        ],
                     )
 
         # Add examples
@@ -286,7 +356,7 @@ class Parser:
                         schema_object[property_name],
                         title_,
                         name_monospace=False,
-                    )
+                    ),
                 )
 
         # Add pattern properties
@@ -300,7 +370,16 @@ class Parser:
             output_lines.append("## Properties\n\n")
             for obj_name, obj in schema_object["properties"].items():
                 required = obj_name in schema_object.get("required", [])
-                output_lines.extend(self._parse_object(obj, obj_name, required=required))
+                output_lines.extend(
+                    self._parse_object(
+                        obj,
+                        obj_name,
+                        required=required,
+                        dependent_required=[
+                            k for k, v in schema_object.get("dependentRequired", {}).items() if obj_name in v
+                        ],
+                    ),
+                )
 
         # Add definitions / $defs
         for name in ["definitions", "$defs"]:
@@ -322,10 +401,14 @@ def main() -> None:
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
     argparser.add_argument("--version", action="store_true", help="Show version and exit.")
     argparser.add_argument(
-        "--pre-commit", action="store_true", help="Run as pre-commit hook after the generation."
+        "--pre-commit",
+        action="store_true",
+        help="Run as pre-commit hook after the generation.",
     )
     argparser.add_argument(
-        "--examples-as-yaml", action="store_true", help="Parse examples in YAML-format instead of JSON."
+        "--examples-as-yaml",
+        action="store_true",
+        help="Parse examples in YAML-format instead of JSON.",
     )
     argparser.add_argument(
         "--show-examples",
@@ -351,7 +434,8 @@ def main() -> None:
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec
-            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"]
+            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],
+            check=False,
         )
 
 
