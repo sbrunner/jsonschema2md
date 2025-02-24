@@ -99,6 +99,7 @@ class Parser:
             description_line.append(length_description)
         if "multipleOf" in obj:
             description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
+
         if "minLength" in obj or "maxLength" in obj:
             length_description = "Length must be "
             if "minLength" in obj and "maxLength" not in obj:
@@ -115,6 +116,20 @@ class Parser:
             description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
         if obj.get("uniqueItems"):
             description_line.append("Items must be unique.")
+        if "minContains" in obj or "maxContains" in obj:
+            contains_description = "Contains schema must be matched"
+            if "minContains" in obj and "maxContains" not in obj:
+                contains_description += f" at least {obj['minContains']} times."
+            elif "maxContains" in obj and "minContains" not in obj:
+                contains_description += f" at most {obj['maxContains']} times."
+            elif obj["minContains"] == obj["maxContains"]:
+                contains_description += f" exactly {obj['minContains']} times."
+            else:
+                contains_description += (
+                    f" between {obj['minContains']} and {obj['maxContains']} times (inclusive)."
+                )
+
+            description_line.append(contains_description)
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
         if "const" in obj:
@@ -223,7 +238,9 @@ class Parser:
             readonly_str = ", read-only" if obj.get("readOnly") else ""
             writeonly_str = ", write-only" if obj.get("writeOnly") else ""
             obj_type = (
-                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*" if "type" in obj else ""
+                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
+                if "type" in obj
+                else ""
             )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
         anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
@@ -248,7 +265,7 @@ class Parser:
                     )
 
         # Recursively add items and definitions
-        for property_name in ["items", "definitions", "$defs"]:
+        for property_name in ["items", "contains", "definitions", "$defs"]:
             if property_name in obj:
                 output_lines = self._parse_object(
                     obj[property_name],
