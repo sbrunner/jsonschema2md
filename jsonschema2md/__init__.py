@@ -93,6 +93,22 @@ class Parser:
             else:
                 length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
             description_line.append(length_description)
+        if "minLength" in obj or "maxLength" in obj:
+            length_description = "Length must be "
+            if "minLength" in obj and "maxLength" not in obj:
+                length_description += f"at least {obj['minLength']}."
+            elif "maxLength" in obj and "minLength" not in obj:
+                length_description += f"at most {obj['maxLength']}."
+            elif obj["minLength"] == obj["maxLength"]:
+                length_description += f"equal to {obj['minLength']}."
+            else:
+                length_description += f"between {obj['minLength']} and {obj['maxLength']} (inclusive)."
+            description_line.append(length_description)
+        if "pattern" in obj:
+            link = f'https://regexr.com/?expression={quote(obj["pattern"])}'
+            description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
+        if "uniqueItems" in obj:
+            description_line.append("Items must be unique.")
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
         if "const" in obj:
