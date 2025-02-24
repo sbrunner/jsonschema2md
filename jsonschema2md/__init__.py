@@ -130,6 +130,17 @@ class Parser:
                 )
 
             description_line.append(contains_description)
+        if "maxProperties" in obj or "minProperties" in obj:
+            properties_description = "Number of properties must be "
+            if "minProperties" in obj and "maxProperties" not in obj:
+                properties_description += f"at least {obj['minProperties']}."
+            elif "maxProperties" in obj and "minProperties" not in obj:
+                properties_description += f"at most {obj['maxProperties']}."
+            elif obj["minProperties"] == obj["maxProperties"]:
+                properties_description += f"equal to {obj['minProperties']}."
+            else:
+                properties_description += f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
+            description_line.append(properties_description)
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
         if "const" in obj:
