@@ -61,7 +61,7 @@ class Parser:
         else:
             message = (
                 f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed."
+                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
             )
             raise ValueError(message)
 
@@ -105,9 +105,9 @@ class Parser:
                 length_description += f"between {obj['minLength']} and {obj['maxLength']} (inclusive)."
             description_line.append(length_description)
         if "pattern" in obj:
-            link = f'https://regexr.com/?expression={quote(obj["pattern"])}'
+            link = f"https://regexr.com/?expression={quote(obj['pattern'])}"
             description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
-        if "uniqueItems" in obj:
+        if obj.get("uniqueItems"):
             description_line.append("Items must be unique.")
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
@@ -213,7 +213,10 @@ class Parser:
             name_formatted = ""
         else:
             required_str = ", required" if required else ""
-            obj_type = f" *({obj['type']}{optional_format}{required_str})*" if "type" in obj else ""
+            deprecated_str = ", deprecated" if obj.get("deprecated") else ""
+            obj_type = (
+                f" *({obj['type']}{optional_format}{required_str}{deprecated_str})*" if "type" in obj else ""
+            )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
         anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
         output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")

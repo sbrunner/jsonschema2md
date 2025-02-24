@@ -34,8 +34,13 @@ class TestDraft201909defs:
         },
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
-            "vegetables": {"type": "array", "items": {"$ref": "#/$defs/veggie"}},
-            "taste": {"type": "string", "description": "How does it taste?", "default": "good", "pattern": "^[a-z]*$"},
+            "vegetables": {"type": "array", "uniqueItems": True, "items": {"$ref": "#/$defs/veggie"}},
+            "taste": {
+                "type": "string",
+                "description": "How does it taste?",
+                "default": "good",
+                "pattern": "^[a-z]*$",
+            },
         },
         "required": ["fruits"],
         "$defs": {
@@ -51,6 +56,7 @@ class TestDraft201909defs:
                     },
                     "veggieLike": {
                         "type": "boolean",
+                        "deprecated": True,
                         "description": "Do I like this vegetable?",
                     },
                     "expiresAt": {
@@ -84,13 +90,13 @@ class TestDraft201909defs:
             "## Properties\n\n",
             "- **`fruits`** *(array, required)*\n",
             "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*\n",
+            "- **`vegetables`** *(array)*: Items must be unique.\n",
             "  - **Items**: Refer to *[#/$defs/veggie](#%24defs/veggie)*.\n",
-            "- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `\"good\"`.\n",
+            '- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `"good"`.\n',
             "## Definitions\n\n",
             '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable. Length must be between 1 and 100 (inclusive).\n",
-            "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
+            "  - **`veggieLike`** *(boolean, required, deprecated)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
             "  ```json\n"
