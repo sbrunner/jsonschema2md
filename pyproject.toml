@@ -70,6 +70,9 @@ dev = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
 ]
+lint = [
+    "ruff>=0.9.7",
+]
 
 [tool.poetry-dynamic-versioning]
 enable = true
