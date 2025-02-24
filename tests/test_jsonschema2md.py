@@ -417,6 +417,7 @@ class TestParser:
             "items": {
                 "description": "A list of fruits",
                 "type": "object",
+                "maxProperties": 2,
                 "properties": {
                     "name": {"description": "The name of the fruit", "type": "string"},
                     "sweet": {
@@ -431,7 +432,7 @@ class TestParser:
             "# Fruits\n\n",
             "*Fruits I like*\n\n",
             "## Items\n\n",
-            "- **Items** *(object)*: A list of fruits.\n",
+            "- **Items** *(object)*: A list of fruits. Number of properties must be at most 2.\n",
             "  - **`name`** *(string)*: The name of the fruit.\n",
             "  - **`sweet`** *(boolean)*: Whether it is sweet or not.\n",
         ]
