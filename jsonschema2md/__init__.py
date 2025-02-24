@@ -74,6 +74,10 @@ class Parser:
             description_line.append(f"{obj['description']}{ending}")
         if add_type and "type" in obj:
             description_line.append(f"Must be of type *{obj['type']}*.")
+        if "contentEncoding" in obj:
+            description_line.append(f"Content encoding: `{obj['contentEncoding']}`.")
+        if "contentMediaType" in obj:
+            description_line.append(f"Content media type: `{obj['contentMediaType']}`.")
         if "minimum" in obj:
             description_line.append(f"Minimum: `{obj['minimum']}`.")
         if "exclusiveMinimum" in obj:
@@ -93,6 +97,8 @@ class Parser:
             else:
                 length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
             description_line.append(length_description)
+        if "multipleOf" in obj:
+            description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
         if "minLength" in obj or "maxLength" in obj:
             length_description = "Length must be "
             if "minLength" in obj and "maxLength" not in obj:
@@ -214,8 +220,10 @@ class Parser:
         else:
             required_str = ", required" if required else ""
             deprecated_str = ", deprecated" if obj.get("deprecated") else ""
+            readonly_str = ", read-only" if obj.get("readOnly") else ""
+            writeonly_str = ", write-only" if obj.get("writeOnly") else ""
             obj_type = (
-                f" *({obj['type']}{optional_format}{required_str}{deprecated_str})*" if "type" in obj else ""
+                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*" if "type" in obj else ""
             )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
         anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
