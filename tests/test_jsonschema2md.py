@@ -144,6 +144,7 @@ class TestParser:
             "veggie": {
                 "type": "object",
                 "required": ["veggieName", "veggieLike"],
+                "dependentRequired": {"veggieLike": ["expiresAt"]},
                 "properties": {
                     "veggieName": {
                         "type": "string",
@@ -330,7 +331,7 @@ class TestParser:
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```json\n"
@@ -370,7 +371,7 @@ class TestParser:
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```yaml\n  fruits:\n  - apple\n  - orange\n  vegetables:\n  -   veggieName: cabbage\n      veggieLike: true\n  ```\n\n",

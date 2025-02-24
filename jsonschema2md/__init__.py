@@ -139,7 +139,9 @@ class Parser:
             elif obj["minProperties"] == obj["maxProperties"]:
                 properties_description += f"equal to {obj['minProperties']}."
             else:
-                properties_description += f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
+                properties_description += (
+                    f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
+                )
             description_line.append(properties_description)
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
@@ -206,6 +208,7 @@ class Parser:
         indent_level: int = 0,
         path: Optional[list[str]] = None,
         required: bool = False,
+        dependent_required: Optional[list[str]] = None,
     ) -> list[str]:
         """Parse JSON object and its items, definitions, and properties recursively."""
         if not output_lines:
@@ -248,6 +251,12 @@ class Parser:
             deprecated_str = ", deprecated" if obj.get("deprecated") else ""
             readonly_str = ", read-only" if obj.get("readOnly") else ""
             writeonly_str = ", write-only" if obj.get("writeOnly") else ""
+            if dependent_required and not required:
+                dependent_required_code = [f"`{k}`" for k in dependent_required]
+                if len(dependent_required_code) == 1:
+                    required_str += f", required <sub><sup>if {dependent_required_code[0]} is set</sup></sub>"
+                else:
+                    required_str += f", required <sub><sup>if {', '.join(dependent_required_code[:-1])}, or {dependent_required_code[-1]} is set</sup></sub>"
             obj_type = (
                 f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
                 if "type" in obj
@@ -308,6 +317,9 @@ class Parser:
                         output_lines=output_lines,
                         indent_level=indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
+                        dependent_required=[
+                            k for k, v in obj.get("dependentRequired", {}).items() if obj_property_name in v
+                        ],
                     )
 
         # Add examples
@@ -358,7 +370,16 @@ class Parser:
             output_lines.append("## Properties\n\n")
             for obj_name, obj in schema_object["properties"].items():
                 required = obj_name in schema_object.get("required", [])
-                output_lines.extend(self._parse_object(obj, obj_name, required=required))
+                output_lines.extend(
+                    self._parse_object(
+                        obj,
+                        obj_name,
+                        required=required,
+                        dependent_required=[
+                            k for k, v in schema_object.get("dependentRequired", {}).items() if obj_name in v
+                        ],
+                    ),
+                )
 
         # Add definitions / $defs
         for name in ["definitions", "$defs"]:
