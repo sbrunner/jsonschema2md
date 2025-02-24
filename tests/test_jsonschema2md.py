@@ -9,7 +9,7 @@ class TestDraft201909defs:
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft/2019-09/schema",
-        "description": "Vegetable preferences",
+        "description": "Food preferences",
         "type": "object",
         "additionalProperties": {
             "description": "Additional info about foods you may like",
@@ -80,7 +80,7 @@ class TestDraft201909defs:
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -123,7 +123,7 @@ class TestParser:
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft-07/schema#",
-        "description": "Vegetable preferences",
+        "description": "Food preferences",
         "type": "object",
         "additionalProperties": {
             "description": "Additional info about foods you may like",
@@ -138,6 +138,7 @@ class TestParser:
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
             "vegetables": {"type": "array", "items": {"$ref": "#/definitions/veggie"}},
+            "cakes": {"type": "array", "maxContains": 3, "contains": {"$ref": "#/definitions/cake"}},
         },
         "definitions": {
             "veggie": {
@@ -158,6 +159,10 @@ class TestParser:
                         "description": "When does the veggie expires",
                     },
                 },
+            },
+            "cake": {
+                "description": "A cake",
+                "type": "string",
             },
         },
         "examples": [
@@ -310,7 +315,7 @@ class TestParser:
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -319,11 +324,14 @@ class TestParser:
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
             "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
+            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
+            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```json\n"
             "  {\n"
@@ -347,7 +355,7 @@ class TestParser:
         parser = jsonschema2md.Parser(examples_as_yaml=True)
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -356,11 +364,14 @@ class TestParser:
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
             "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
+            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
+            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```yaml\n  fruits:\n  - apple\n  - orange\n  vegetables:\n  -   veggieName: cabbage\n      veggieLike: true\n  ```\n\n",
         ]
