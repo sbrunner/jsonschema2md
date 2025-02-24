@@ -1,3 +1,12 @@
+[project]
+name = "jsonschema2md"
+version = "0.0.0"
+requires-python = ">=3.9,<4.0"
+description = "Convert JSON Schema to human-readable Markdown documentation"
+dependencies = [
+    "pyyaml==6.0.2",
+]
+
 [tool.poetry]
 name = "jsonschema2md"
 version = "0.0.0"
@@ -55,6 +64,12 @@ requires = [
     "poetry-dynamic-versioning",
 ]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+]
 
 [tool.poetry-dynamic-versioning]
 enable = true

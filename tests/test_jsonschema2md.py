@@ -35,6 +35,7 @@ class TestDraft201909defs:
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
             "vegetables": {"type": "array", "items": {"$ref": "#/$defs/veggie"}},
+            "taste": {"type": "string", "description": "How does it taste?", "default": "good", "pattern": "^[a-z]*$"},
         },
         "required": ["fruits"],
         "$defs": {
@@ -45,6 +46,8 @@ class TestDraft201909defs:
                     "veggieName": {
                         "type": "string",
                         "description": "The name of the vegetable.",
+                        "minLength": 1,
+                        "maxLength": 100,
                     },
                     "veggieLike": {
                         "type": "boolean",
@@ -83,9 +86,10 @@ class TestDraft201909defs:
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
             "  - **Items**: Refer to *[#/$defs/veggie](#%24defs/veggie)*.\n",
+            "- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `\"good\"`.\n",
             "## Definitions\n\n",
             '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
-            "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
+            "  - **`veggieName`** *(string, required)*: The name of the vegetable. Length must be between 1 and 100 (inclusive).\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
