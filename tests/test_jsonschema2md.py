@@ -18,7 +18,7 @@ class TestDraft201909defs:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         },
         "unevaluatedProperties": {
@@ -29,7 +29,7 @@ class TestDraft201909defs:
                 "^extraInfo[\\w]*$": {
                     "type": "string",
                     "description": "Anything else I might like to say.",
-                }
+                },
             },
         },
         "properties": {
@@ -56,13 +56,13 @@ class TestDraft201909defs:
                         "description": "When does the veggie expires",
                     },
                 },
-            }
+            },
         },
         "examples": [
             {
                 "fruits": ["apple", "orange"],
                 "vegetables": [{"veggieName": "cabbage", "veggieLike": True}],
-            }
+            },
         ],
     }
 
@@ -122,7 +122,7 @@ class TestParser:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         },
         "properties": {
@@ -148,13 +148,13 @@ class TestParser:
                         "description": "When does the veggie expires",
                     },
                 },
-            }
+            },
         },
         "examples": [
             {
                 "fruits": ["apple", "orange"],
                 "vegetables": [{"veggieName": "cabbage", "veggieLike": True}],
-            }
+            },
         ],
     }
 
@@ -285,7 +285,7 @@ class TestParser:
 
         for case in test_cases:
             observed_output = " ".join(
-                parser._construct_description_line(case["input"], add_type=case["add_type"])
+                parser._construct_description_line(case["input"], add_type=case["add_type"]),
             )
             assert case["expected_output"] == observed_output
 
@@ -370,7 +370,7 @@ class TestParser:
                 "^iLike(Meat|Drinks)$": {
                     "type": "boolean",
                     "description": "Do I like it?",
-                }
+                },
             },
         }
 
@@ -430,7 +430,7 @@ class TestParser:
                     "allOf": [
                         {"type": "number"},
                         {"type": "integer"},
-                    ]
+                    ],
                 },
                 "any_of_example": {"anyOf": [{"type": "string"}, {"type": "number", "minimum": 0}]},
                 "one_of_example": {
