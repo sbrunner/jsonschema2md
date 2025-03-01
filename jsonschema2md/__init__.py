@@ -113,7 +113,10 @@ class Parser:
         return description_line
 
     def _construct_examples(
-        self, obj: dict[str, Any], indent_level: int = 0, add_header: bool = True,
+        self,
+        obj: dict[str, Any],
+        indent_level: int = 0,
+        add_header: bool = True,
     ) -> Sequence[str]:
         def dump_json_with_line_head(obj: dict[str, Any], line_head: str, **kwargs: Any) -> str:
             result = [line_head + line for line in io.StringIO(json.dumps(obj, **kwargs)).readlines()]
@@ -322,10 +325,14 @@ def main() -> None:
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
     argparser.add_argument("--version", action="store_true", help="Show version and exit.")
     argparser.add_argument(
-        "--pre-commit", action="store_true", help="Run as pre-commit hook after the generation.",
+        "--pre-commit",
+        action="store_true",
+        help="Run as pre-commit hook after the generation.",
     )
     argparser.add_argument(
-        "--examples-as-yaml", action="store_true", help="Parse examples in YAML-format instead of JSON.",
+        "--examples-as-yaml",
+        action="store_true",
+        help="Parse examples in YAML-format instead of JSON.",
     )
     argparser.add_argument(
         "--show-examples",
@@ -351,7 +358,8 @@ def main() -> None:
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec
-            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"], check=False,
+            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],
+            check=False,
         )
 
 
