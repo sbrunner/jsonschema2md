@@ -17,6 +17,7 @@ import re
 import subprocess  # nosec
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, Optional, Union
 from urllib.parse import quote
 
@@ -58,10 +59,11 @@ class Parser:
         if show_examples in valid_show_examples_options:
             self.show_examples = show_examples
         else:
-            raise ValueError(
+            message = (
                 f"`show_examples` option should be one of "
                 f"`{valid_show_examples_options}`; `{show_examples}` was passed."
             )
+            raise ValueError(message)
 
     def _construct_description_line(self, obj: dict[str, Any], add_type: bool = False) -> Sequence[str]:
         """Construct description line of property, definition, or item."""
@@ -113,7 +115,10 @@ class Parser:
         return description_line
 
     def _construct_examples(
-        self, obj: dict[str, Any], indent_level: int = 0, add_header: bool = True
+        self,
+        obj: dict[str, Any],
+        indent_level: int = 0,
+        add_header: bool = True,
     ) -> Sequence[str]:
         def dump_json_with_line_head(obj: dict[str, Any], line_head: str, **kwargs: Any) -> str:
             result = [line_head + line for line in io.StringIO(json.dumps(obj, **kwargs)).readlines()]
@@ -140,7 +145,7 @@ class Parser:
                     dump_fn = dump_json_with_line_head
                 example_str = dump_fn(example, line_head=example_indentation, indent=4)
                 example_lines.append(
-                    f"{example_indentation}```{lang}\n{example_str}\n{example_indentation}```\n\n"
+                    f"{example_indentation}```{lang}\n{example_str}\n{example_indentation}```\n\n",
                 )
         return example_lines
 
@@ -175,16 +180,14 @@ class Parser:
             return output_lines
 
         if not isinstance(obj, dict):
-            raise TypeError(f"Non-object type found in properties list: `{name}: {obj}`.")
+            message = f"Non-object type found in properties list: `{name}: {obj}`."
+            raise TypeError(message)
 
         # Construct full description line
         description_line_base = self._construct_description_line(obj)
-        description_line_list = list(
-            map(
-                lambda line: line.replace("\n\n", "<br>" + indentation_items),
-                description_line_base,
-            )
-        )
+        description_line_list = [
+            line.replace("\n\n", "<br>" + indentation_items) for line in description_line_base
+        ]
 
         # Add full line to output
         description_line = " ".join(description_line_list)
@@ -286,7 +289,7 @@ class Parser:
                         schema_object[property_name],
                         title_,
                         name_monospace=False,
-                    )
+                    ),
                 )
 
         # Add pattern properties
@@ -322,10 +325,14 @@ def main() -> None:
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
     argparser.add_argument("--version", action="store_true", help="Show version and exit.")
     argparser.add_argument(
-        "--pre-commit", action="store_true", help="Run as pre-commit hook after the generation."
+        "--pre-commit",
+        action="store_true",
+        help="Run as pre-commit hook after the generation.",
     )
     argparser.add_argument(
-        "--examples-as-yaml", action="store_true", help="Parse examples in YAML-format instead of JSON."
+        "--examples-as-yaml",
+        action="store_true",
+        help="Parse examples in YAML-format instead of JSON.",
     )
     argparser.add_argument(
         "--show-examples",
@@ -333,8 +340,8 @@ def main() -> None:
         default="all",
         help="Parse examples for only the main object, only properties, or all.",
     )
-    argparser.add_argument("input_json", help="Input JSON file.")
-    argparser.add_argument("output_markdown", help="Output Markdown file.")
+    argparser.add_argument("input_json", type=Path, help="Input JSON file.")
+    argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
     args = argparser.parse_args()
 
@@ -343,15 +350,16 @@ def main() -> None:
         sys.exit(0)
 
     parser = Parser(examples_as_yaml=args.examples_as_yaml, show_examples=args.show_examples)
-    with open(args.input_json, encoding="utf-8") as input_json:
+    with args.input_json.open(encoding="utf-8") as input_json:
         output_md = parser.parse_schema(json.load(input_json))
 
-    with open(args.output_markdown, "w", encoding="utf-8") as output_markdown:
+    with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
         output_markdown.writelines(output_md)
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec
-            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"]
+            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],
+            check=False,
         )
 
 
