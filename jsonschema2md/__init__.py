@@ -17,6 +17,7 @@ import re
 import subprocess  # nosec
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, Optional, Union
 from urllib.parse import quote
 
@@ -58,10 +59,11 @@ class Parser:
         if show_examples in valid_show_examples_options:
             self.show_examples = show_examples
         else:
-            raise ValueError(
+            message = (
                 f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
+                f"`{valid_show_examples_options}`; `{show_examples}` was passed."
             )
+            raise ValueError(message)
 
     def _construct_description_line(self, obj: dict[str, Any], add_type: bool = False) -> Sequence[str]:
         """Construct description line of property, definition, or item."""
@@ -178,16 +180,14 @@ class Parser:
             return output_lines
 
         if not isinstance(obj, dict):
-            raise TypeError(f"Non-object type found in properties list: `{name}: {obj}`.")
+            message = f"Non-object type found in properties list: `{name}: {obj}`."
+            raise TypeError(message)
 
         # Construct full description line
         description_line_base = self._construct_description_line(obj)
-        description_line_list = list(
-            map(
-                lambda line: line.replace("\n\n", "<br>" + indentation_items),
-                description_line_base,
-            ),
-        )
+        description_line_list = [
+            line.replace("\n\n", "<br>" + indentation_items) for line in description_line_base
+        ]
 
         # Add full line to output
         description_line = " ".join(description_line_list)
@@ -340,8 +340,8 @@ def main() -> None:
         default="all",
         help="Parse examples for only the main object, only properties, or all.",
     )
-    argparser.add_argument("input_json", help="Input JSON file.")
-    argparser.add_argument("output_markdown", help="Output Markdown file.")
+    argparser.add_argument("input_json", type=Path, help="Input JSON file.")
+    argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
     args = argparser.parse_args()
 
@@ -350,10 +350,10 @@ def main() -> None:
         sys.exit(0)
 
     parser = Parser(examples_as_yaml=args.examples_as_yaml, show_examples=args.show_examples)
-    with open(args.input_json, encoding="utf-8") as input_json:
+    with args.input_json.open(encoding="utf-8") as input_json:
         output_md = parser.parse_schema(json.load(input_json))
 
-    with open(args.output_markdown, "w", encoding="utf-8") as output_markdown:
+    with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
         output_markdown.writelines(output_md)
 
     if args.pre_commit:
