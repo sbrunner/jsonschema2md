@@ -7,6 +7,3 @@ dist/
 
 # mypy
 .mypy_cache/
-
-# uv
-uv.lock
