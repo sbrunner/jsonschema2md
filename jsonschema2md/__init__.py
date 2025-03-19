@@ -39,7 +39,12 @@ class Parser:
 
     tab_size = 2
 
-    def __init__(self, examples_as_yaml: bool = False, show_examples: str = "all") -> None:
+    def __init__(
+        self,
+        examples_as_yaml: bool = False,
+        show_examples: str = "all",
+        header_level: int = 0,
+    ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
 
@@ -50,9 +55,13 @@ class Parser:
         show_examples: str, default 'all'
             Parse examples for only objects, only properties or all. Valid options are
             `{"all", "object", "properties"}`.
+        header_level : int, default 0
+            Base header level for the generated markdown. This is useful to include the
+            generated markdown in a larger document with its own header levels.
 
         """
         self.examples_as_yaml = examples_as_yaml
+        self.header_level = header_level
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -334,15 +343,15 @@ class Parser:
 
         # Add title and description
         if "title" in schema_object:
-            output_lines.append(f"# {schema_object['title']}\n\n")
+            output_lines.append(f"{'#' * (self.header_level + 1)} {schema_object['title']}\n\n")
         else:
-            output_lines.append("# JSON Schema\n\n")
+            output_lines.append(f"{'#' * (self.header_level + 1)} JSON Schema\n\n")
         if "description" in schema_object:
             output_lines.append(f"*{schema_object['description']}*\n\n")
 
         # Add items
         if "items" in schema_object:
-            output_lines.append("## Items\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Items\n\n")
             output_lines.extend(self._parse_object(schema_object["items"], "Items", name_monospace=False))
 
         # Add additional/unevaluated properties
@@ -350,7 +359,7 @@ class Parser:
             property_name = f"{extra_props}Properties"
             title_ = f"{extra_props.capitalize()} Properties"
             if property_name in schema_object and isinstance(schema_object[property_name], dict):
-                output_lines.append(f"## {title_}\n\n")
+                output_lines.append(f"#{'#' * (self.header_level + 1)} {title_}\n\n")
                 output_lines.extend(
                     self._parse_object(
                         schema_object[property_name],
@@ -361,13 +370,13 @@ class Parser:
 
         # Add pattern properties
         if "patternProperties" in schema_object:
-            output_lines.append("## Pattern Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Pattern Properties\n\n")
             for obj_name, obj in schema_object["patternProperties"].items():
                 output_lines.extend(self._parse_object(obj, obj_name))
 
         # Add properties
         if "properties" in schema_object:
-            output_lines.append("## Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Properties\n\n")
             for obj_name, obj in schema_object["properties"].items():
                 required = obj_name in schema_object.get("required", [])
                 output_lines.extend(
@@ -384,13 +393,13 @@ class Parser:
         # Add definitions / $defs
         for name in ["definitions", "$defs"]:
             if name in schema_object:
-                output_lines.append("## Definitions\n\n")
+                output_lines.append(f"#{'#' * (self.header_level + 1)} Definitions\n\n")
                 for obj_name, obj in schema_object[name].items():
                     output_lines.extend(self._parse_object(obj, obj_name, path=[name, obj_name]))
 
         # Add examples
         if "examples" in schema_object and self.show_examples in ["all", "object"]:
-            output_lines.append("## Examples\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Examples\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
         return output_lines
@@ -416,6 +425,12 @@ def main() -> None:
         default="all",
         help="Parse examples for only the main object, only properties, or all.",
     )
+    argparser.add_argument(
+        "--header-level",
+        type=int,
+        default=0,
+        help="Base header level for the generated markdown.",
+    )
     argparser.add_argument("input_json", type=Path, help="Input JSON file.")
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
@@ -425,7 +440,11 @@ def main() -> None:
         print(__version__)
         sys.exit(0)
 
-    parser = Parser(examples_as_yaml=args.examples_as_yaml, show_examples=args.show_examples)
+    parser = Parser(
+        examples_as_yaml=args.examples_as_yaml,
+        show_examples=args.show_examples,
+        header_level=args.header_level,
+    )
     with args.input_json.open(encoding="utf-8") as input_json:
         output_md = parser.parse_schema(json.load(input_json))
 
