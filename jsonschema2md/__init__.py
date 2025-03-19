@@ -358,7 +358,7 @@ def main() -> None:
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec
-            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],
+            ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],  # noqa: S607,RUF100
             check=False,
         )
 
