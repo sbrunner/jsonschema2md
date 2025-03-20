@@ -107,7 +107,10 @@ class Parser:
                 length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
             description_line.append(length_description)
         if "multipleOf" in obj:
-            description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
+            if obj["multipleOf"] == 1:
+                description_line.append("Must be an integer.")
+            else:
+                description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
 
         if "minLength" in obj or "maxLength" in obj:
             length_description = "Length must be "
