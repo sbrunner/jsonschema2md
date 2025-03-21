@@ -85,6 +85,9 @@ print(''.join(md_lines))
   `False`)
 - `show-examples`: Parse examples for only the main object, only properties, or all.
   (`str`, default `all`, options: `object`, `properties`, `all`)
+- `header-level`: Base header level for the generated markdown. (`int`, default: `0`)
+- `ignore-patterns`: List of regex patterns to ignore when parsing the schema. (`list of
+str`, default: `None`)
 
 ## pre-commit hook
 

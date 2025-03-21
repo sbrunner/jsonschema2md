@@ -44,6 +44,7 @@ class Parser:
         examples_as_yaml: bool = False,
         show_examples: str = "all",
         header_level: int = 0,
+        ignore_patterns: Optional[Sequence[str]] = None,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -58,10 +59,16 @@ class Parser:
         header_level : int, default 0
             Base header level for the generated markdown. This is useful to include the
             generated markdown in a larger document with its own header levels.
+        ignore_patterns : list of str, default None
+            List of regex patterns to ignore when parsing the schema. This can be useful
+            to skip certain properties or definitions that are not relevant for the
+            documentation. The patterns are matched against the full path of the
+            property or definition (e.g., `properties/name`, `definitions/Person`).
 
         """
         self.examples_as_yaml = examples_as_yaml
         self.header_level = header_level
+        self.ignore_patterns = ignore_patterns if ignore_patterns else []
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -215,10 +222,10 @@ class Parser:
         self,
         obj: Union[dict[str, Any], list[Any]],
         name: Optional[str],
+        path: list[str],
         name_monospace: bool = True,
         output_lines: Optional[list[str]] = None,
         indent_level: int = 0,
-        path: Optional[list[str]] = None,
         required: bool = False,
         dependent_required: Optional[list[str]] = None,
     ) -> list[str]:
@@ -232,10 +239,11 @@ class Parser:
         if isinstance(obj, list):
             output_lines.append(f"{indentation}- **{name}**:\n")
 
-            for element in obj:
+            for i, element in enumerate(obj):
                 output_lines = self._parse_object(
                     element,
-                    None,
+                    path=[*path, str(i)],
+                    name=None,
                     name_monospace=False,
                     output_lines=output_lines,
                     indent_level=indent_level + 2,
@@ -275,8 +283,10 @@ class Parser:
                 else ""
             )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
-        anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
-        output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
+        anchor = f'<a id="{quote("/".join(path))}"></a>'
+        ignored = any(re.match(ignore, "/".join(path)) is not None for ignore in self.ignore_patterns)
+        if not ignored:
+            output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
 
         # Recursively parse subschemas following schema composition keywords
         schema_composition_keyword_map = {
@@ -287,10 +297,11 @@ class Parser:
         for key, label in schema_composition_keyword_map.items():
             if key in obj:
                 output_lines.append(f"{indentation_items}- **{label}**\n")
-                for child_obj in obj[key]:
+                for i, child_obj in enumerate(obj[key]):
                     output_lines = self._parse_object(
                         child_obj,
-                        None,
+                        path=[*path, key, str(i)],
+                        name=None,
                         name_monospace=False,
                         output_lines=output_lines,
                         indent_level=indent_level + 2,
@@ -301,7 +312,8 @@ class Parser:
             if property_name in obj:
                 output_lines = self._parse_object(
                     obj[property_name],
-                    property_name.capitalize(),
+                    path=[*path, property_name],
+                    name=property_name.capitalize(),
                     name_monospace=False,
                     output_lines=output_lines,
                     indent_level=indent_level + 1,
@@ -313,7 +325,8 @@ class Parser:
             if property_name in obj and isinstance(obj[property_name], dict):
                 output_lines = self._parse_object(
                     obj[property_name],
-                    f"{extra_props.capitalize()} properties",
+                    path=[*path, property_name],
+                    name=f"{extra_props.capitalize()} properties",
                     name_monospace=False,
                     output_lines=output_lines,
                     indent_level=indent_level + 1,
@@ -325,7 +338,8 @@ class Parser:
                 for obj_property_name, property_obj in obj[property_name].items():
                     output_lines = self._parse_object(
                         property_obj,
-                        obj_property_name,
+                        path=[*path, property_name, obj_property_name],
+                        name=obj_property_name,
                         output_lines=output_lines,
                         indent_level=indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
@@ -355,7 +369,14 @@ class Parser:
         # Add items
         if "items" in schema_object:
             output_lines.append(f"#{'#' * (self.header_level + 1)} Items\n\n")
-            output_lines.extend(self._parse_object(schema_object["items"], "Items", name_monospace=False))
+            output_lines.extend(
+                self._parse_object(
+                    schema_object["items"],
+                    path=["items"],
+                    name="Items",
+                    name_monospace=False,
+                ),
+            )
 
         # Add additional/unevaluated properties
         for extra_props in ["additional", "unevaluated"]:
@@ -366,7 +387,8 @@ class Parser:
                 output_lines.extend(
                     self._parse_object(
                         schema_object[property_name],
-                        title_,
+                        path=[property_name],
+                        name=title_,
                         name_monospace=False,
                     ),
                 )
@@ -375,7 +397,7 @@ class Parser:
         if "patternProperties" in schema_object:
             output_lines.append(f"#{'#' * (self.header_level + 1)} Pattern Properties\n\n")
             for obj_name, obj in schema_object["patternProperties"].items():
-                output_lines.extend(self._parse_object(obj, obj_name))
+                output_lines.extend(self._parse_object(obj, path=["patternProperties"], name=obj_name))
 
         # Add properties
         if "properties" in schema_object:
@@ -385,7 +407,8 @@ class Parser:
                 output_lines.extend(
                     self._parse_object(
                         obj,
-                        obj_name,
+                        path=["properties", obj_name],
+                        name=obj_name,
                         required=required,
                         dependent_required=[
                             k for k, v in schema_object.get("dependentRequired", {}).items() if obj_name in v
@@ -398,7 +421,7 @@ class Parser:
             if name in schema_object:
                 output_lines.append(f"#{'#' * (self.header_level + 1)} Definitions\n\n")
                 for obj_name, obj in schema_object[name].items():
-                    output_lines.extend(self._parse_object(obj, obj_name, path=[name, obj_name]))
+                    output_lines.extend(self._parse_object(obj, path=[name, obj_name], name=obj_name))
 
         # Add examples
         if "examples" in schema_object and self.show_examples in ["all", "object"]:
