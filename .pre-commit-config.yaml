@@ -64,7 +64,7 @@ repos:
     hooks:
       - id: prettier
         additional_dependencies:
-          - prettier@3.5.2 # npm
+          - prettier@3.5.3 # npm
           - prettier-plugin-sh@0.15.0 # npm
           - prettier-plugin-toml@2.0.2 # npm
           - '@prettier/plugin-xml@0.12.0' # npm
@@ -77,7 +77,7 @@ repos:
     hooks:
       - id: git-check
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.2
+    rev: 0.31.3
     hooks:
       - id: check-github-actions
       - id: check-github-workflows
@@ -100,11 +100,11 @@ repos:
         files: |-
           ^\.github/publish\.yaml$
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 39.182.3
+    rev: 39.205.1
     hooks:
       - id: renovate-config-validator
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.9
+    rev: v0.11.1
     hooks:
       - id: ruff-format
   - repo: https://github.com/PyCQA/prospector
