@@ -9,7 +9,7 @@ class TestDraft201909defs:
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft/2019-09/schema",
-        "description": "Vegetable preferences",
+        "description": "Food preferences",
         "type": "object",
         "additionalProperties": {
             "description": "Additional info about foods you may like",
@@ -34,7 +34,13 @@ class TestDraft201909defs:
         },
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
-            "vegetables": {"type": "array", "items": {"$ref": "#/$defs/veggie"}},
+            "vegetables": {"type": "array", "uniqueItems": True, "items": {"$ref": "#/$defs/veggie"}},
+            "taste": {
+                "type": "string",
+                "description": "How does it taste?",
+                "default": "good",
+                "pattern": "^[a-z]*$",
+            },
         },
         "required": ["fruits"],
         "$defs": {
@@ -45,9 +51,12 @@ class TestDraft201909defs:
                     "veggieName": {
                         "type": "string",
                         "description": "The name of the vegetable.",
+                        "minLength": 1,
+                        "maxLength": 100,
                     },
                     "veggieLike": {
                         "type": "boolean",
+                        "deprecated": True,
                         "description": "Do I like this vegetable?",
                     },
                     "expiresAt": {
@@ -71,7 +80,7 @@ class TestDraft201909defs:
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -81,12 +90,13 @@ class TestDraft201909defs:
             "## Properties\n\n",
             "- **`fruits`** *(array, required)*\n",
             "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*\n",
+            "- **`vegetables`** *(array)*: Items must be unique.\n",
             "  - **Items**: Refer to *[#/$defs/veggie](#%24defs/veggie)*.\n",
+            '- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `"good"`.\n',
             "## Definitions\n\n",
             '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
-            "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
-            "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
+            "  - **`veggieName`** *(string, required)*: The name of the vegetable. Length must be between 1 and 100 (inclusive).\n",
+            "  - **`veggieLike`** *(boolean, required, deprecated)*: Do I like this vegetable?\n",
             "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
             "  ```json\n"
@@ -113,7 +123,7 @@ class TestParser:
     test_schema = {
         "$id": "https://example.com/arrays.schema.json",
         "$schema": "http://json-schema.org/draft-07/schema#",
-        "description": "Vegetable preferences",
+        "description": "Food preferences",
         "type": "object",
         "additionalProperties": {
             "description": "Additional info about foods you may like",
@@ -128,11 +138,13 @@ class TestParser:
         "properties": {
             "fruits": {"type": "array", "items": {"type": "string"}},
             "vegetables": {"type": "array", "items": {"$ref": "#/definitions/veggie"}},
+            "cakes": {"type": "array", "maxContains": 3, "contains": {"$ref": "#/definitions/cake"}},
         },
         "definitions": {
             "veggie": {
                 "type": "object",
                 "required": ["veggieName", "veggieLike"],
+                "dependentRequired": {"veggieLike": ["expiresAt"]},
                 "properties": {
                     "veggieName": {
                         "type": "string",
@@ -148,6 +160,10 @@ class TestParser:
                         "description": "When does the veggie expires",
                     },
                 },
+            },
+            "cake": {
+                "description": "A cake",
+                "type": "string",
             },
         },
         "examples": [
@@ -300,7 +316,7 @@ class TestParser:
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -309,11 +325,14 @@ class TestParser:
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
             "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
+            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
+            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
+            '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```json\n"
             "  {\n"
@@ -337,7 +356,7 @@ class TestParser:
         parser = jsonschema2md.Parser(examples_as_yaml=True)
         expected_output = [
             "# JSON Schema\n\n",
-            "*Vegetable preferences*\n\n",
+            "*Food preferences*\n\n",
             "## Additional Properties\n\n",
             "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
             "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
@@ -346,11 +365,14 @@ class TestParser:
             "  - **Items** *(string)*\n",
             "- **`vegetables`** *(array)*\n",
             "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
+            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
+            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
             "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
             "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
+            '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```yaml\n  fruits:\n  - apple\n  - orange\n  vegetables:\n  -   veggieName: cabbage\n      veggieLike: true\n  ```\n\n",
         ]
@@ -396,6 +418,7 @@ class TestParser:
             "items": {
                 "description": "A list of fruits",
                 "type": "object",
+                "maxProperties": 2,
                 "properties": {
                     "name": {"description": "The name of the fruit", "type": "string"},
                     "sweet": {
@@ -410,7 +433,7 @@ class TestParser:
             "# Fruits\n\n",
             "*Fruits I like*\n\n",
             "## Items\n\n",
-            "- **Items** *(object)*: A list of fruits.\n",
+            "- **Items** *(object)*: A list of fruits. Number of properties must be at most 2.\n",
             "  - **`name`** *(string)*: The name of the fruit.\n",
             "  - **`sweet`** *(boolean)*: Whether it is sweet or not.\n",
         ]

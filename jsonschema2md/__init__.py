@@ -39,7 +39,12 @@ class Parser:
 
     tab_size = 2
 
-    def __init__(self, examples_as_yaml: bool = False, show_examples: str = "all") -> None:
+    def __init__(
+        self,
+        examples_as_yaml: bool = False,
+        show_examples: str = "all",
+        header_level: int = 0,
+    ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
 
@@ -50,9 +55,13 @@ class Parser:
         show_examples: str, default 'all'
             Parse examples for only objects, only properties or all. Valid options are
             `{"all", "object", "properties"}`.
+        header_level : int, default 0
+            Base header level for the generated markdown. This is useful to include the
+            generated markdown in a larger document with its own header levels.
 
         """
         self.examples_as_yaml = examples_as_yaml
+        self.header_level = header_level
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -61,7 +70,7 @@ class Parser:
         else:
             message = (
                 f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed."
+                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
             )
             raise ValueError(message)
 
@@ -74,6 +83,10 @@ class Parser:
             description_line.append(f"{obj['description']}{ending}")
         if add_type and "type" in obj:
             description_line.append(f"Must be of type *{obj['type']}*.")
+        if "contentEncoding" in obj:
+            description_line.append(f"Content encoding: `{obj['contentEncoding']}`.")
+        if "contentMediaType" in obj:
+            description_line.append(f"Content media type: `{obj['contentMediaType']}`.")
         if "minimum" in obj:
             description_line.append(f"Minimum: `{obj['minimum']}`.")
         if "exclusiveMinimum" in obj:
@@ -93,6 +106,55 @@ class Parser:
             else:
                 length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
             description_line.append(length_description)
+        if "multipleOf" in obj:
+            if obj["multipleOf"] == 1:
+                description_line.append("Must be an integer.")
+            else:
+                description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
+
+        if "minLength" in obj or "maxLength" in obj:
+            length_description = "Length must be "
+            if "minLength" in obj and "maxLength" not in obj:
+                length_description += f"at least {obj['minLength']}."
+            elif "maxLength" in obj and "minLength" not in obj:
+                length_description += f"at most {obj['maxLength']}."
+            elif obj["minLength"] == obj["maxLength"]:
+                length_description += f"equal to {obj['minLength']}."
+            else:
+                length_description += f"between {obj['minLength']} and {obj['maxLength']} (inclusive)."
+            description_line.append(length_description)
+        if "pattern" in obj:
+            link = f"https://regexr.com/?expression={quote(obj['pattern'])}"
+            description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
+        if obj.get("uniqueItems"):
+            description_line.append("Items must be unique.")
+        if "minContains" in obj or "maxContains" in obj:
+            contains_description = "Contains schema must be matched"
+            if "minContains" in obj and "maxContains" not in obj:
+                contains_description += f" at least {obj['minContains']} times."
+            elif "maxContains" in obj and "minContains" not in obj:
+                contains_description += f" at most {obj['maxContains']} times."
+            elif obj["minContains"] == obj["maxContains"]:
+                contains_description += f" exactly {obj['minContains']} times."
+            else:
+                contains_description += (
+                    f" between {obj['minContains']} and {obj['maxContains']} times (inclusive)."
+                )
+
+            description_line.append(contains_description)
+        if "maxProperties" in obj or "minProperties" in obj:
+            properties_description = "Number of properties must be "
+            if "minProperties" in obj and "maxProperties" not in obj:
+                properties_description += f"at least {obj['minProperties']}."
+            elif "maxProperties" in obj and "minProperties" not in obj:
+                properties_description += f"at most {obj['maxProperties']}."
+            elif obj["minProperties"] == obj["maxProperties"]:
+                properties_description += f"equal to {obj['minProperties']}."
+            else:
+                properties_description += (
+                    f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
+                )
+            description_line.append(properties_description)
         if "enum" in obj:
             description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
         if "const" in obj:
@@ -158,6 +220,7 @@ class Parser:
         indent_level: int = 0,
         path: Optional[list[str]] = None,
         required: bool = False,
+        dependent_required: Optional[list[str]] = None,
     ) -> list[str]:
         """Parse JSON object and its items, definitions, and properties recursively."""
         if not output_lines:
@@ -197,7 +260,20 @@ class Parser:
             name_formatted = ""
         else:
             required_str = ", required" if required else ""
-            obj_type = f" *({obj['type']}{optional_format}{required_str})*" if "type" in obj else ""
+            deprecated_str = ", deprecated" if obj.get("deprecated") else ""
+            readonly_str = ", read-only" if obj.get("readOnly") else ""
+            writeonly_str = ", write-only" if obj.get("writeOnly") else ""
+            if dependent_required and not required:
+                dependent_required_code = [f"`{k}`" for k in dependent_required]
+                if len(dependent_required_code) == 1:
+                    required_str += f", required <sub><sup>if {dependent_required_code[0]} is set</sup></sub>"
+                else:
+                    required_str += f", required <sub><sup>if {', '.join(dependent_required_code[:-1])}, or {dependent_required_code[-1]} is set</sup></sub>"
+            obj_type = (
+                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
+                if "type" in obj
+                else ""
+            )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
         anchor = f'<a id="{quote("/".join(path))}"></a>' if path else ""
         output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
@@ -221,7 +297,7 @@ class Parser:
                     )
 
         # Recursively add items and definitions
-        for property_name in ["items", "definitions", "$defs"]:
+        for property_name in ["items", "contains", "definitions", "$defs"]:
             if property_name in obj:
                 output_lines = self._parse_object(
                     obj[property_name],
@@ -253,6 +329,9 @@ class Parser:
                         output_lines=output_lines,
                         indent_level=indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
+                        dependent_required=[
+                            k for k, v in obj.get("dependentRequired", {}).items() if obj_property_name in v
+                        ],
                     )
 
         # Add examples
@@ -267,15 +346,15 @@ class Parser:
 
         # Add title and description
         if "title" in schema_object:
-            output_lines.append(f"# {schema_object['title']}\n\n")
+            output_lines.append(f"{'#' * (self.header_level + 1)} {schema_object['title']}\n\n")
         else:
-            output_lines.append("# JSON Schema\n\n")
+            output_lines.append(f"{'#' * (self.header_level + 1)} JSON Schema\n\n")
         if "description" in schema_object:
             output_lines.append(f"*{schema_object['description']}*\n\n")
 
         # Add items
         if "items" in schema_object:
-            output_lines.append("## Items\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Items\n\n")
             output_lines.extend(self._parse_object(schema_object["items"], "Items", name_monospace=False))
 
         # Add additional/unevaluated properties
@@ -283,7 +362,7 @@ class Parser:
             property_name = f"{extra_props}Properties"
             title_ = f"{extra_props.capitalize()} Properties"
             if property_name in schema_object and isinstance(schema_object[property_name], dict):
-                output_lines.append(f"## {title_}\n\n")
+                output_lines.append(f"#{'#' * (self.header_level + 1)} {title_}\n\n")
                 output_lines.extend(
                     self._parse_object(
                         schema_object[property_name],
@@ -294,27 +373,36 @@ class Parser:
 
         # Add pattern properties
         if "patternProperties" in schema_object:
-            output_lines.append("## Pattern Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Pattern Properties\n\n")
             for obj_name, obj in schema_object["patternProperties"].items():
                 output_lines.extend(self._parse_object(obj, obj_name))
 
         # Add properties
         if "properties" in schema_object:
-            output_lines.append("## Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Properties\n\n")
             for obj_name, obj in schema_object["properties"].items():
                 required = obj_name in schema_object.get("required", [])
-                output_lines.extend(self._parse_object(obj, obj_name, required=required))
+                output_lines.extend(
+                    self._parse_object(
+                        obj,
+                        obj_name,
+                        required=required,
+                        dependent_required=[
+                            k for k, v in schema_object.get("dependentRequired", {}).items() if obj_name in v
+                        ],
+                    ),
+                )
 
         # Add definitions / $defs
         for name in ["definitions", "$defs"]:
             if name in schema_object:
-                output_lines.append("## Definitions\n\n")
+                output_lines.append(f"#{'#' * (self.header_level + 1)} Definitions\n\n")
                 for obj_name, obj in schema_object[name].items():
                     output_lines.extend(self._parse_object(obj, obj_name, path=[name, obj_name]))
 
         # Add examples
         if "examples" in schema_object and self.show_examples in ["all", "object"]:
-            output_lines.append("## Examples\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} Examples\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
         return output_lines
@@ -340,6 +428,12 @@ def main() -> None:
         default="all",
         help="Parse examples for only the main object, only properties, or all.",
     )
+    argparser.add_argument(
+        "--header-level",
+        type=int,
+        default=0,
+        help="Base header level for the generated markdown.",
+    )
     argparser.add_argument("input_json", type=Path, help="Input JSON file.")
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
@@ -349,7 +443,11 @@ def main() -> None:
         print(__version__)
         sys.exit(0)
 
-    parser = Parser(examples_as_yaml=args.examples_as_yaml, show_examples=args.show_examples)
+    parser = Parser(
+        examples_as_yaml=args.examples_as_yaml,
+        show_examples=args.show_examples,
+        header_level=args.header_level,
+    )
     with args.input_json.open(encoding="utf-8") as input_json:
         output_md = parser.parse_schema(json.load(input_json))
 

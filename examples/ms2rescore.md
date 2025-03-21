@@ -6,14 +6,14 @@ _MS²ReScore JSON configuration file._
 
 - **`general`** _(object)_: General MS²ReScore settings. Cannot contain additional properties.
   - **`pipeline`** _(string)_: Pipeline to use, depending on input format. Must be one of: `["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.
-  - **`feature_sets`** _(array)_: Feature sets for which to generate PIN files and optionally run Percolator. Length must be at least 1. Default: `["all"]`.
+  - **`feature_sets`** _(array)_: Feature sets for which to generate PIN files and optionally run Percolator. Length must be at least 1. Items must be unique. Default: `["all"]`.
     - **Items** _(string)_: Must be one of: `["all", "ms2pip_rt", "searchengine", "rt", "ms2pip"]`.
   - **`id_decoy_pattern`**: Pattern used to identify the decoy PSMs in identification file. Passed to `--pattern` option of Percolator converters. Default: `null`.
     - **One of**
       - _string_
       - _null_
   - **`run_percolator`** _(boolean)_: Run Percolator within MS²ReScore. Default: `false`.
-  - **`num_cpu`** _(number)_: Number of parallel processes to use; -1 for all available. Minimum: `-1`. Default: `-1`.
+  - **`num_cpu`** _(number)_: Number of parallel processes to use; -1 for all available. Minimum: `-1`. Must be an integer. Default: `-1`.
   - **`config_file`**: Path to configuration file.
     - **One of**
       - _string_
@@ -48,10 +48,10 @@ _MS²ReScore JSON configuration file._
 
 - <a id="definitions/modifications"></a>**`modifications`** _(object)_: Peptide mass modifications, per amino acid. Cannot contain additional properties.
   - **`name`** _(string, required)_: Unique name for modification.
-  - **`unimod_accession`** _(number, required)_: Unimod accession of modification.
+  - **`unimod_accession`** _(number, required)_: Unimod accession of modification. Must be an integer.
   - **`mass_shift`** _(number, required)_: Mono-isotopic mass shift.
   - **`amino_acid`**: Amino acid one-letter code, or null if amino acid-agnostic (e.g. N-term acetylation).
     - **One of**
-      - _string_
+      - _string_: Length must be equal to 1.
       - _null_
   - **`n_term`** _(boolean, required)_: Modification is N-terminal.
