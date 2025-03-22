@@ -4,20 +4,20 @@ _Vegetable preferences_
 
 ## Properties
 
-- **`fruits`** _(array)_
-  - **Items** _(string)_
-- **`vegetables`** _(array)_
-  - **Items**: Refer to _[#/definitions/veggie](#definitions/veggie)_.
+- <a id="properties/fruits"></a>**`fruits`** _(array)_
+  - <a id="properties/fruits/items"></a>**Items** _(string)_
+- <a id="properties/vegetables"></a>**`vegetables`** _(array)_
+  - <a id="properties/vegetables/items"></a>**Items**: Refer to _[#/definitions/veggie](#definitions/veggie)_.
 
 ## Definitions
 
 - <a id="definitions/veggie"></a>**`veggie`** _(object)_
-  - **`veggieName`** _(string, required)_: The name of the vegetable.
-  - **`veggieLike`** _(boolean, required)_: Do I like this vegetable?
-  - **`type_number`** _(array)_: The type and number of vegetable.
+  - <a id="definitions/veggie/properties/veggieName"></a>**`veggieName`** _(string, required)_: The name of the vegetable.
+  - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** _(boolean, required)_: Do I like this vegetable?
+  - <a id="definitions/veggie/properties/type_number"></a>**`type_number`** _(array)_: The type and number of vegetable.
     - **Items**:
-      - _string_: The type of the vegetable.
-      - _number_: The number of vegetable.
+      - <a id="definitions/veggie/properties/type_number/items/0"></a>_string_: The type of the vegetable.
+      - <a id="definitions/veggie/properties/type_number/items/1"></a>_number_: The number of vegetable.
 
 ## Examples
 

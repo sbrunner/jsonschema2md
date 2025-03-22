@@ -82,22 +82,37 @@ class TestDraft201909defs:
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
             "## Additional Properties\n\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
-            "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
+            '- <a id="additionalProperties"></a>**Additional Properties** *(object)*: '
+            "Additional info about foods you may like.\n",
+            "  - <a "
+            'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
+            "*(boolean)*: Do I like it?\n",
             "## Unevaluated Properties\n\n",
-            "- **Unevaluated Properties** *(object)*: Anything else you want to add. Cannot contain additional properties.\n",
-            "  - **`^extraInfo[\\w]*$`** *(string)*: Anything else I might like to say.\n",
+            '- <a id="unevaluatedProperties"></a>**Unevaluated Properties** '
+            "*(object)*: Anything else you want to add. Cannot contain additional "
+            "properties.\n",
+            "  - <a "
+            'id="unevaluatedProperties/patternProperties/%5EextraInfo%5B%5Cw%5D%2A%24"></a>**`^extraInfo[\\w]*$`** '
+            "*(string)*: Anything else I might like to say.\n",
             "## Properties\n\n",
-            "- **`fruits`** *(array, required)*\n",
-            "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*: Items must be unique.\n",
-            "  - **Items**: Refer to *[#/$defs/veggie](#%24defs/veggie)*.\n",
-            '- **`taste`** *(string)*: How does it taste? Must match pattern: `^[a-z]*$` ([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: `"good"`.\n',
+            '- <a id="properties/fruits"></a>**`fruits`** *(array, required)*\n',
+            '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
+            '- <a id="properties/vegetables"></a>**`vegetables`** *(array)*: Items must be unique.\n',
+            '  - <a id="properties/vegetables/items"></a>**Items**: Refer to '
+            "*[#/$defs/veggie](#%24defs/veggie)*.\n",
+            '- <a id="properties/taste"></a>**`taste`** *(string)*: How does it taste? '
+            "Must match pattern: `^[a-z]*$` "
+            "([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: "
+            '`"good"`.\n',
             "## Definitions\n\n",
             '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
-            "  - **`veggieName`** *(string, required)*: The name of the vegetable. Length must be between 1 and 100 (inclusive).\n",
-            "  - **`veggieLike`** *(boolean, required, deprecated)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date)*: When does the veggie expires.\n",
+            '  - <a id="%24defs/veggie/properties/veggieName"></a>**`veggieName`** '
+            "*(string, required)*: The name of the vegetable. Length must be between 1 "
+            "and 100 (inclusive).\n",
+            '  - <a id="%24defs/veggie/properties/veggieLike"></a>**`veggieLike`** '
+            "*(boolean, required, deprecated)*: Do I like this vegetable?\n",
+            '  - <a id="%24defs/veggie/properties/expiresAt"></a>**`expiresAt`** '
+            "*(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
             "  ```json\n"
             "  {\n"
@@ -112,7 +127,8 @@ class TestDraft201909defs:
             "          }\n"
             "      ]\n"
             "  }\n"
-            "  ```\n\n",
+            "  ```\n"
+            "\n",
         ]
         assert expected_output == parser.parse_schema(self.test_schema)
 
@@ -308,8 +324,13 @@ class TestParser:
     def test_parse_object(self):
         """Test."""
         parser = jsonschema2md.Parser()
-        expected_output = ["- **`fruits`** *(array)*\n", "  - **Items** *(string)*\n"]
-        assert expected_output == parser._parse_object(self.test_schema["properties"]["fruits"], "fruits")
+        expected_output = [
+            '- <a id="properties/fruits"></a>**`fruits`** *(array)*\n',
+            '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
+        ]
+        assert expected_output == parser._parse_object(
+            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"]
+        )
 
     def test_parse_schema(self):
         """Test."""
@@ -318,20 +339,30 @@ class TestParser:
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
             "## Additional Properties\n\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
-            "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
+            '- <a id="additionalProperties"></a>**Additional Properties** *(object)*: '
+            "Additional info about foods you may like.\n",
+            "  - <a "
+            'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
+            "*(boolean)*: Do I like it?\n",
             "## Properties\n\n",
-            "- **`fruits`** *(array)*\n",
-            "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*\n",
-            "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
-            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
-            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
+            '- <a id="properties/fruits"></a>**`fruits`** *(array)*\n',
+            '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
+            '- <a id="properties/vegetables"></a>**`vegetables`** *(array)*\n',
+            '  - <a id="properties/vegetables/items"></a>**Items**: Refer to '
+            "*[#/definitions/veggie](#definitions/veggie)*.\n",
+            '- <a id="properties/cakes"></a>**`cakes`** *(array)*: Contains schema '
+            "must be matched at most 3 times.\n",
+            '  - <a id="properties/cakes/contains"></a>**Contains**: Refer to '
+            "*[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
-            "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
-            "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
+            '  - <a id="definitions/veggie/properties/veggieName"></a>**`veggieName`** '
+            "*(string, required)*: The name of the vegetable.\n",
+            '  - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** '
+            "*(boolean, required)*: Do I like this vegetable?\n",
+            '  - <a id="definitions/veggie/properties/expiresAt"></a>**`expiresAt`** '
+            "*(string, format: date, required <sub><sup>if `veggieLike` is "
+            "set</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
             "  ```json\n"
@@ -347,7 +378,8 @@ class TestParser:
             "          }\n"
             "      ]\n"
             "  }\n"
-            "  ```\n\n",
+            "  ```\n"
+            "\n",
         ]
         assert expected_output == parser.parse_schema(self.test_schema)
 
@@ -358,23 +390,41 @@ class TestParser:
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
             "## Additional Properties\n\n",
-            "- **Additional Properties** *(object)*: Additional info about foods you may like.\n",
-            "  - **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
+            '- <a id="additionalProperties"></a>**Additional Properties** *(object)*: '
+            "Additional info about foods you may like.\n",
+            "  - <a "
+            'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
+            "*(boolean)*: Do I like it?\n",
             "## Properties\n\n",
-            "- **`fruits`** *(array)*\n",
-            "  - **Items** *(string)*\n",
-            "- **`vegetables`** *(array)*\n",
-            "  - **Items**: Refer to *[#/definitions/veggie](#definitions/veggie)*.\n",
-            "- **`cakes`** *(array)*: Contains schema must be matched at most 3 times.\n",
-            "  - **Contains**: Refer to *[#/definitions/cake](#definitions/cake)*.\n",
+            '- <a id="properties/fruits"></a>**`fruits`** *(array)*\n',
+            '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
+            '- <a id="properties/vegetables"></a>**`vegetables`** *(array)*\n',
+            '  - <a id="properties/vegetables/items"></a>**Items**: Refer to '
+            "*[#/definitions/veggie](#definitions/veggie)*.\n",
+            '- <a id="properties/cakes"></a>**`cakes`** *(array)*: Contains schema '
+            "must be matched at most 3 times.\n",
+            '  - <a id="properties/cakes/contains"></a>**Contains**: Refer to '
+            "*[#/definitions/cake](#definitions/cake)*.\n",
             "## Definitions\n\n",
             '- <a id="definitions/veggie"></a>**`veggie`** *(object)*\n',
-            "  - **`veggieName`** *(string, required)*: The name of the vegetable.\n",
-            "  - **`veggieLike`** *(boolean, required)*: Do I like this vegetable?\n",
-            "  - **`expiresAt`** *(string, format: date, required <sub><sup>if `veggieLike` is set</sup></sub>)*: When does the veggie expires.\n",
+            '  - <a id="definitions/veggie/properties/veggieName"></a>**`veggieName`** '
+            "*(string, required)*: The name of the vegetable.\n",
+            '  - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** '
+            "*(boolean, required)*: Do I like this vegetable?\n",
+            '  - <a id="definitions/veggie/properties/expiresAt"></a>**`expiresAt`** '
+            "*(string, format: date, required <sub><sup>if `veggieLike` is "
+            "set</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(string)*: A cake.\n',
             "## Examples\n\n",
-            "  ```yaml\n  fruits:\n  - apple\n  - orange\n  vegetables:\n  -   veggieName: cabbage\n      veggieLike: true\n  ```\n\n",
+            "  ```yaml\n"
+            "  fruits:\n"
+            "  - apple\n"
+            "  - orange\n"
+            "  vegetables:\n"
+            "  -   veggieName: cabbage\n"
+            "      veggieLike: true\n"
+            "  ```\n"
+            "\n",
         ]
         assert expected_output == parser.parse_schema(self.test_schema)
 
@@ -400,7 +450,7 @@ class TestParser:
             "# JSON Schema\n\n",
             "*Diet preferences*\n\n",
             "## Pattern Properties\n\n",
-            "- **`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n",
+            '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n',
         ]
 
         assert expected_output == parser.parse_schema(test_schema)
@@ -433,9 +483,10 @@ class TestParser:
             "# Fruits\n\n",
             "*Fruits I like*\n\n",
             "## Items\n\n",
-            "- **Items** *(object)*: A list of fruits. Number of properties must be at most 2.\n",
-            "  - **`name`** *(string)*: The name of the fruit.\n",
-            "  - **`sweet`** *(boolean)*: Whether it is sweet or not.\n",
+            '- <a id="items"></a>**Items** *(object)*: A list of fruits. Number of '
+            "properties must be at most 2.\n",
+            '  - <a id="items/properties/name"></a>**`name`** *(string)*: The name of the fruit.\n',
+            '  - <a id="items/properties/sweet"></a>**`sweet`** *(boolean)*: Whether it is sweet or not.\n',
         ]
 
         assert expected_output == parser.parse_schema(test_schema)
@@ -469,18 +520,63 @@ class TestParser:
             "# JSON Schema\n\n",
             "*Schema composition test case*\n\n",
             "## Properties\n\n",
-            "- **`all_of_example`**\n",
+            '- <a id="properties/all_of_example"></a>**`all_of_example`**\n',
             "  - **All of**\n",
-            "    - *number*\n",
-            "    - *integer*\n",
-            "- **`any_of_example`**\n",
+            '    - <a id="properties/all_of_example/allOf/0"></a>*number*\n',
+            '    - <a id="properties/all_of_example/allOf/1"></a>*integer*\n',
+            '- <a id="properties/any_of_example"></a>**`any_of_example`**\n',
             "  - **Any of**\n",
-            "    - *string*\n",
-            "    - *number*: Minimum: `0`.\n",
-            "- **`one_of_example`**: Default: `[1, 2, 3]`.\n",
+            '    - <a id="properties/any_of_example/anyOf/0"></a>*string*\n',
+            '    - <a id="properties/any_of_example/anyOf/1"></a>*number*: Minimum: `0`.\n',
+            '- <a id="properties/one_of_example"></a>**`one_of_example`**: Default: `[1, 2, 3]`.\n',
             "  - **One of**\n",
-            "    - *null*\n",
-            "    - *array*\n",
-            "      - **Items** *(number)*\n",
+            '    - <a id="properties/one_of_example/oneOf/0"></a>*null*\n',
+            '    - <a id="properties/one_of_example/oneOf/1"></a>*array*\n',
+            '      - <a id="properties/one_of_example/oneOf/1/items"></a>**Items** *(number)*\n',
+        ]
+        assert expected_output == parser.parse_schema(test_schema)
+
+    def test_pattern_ignore(self):
+        test_schema = {
+            "type": "object",
+            "properties": {
+                "general": {
+                    "description": "General settings.",
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "pipeline": {
+                            "description": "Pipeline to use, depending on input format",
+                            "type": "string",
+                            "enum": ["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"],
+                            "default": "infer",
+                        },
+                    },
+                },
+                "ignoreme": {
+                    "description": "Ignored property",
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "thing": {
+                            "description": "the description",
+                            "type": "string",
+                            "enum": ["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"],
+                            "default": "infer",
+                        },
+                    },
+                },
+            },
+        }
+        parser = jsonschema2md.Parser(ignore_patterns=[r".*ignoreme.*"])
+        expected_output = [
+            "# JSON Schema\n\n",
+            "## Properties\n\n",
+            '- <a id="properties/general"></a>**`general`** *(object)*: General '
+            "settings. Cannot contain additional properties.\n",
+            '  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** '
+            "*(string)*: Pipeline to use, depending on input format. Must be one of: "
+            '`["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. '
+            'Default: `"infer"`.\n',
         ]
         assert expected_output == parser.parse_schema(test_schema)
