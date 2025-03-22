@@ -292,7 +292,16 @@ class Parser:
 
         has_children = any(
             prop in obj and isinstance(obj[prop], dict)
-            for prop in ["additionalProperties", "unevaluatedProperties", "properties", "patternProperties"]
+            for prop in [
+                "additionalProperties",
+                "unevaluatedProperties",
+                "properties",
+                "patternProperties",
+                "items",
+                "contains",
+                "definitions",
+                "$defs",
+            ]
         )
 
         anchor = f'<a id="{quote("/".join(path))}"></a>'
