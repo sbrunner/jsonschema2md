@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 from urllib.parse import quote
 
+import markdown
 import yaml
 
 __version__ = version("jsonschema2md")
@@ -43,6 +44,7 @@ class Parser:
         self,
         examples_as_yaml: bool = False,
         show_examples: str = "all",
+        collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
     ) -> None:
@@ -56,6 +58,9 @@ class Parser:
         show_examples: str, default 'all'
             Parse examples for only objects, only properties or all. Valid options are
             `{"all", "object", "properties"}`.
+        collapse_children : bool, default False
+            If `True`, collapses objects with children in the generated markdown. This
+            allows for a cleaner view of the schema.
         header_level : int, default 0
             Base header level for the generated markdown. This is useful to include the
             generated markdown in a larger document with its own header levels.
@@ -68,6 +73,7 @@ class Parser:
         """
         self.examples_as_yaml = examples_as_yaml
         self.header_level = header_level
+        self.collapse_children = collapse_children
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
 
         valid_show_examples_options = ["all", "object", "properties"]
@@ -283,10 +289,32 @@ class Parser:
                 else ""
             )
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
+
+        has_children = any(
+            prop in obj and isinstance(obj[prop], dict)
+            for prop in ["additionalProperties", "unevaluatedProperties", "properties", "patternProperties"]
+        )
+
         anchor = f'<a id="{quote("/".join(path))}"></a>'
         ignored = any(re.match(ignore, "/".join(path)) is not None for ignore in self.ignore_patterns)
         if not ignored:
-            output_lines.append(f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line}\n")
+            if has_children and self.collapse_children:
+                # Expandable children
+                output_lines.extend(
+                    [
+                        "<details>\n",
+                        "<summary>",
+                        markdown.markdown(  # Only HTML is supported for the summary
+                            f"{anchor}{name_formatted}{obj_type}{description_line.strip()}",
+                        )[3:-4],  # Remove <p> tags
+                        "</summary>\n\n",
+                    ],
+                )
+
+            else:
+                output_lines.append(
+                    f"{indentation}- {anchor}{name_formatted}{obj_type}{description_line.strip()}\n",
+                )
 
         # Recursively parse subschemas following schema composition keywords
         schema_composition_keyword_map = {
@@ -296,7 +324,9 @@ class Parser:
         }
         for key, label in schema_composition_keyword_map.items():
             if key in obj:
-                output_lines.append(f"{indentation_items}- **{label}**\n")
+                output_lines.append(
+                    f"{'' if has_children and self.collapse_children else indentation_items}- **{label}**\n",
+                )
                 for i, child_obj in enumerate(obj[key]):
                     output_lines = self._parse_object(
                         child_obj,
@@ -304,9 +334,10 @@ class Parser:
                         name=None,
                         name_monospace=False,
                         output_lines=output_lines,
-                        indent_level=indent_level + 2,
+                        indent_level=0
+                        if has_children and self.collapse_children
+                        else indent_level + 2,  # If we are inside a <details> block, no need to indent
                     )
-
         # Recursively add items and definitions
         for property_name in ["items", "contains", "definitions", "$defs"]:
             if property_name in obj:
@@ -316,7 +347,7 @@ class Parser:
                     name=property_name.capitalize(),
                     name_monospace=False,
                     output_lines=output_lines,
-                    indent_level=indent_level + 1,
+                    indent_level=0 if has_children and self.collapse_children else indent_level + 1,
                 )
 
         # Recursively add additional child properties
@@ -329,7 +360,7 @@ class Parser:
                     name=f"{extra_props.capitalize()} properties",
                     name_monospace=False,
                     output_lines=output_lines,
-                    indent_level=indent_level + 1,
+                    indent_level=0 if has_children and self.collapse_children else indent_level + 1,
                 )
 
         # Recursively add child properties
@@ -341,12 +372,15 @@ class Parser:
                         path=[*path, property_name, obj_property_name],
                         name=obj_property_name,
                         output_lines=output_lines,
-                        indent_level=indent_level + 1,
+                        indent_level=0 if has_children and self.collapse_children else indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
                         dependent_required=[
                             k for k, v in obj.get("dependentRequired", {}).items() if obj_property_name in v
                         ],
                     )
+
+        if not ignored and has_children and self.collapse_children:
+            output_lines.append("</details>\n")
 
         # Add examples
         if self.show_examples in ["all", "properties"]:
