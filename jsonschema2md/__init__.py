@@ -390,7 +390,6 @@ class Parser:
 
         if not ignored and has_children and self.collapse_children:
             output_lines.append(f"{indentation}</details>\n\n")
-        print("".join(output_lines))  # Debugging line to see the output at each step
         # Add examples
         if self.show_examples in ["all", "properties"]:
             output_lines.extend(self._construct_examples(obj, indent_level=indent_level))
