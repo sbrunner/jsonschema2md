@@ -618,24 +618,24 @@ class TestParser:
         expected_output = [
             "# JSON Schema\n\n",
             "## Properties\n\n",
-            "<details>\n",
-            "<summary>",
+            '- <details markdown="1">\n',
+            "  <summary>",
             '<a id="properties/general"></a><strong><code>general</code></strong> '
             "<em>(object)</em>: General settings. Cannot contain additional "
             "properties.",
             "</summary>\n\n",
-            "<details>\n",
-            "<summary>",
+            '  - <details markdown="1">\n',
+            "    <summary>",
             "<a "
             'id="properties/general/properties/pipeline"></a><strong><code>pipeline</code></strong> '
             "<em>(object)</em>: Pipeline to use, depending on input format. Cannot "
             "contain additional properties.",
             "</summary>\n\n",
-            "- <a "
+            "    - <a "
             'id="properties/general/properties/pipeline/properties/foo"></a>**`foo`** '
             '*(string)*: Foo description. Must be one of: `["infer", "pin", "tandem", '
             '"maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.\n',
-            "</details>\n",
-            "</details>\n",
+            "  </details>\n\n",
+            "</details>\n\n",
         ]
         assert expected_output == parser.parse_schema(test_schema)

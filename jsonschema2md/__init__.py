@@ -297,10 +297,6 @@ class Parser:
                 "unevaluatedProperties",
                 "properties",
                 "patternProperties",
-                "items",
-                "contains",
-                "definitions",
-                "$defs",
             ]
         )
 
@@ -311,8 +307,8 @@ class Parser:
                 # Expandable children
                 output_lines.extend(
                     [
-                        "<details>\n",
-                        "<summary>",
+                        f'{indentation}- <details markdown="1">\n',
+                        f"{indentation_items}<summary>",
                         markdown.markdown(  # Only HTML is supported for the summary
                             f"{anchor}{name_formatted}{obj_type}{description_line.strip()}",
                         )[3:-4],  # Remove <p> tags
@@ -333,9 +329,14 @@ class Parser:
         }
         for key, label in schema_composition_keyword_map.items():
             if key in obj:
-                output_lines.append(
-                    f"{'' if has_children and self.collapse_children else indentation_items}- **{label}**\n",
+                # Only add if the subschema is not ignored
+                ignored_child = any(
+                    re.match(ignore, "/".join([*path, key])) is not None for ignore in self.ignore_patterns
                 )
+                if not ignored_child:
+                    output_lines.append(
+                        f"{indentation_items}- **{label}**\n",
+                    )
                 for i, child_obj in enumerate(obj[key]):
                     output_lines = self._parse_object(
                         child_obj,
@@ -343,10 +344,9 @@ class Parser:
                         name=None,
                         name_monospace=False,
                         output_lines=output_lines,
-                        indent_level=0
-                        if has_children and self.collapse_children
-                        else indent_level + 2,  # If we are inside a <details> block, no need to indent
+                        indent_level=indent_level + 2,
                     )
+
         # Recursively add items and definitions
         for property_name in ["items", "contains", "definitions", "$defs"]:
             if property_name in obj:
@@ -356,7 +356,7 @@ class Parser:
                     name=property_name.capitalize(),
                     name_monospace=False,
                     output_lines=output_lines,
-                    indent_level=0 if has_children and self.collapse_children else indent_level + 1,
+                    indent_level=indent_level + 1,
                 )
 
         # Recursively add additional child properties
@@ -369,7 +369,7 @@ class Parser:
                     name=f"{extra_props.capitalize()} properties",
                     name_monospace=False,
                     output_lines=output_lines,
-                    indent_level=0 if has_children and self.collapse_children else indent_level + 1,
+                    indent_level=indent_level + 1,
                 )
 
         # Recursively add child properties
@@ -381,7 +381,7 @@ class Parser:
                         path=[*path, property_name, obj_property_name],
                         name=obj_property_name,
                         output_lines=output_lines,
-                        indent_level=0 if has_children and self.collapse_children else indent_level + 1,
+                        indent_level=indent_level + 1,
                         required=obj_property_name in obj.get("required", []),
                         dependent_required=[
                             k for k, v in obj.get("dependentRequired", {}).items() if obj_property_name in v
@@ -389,8 +389,8 @@ class Parser:
                     )
 
         if not ignored and has_children and self.collapse_children:
-            output_lines.append("</details>\n")
-
+            output_lines.append(f"{indentation}</details>\n\n")
+        print("".join(output_lines))  # Debugging line to see the output at each step
         # Add examples
         if self.show_examples in ["all", "properties"]:
             output_lines.extend(self._construct_examples(obj, indent_level=indent_level))
