@@ -415,7 +415,12 @@ version = "8.6.1"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.9"
+<<<<<<< Updated upstream
 groups = ["main", "dev"]
+=======
+groups = ["dev"]
+markers = "python_full_version < \"3.10.2\""
+>>>>>>> Stashed changes
 files = [
     {file = "importlib_metadata-8.6.1-py3-none-any.whl", hash = "sha256:02a89390c1e15fdfdc0d7c6b25cb3e62650d0494005c97d6f148bf5b9787525e"},
     {file = "importlib_metadata-8.6.1.tar.gz", hash = "sha256:310b41d755445d74569f993ccfc22838295d9fe005425094fad953d7f15c8580"},
@@ -877,11 +882,14 @@ files = [
     {file = "pylint-flask-0.6.tar.gz", hash = "sha256:f4d97de2216bf7bfce07c9c08b166e978fe9f2725de2a50a9845a97de7e31517"},
 ]
 
+<<<<<<< Updated upstream
 [package.dependencies]
 astroid = ">=1.0"
 pylint = ">=1.0"
 pylint-plugin-utils = ">=0.2.1"
 
+=======
+>>>>>>> Stashed changes
 [[package]]
 name = "pylint-plugin-utils"
 version = "0.8.2"
@@ -1340,7 +1348,12 @@ version = "3.21.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 optional = false
 python-versions = ">=3.9"
+<<<<<<< Updated upstream
 groups = ["main", "dev"]
+=======
+groups = ["dev"]
+markers = "python_full_version < \"3.10.2\""
+>>>>>>> Stashed changes
 files = [
     {file = "zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931"},
     {file = "zipp-3.21.0.tar.gz", hash = "sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4"},
