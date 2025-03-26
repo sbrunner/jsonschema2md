@@ -44,7 +44,7 @@ class Parser:
         self,
         examples_as_yaml: bool = False,
         show_examples: str = "all",
-        collapse_children: bool = False,
+        collapse_children: bool = True,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
     ) -> None:
@@ -308,7 +308,7 @@ class Parser:
                 output_lines.extend(
                     [
                         f'{indentation}- <details markdown="1">',
-                        f"{indentation_items}<summary>",
+                        "<summary>",
                         markdown.markdown(  # Only HTML is supported for the summary
                             f"{anchor}{name_formatted}{obj_type}{description_line.strip()}",
                         )[3:-4],  # Remove <p> tags
