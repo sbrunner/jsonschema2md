@@ -44,7 +44,7 @@ class Parser:
         self,
         examples_as_yaml: bool = False,
         show_examples: str = "all",
-        collapse_children: bool = True,
+        collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
     ) -> None:
@@ -263,7 +263,7 @@ class Parser:
         # Construct full description line
         description_line_base = self._construct_description_line(obj)
         description_line_list = [
-            line.replace("\n\n", "NOPLZ\n" + indentation_items) for line in description_line_base
+            line.replace("\n\n", "<br>" + indentation_items) for line in description_line_base
         ]
 
         # Add full line to output

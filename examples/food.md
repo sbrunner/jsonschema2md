@@ -11,10 +11,12 @@ _A representation of a person, company, organization, or place_
 
 ## Definitions
 
-- <a id="definitions/veggie"></a>**`veggie`** _(object)_
+- <details markdown="1"><summary><a id="definitions/veggie"></a><strong><code>veggie</code></strong> <em>(object)</em></summary>
 
   - <a id="definitions/veggie/properties/veggieName"></a>**`veggieName`** _(string, required)_: The name of the vegetable.
   - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** _(boolean, required)_: Do I like this vegetable?
+
+  </details>
 
   Examples:
 
