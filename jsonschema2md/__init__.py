@@ -263,7 +263,7 @@ class Parser:
         # Construct full description line
         description_line_base = self._construct_description_line(obj)
         description_line_list = [
-            line.replace("\n\n", "<br>" + indentation_items) for line in description_line_base
+            line.replace("\n\n", "NOPLZ\n" + indentation_items) for line in description_line_base
         ]
 
         # Add full line to output
@@ -307,7 +307,7 @@ class Parser:
                 # Expandable children
                 output_lines.extend(
                     [
-                        f'{indentation}- <details markdown="1">\n',
+                        f'{indentation}- <details markdown="1">',
                         f"{indentation_items}<summary>",
                         markdown.markdown(  # Only HTML is supported for the summary
                             f"{anchor}{name_formatted}{obj_type}{description_line.strip()}",
