@@ -307,7 +307,7 @@ class Parser:
                 # Expandable children
                 output_lines.extend(
                     [
-                        f'{indentation}- <details markdown="1">',
+                        f"{indentation}- <details>",
                         "<summary>",
                         markdown.markdown(  # Only HTML is supported for the summary
                             f"{anchor}{name_formatted}{obj_type}{description_line.strip()}",

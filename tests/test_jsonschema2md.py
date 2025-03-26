@@ -618,13 +618,13 @@ class TestParser:
         expected_output = [
             "# JSON Schema\n\n",
             "## Properties\n\n",
-            '- <details markdown="1">',
+            "- <details>",
             "<summary>",
             '<a id="properties/general"></a><strong><code>general</code></strong> '
             "<em>(object)</em>: General settings. Cannot contain additional "
             "properties.",
             "</summary>\n\n",
-            '  - <details markdown="1">',
+            "  - <details>",
             "<summary>",
             "<a "
             'id="properties/general/properties/pipeline"></a><strong><code>pipeline</code></strong> '
