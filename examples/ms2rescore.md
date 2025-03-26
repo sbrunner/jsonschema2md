@@ -4,8 +4,7 @@ _MS²ReScore JSON configuration file._
 
 ## Properties
 
-- <details markdown="1"><summary><a id="properties/general"></a><strong><code>general</code></strong> <em>(object)</em>: General MS²ReScore settings. Cannot contain additional properties.</summary>
-
+- <a id="properties/general"></a>**`general`** _(object)_: General MS²ReScore settings. Cannot contain additional properties.
   - <a id="properties/general/properties/pipeline"></a>**`pipeline`** _(string)_: Pipeline to use, depending on input format. Must be one of: `["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.
   - <a id="properties/general/properties/feature_sets"></a>**`feature_sets`** _(array)_: Feature sets for which to generate PIN files and optionally run Percolator. Length must be at least 1. Items must be unique. Default: `["all"]`.
     - <a id="properties/general/properties/feature_sets/items"></a>**Items** _(string)_: Must be one of: `["all", "ms2pip_rt", "searchengine", "rt", "ms2pip"]`.
@@ -34,31 +33,20 @@ _MS²ReScore JSON configuration file._
       - <a id="properties/general/properties/output_filename/oneOf/1"></a>_null_
   - <a id="properties/general/properties/log_level"></a>**`log_level`** _(string)_: Logging level. Must be one of: `["debug", "info", "warning", "error", "critical"]`.
   - <a id="properties/general/properties/const"></a>**`const`** _(string)_: Const attribute. Must be: `"value"`.
-
-  </details>
-
-- <details markdown="1"><summary><a id="properties/ms2pip"></a><strong><code>ms2pip</code></strong> <em>(object)</em>: MS²PIP settings. Cannot contain additional properties.</summary>
-
+- <a id="properties/ms2pip"></a>**`ms2pip`** _(object)_: MS²PIP settings. Cannot contain additional properties.
   - <a id="properties/ms2pip/properties/model"></a>**`model`** _(string)_: MS²PIP model to use (see MS²PIP documentation). Default: `"HCD"`.
   - <a id="properties/ms2pip/properties/frag_error"></a>**`frag_error`** _(number)_: MS2 error tolerance in Da. Minimum: `0`. Default: `0.02`.
   - <a id="properties/ms2pip/properties/modifications"></a>**`modifications`** _(array)_: Array of peptide mass modifications.
     - <a id="properties/ms2pip/properties/modifications/items"></a>**Items**: Refer to _[#/definitions/modifications](#definitions/modifications)_.
-
-  </details>
-
 - <a id="properties/percolator"></a>**`percolator`** _(object)_: Command line options directly passed to Percolator (see the Percolator wiki).
-- <details markdown="1"><summary><a id="properties/maxquant_to_rescore"></a><strong><code>maxquant_to_rescore</code></strong> <em>(object)</em>: Settings specific to the MaxQuant pipeline. Cannot contain additional properties.</summary>
-
+- <a id="properties/maxquant_to_rescore"></a>**`maxquant_to_rescore`** _(object)_: Settings specific to the MaxQuant pipeline. Cannot contain additional properties.
   - <a id="properties/maxquant_to_rescore/properties/mgf_dir"></a>**`mgf_dir`** _(string, required)_: Path to directory with MGF files.
   - <a id="properties/maxquant_to_rescore/properties/modification_mapping"></a>**`modification_mapping`** _(object, required)_: Mapping of MaxQuant modification labels to modifications names for MS²PIP. Default: `{}`.
   - <a id="properties/maxquant_to_rescore/properties/fixed_modifications"></a>**`fixed_modifications`** _(object, required)_: Mapping of amino acids with fixed modifications to the modification name. Default: `{}`.
 
-  </details>
-
 ## Definitions
 
-- <details markdown="1"><summary><a id="definitions/modifications"></a><strong><code>modifications</code></strong> <em>(object)</em>: Peptide mass modifications, per amino acid. Cannot contain additional properties.</summary>
-
+- <a id="definitions/modifications"></a>**`modifications`** _(object)_: Peptide mass modifications, per amino acid. Cannot contain additional properties.
   - <a id="definitions/modifications/properties/name"></a>**`name`** _(string, required)_: Unique name for modification.
   - <a id="definitions/modifications/properties/unimod_accession"></a>**`unimod_accession`** _(number, required)_: Unimod accession of modification. Must be an integer.
   - <a id="definitions/modifications/properties/mass_shift"></a>**`mass_shift`** _(number, required)_: Mono-isotopic mass shift.
@@ -67,5 +55,3 @@ _MS²ReScore JSON configuration file._
       - <a id="definitions/modifications/properties/amino_acid/oneOf/0"></a>_string_: Length must be equal to 1.
       - <a id="definitions/modifications/properties/amino_acid/oneOf/1"></a>_null_
   - <a id="definitions/modifications/properties/n_term"></a>**`n_term`** _(boolean, required)_: Modification is N-terminal.
-
-  </details>
