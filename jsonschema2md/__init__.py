@@ -44,7 +44,7 @@ class Parser:
         self,
         examples_as_yaml: bool = False,
         show_examples: str = "all",
-        show_deprecated: bool = True,
+        show_deprecated: bool = False,
         collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,

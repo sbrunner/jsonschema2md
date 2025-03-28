@@ -56,8 +56,13 @@ class TestDraft201909defs:
                     },
                     "veggieLike": {
                         "type": "boolean",
-                        "deprecated": True,
+                        "deprecated": False,
                         "description": "Do I like this vegetable?",
+                    },
+                    "foodLike": {
+                        "type": "boolean",
+                        "deprecated": True,
+                        "description": "Do I like this food?",
                     },
                     "expiresAt": {
                         "type": "string",
@@ -110,7 +115,7 @@ class TestDraft201909defs:
             "*(string, required)*: The name of the vegetable. Length must be between 1 "
             "and 100 (inclusive).\n",
             '  - <a id="%24defs/veggie/properties/veggieLike"></a>**`veggieLike`** '
-            "*(boolean, required, deprecated)*: Do I like this vegetable?\n",
+            "*(boolean, required)*: Do I like this vegetable?\n",
             '  - <a id="%24defs/veggie/properties/expiresAt"></a>**`expiresAt`** '
             "*(string, format: date)*: When does the veggie expires.\n",
             "## Examples\n\n",
