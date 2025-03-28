@@ -81,14 +81,15 @@ print(''.join(md_lines))
 
 ### Options
 
-- `examples-as-yaml`: Parse examples in YAML-format instead of JSON. (`bool`, default:
+- `examples_as_yaml`: Parse examples in YAML-format instead of JSON. (`bool`, default:
   `False`)
-- `show-examples`: Parse examples for only the main object, only properties, or all.
+- `show_examples`: Parse examples for only the main object, only properties, or all.
   (`str`, default `all`, options: `object`, `properties`, `all`)
+- `show_deprecated`: Show deprecated properties. (`bool`, default: `True`)
 - `collapse_children`: Collapse object children into a `<details>` element (`bool`, default:
   `False`)
-- `header-level`: Base header level for the generated markdown. (`int`, default: `0`)
-- `ignore-patterns`: List of regex patterns to ignore when parsing the schema. (`list of
+- `header_level`: Base header level for the generated markdown. (`int`, default: `0`)
+- `ignore_patterns`: List of regex patterns to ignore when parsing the schema. (`list of
 str`, default: `None`)
 
 ## pre-commit hook

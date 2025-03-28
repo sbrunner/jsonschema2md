@@ -44,6 +44,7 @@ class Parser:
         self,
         examples_as_yaml: bool = False,
         show_examples: str = "all",
+        show_deprecated: bool = False,
         collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
@@ -58,6 +59,9 @@ class Parser:
         show_examples: str, default 'all'
             Parse examples for only objects, only properties or all. Valid options are
             `{"all", "object", "properties"}`.
+        show_deprecated : bool, default False
+            If `True`, includes deprecated properties in the generated markdown. This
+            allows for documenting properties that are no longer recommended for use.
         collapse_children : bool, default False
             If `True`, collapses objects with children in the generated markdown. This
             allows for a cleaner view of the schema.
@@ -72,6 +76,7 @@ class Parser:
 
         """
         self.examples_as_yaml = examples_as_yaml
+        self.show_deprecated = show_deprecated
         self.header_level = header_level
         self.collapse_children = collapse_children
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
@@ -302,6 +307,10 @@ class Parser:
 
         anchor = f'<a id="{quote("/".join(path))}"></a>'
         ignored = any(re.match(ignore, "/".join(path)) is not None for ignore in self.ignore_patterns)
+        if obj.get("deprecated") and not self.show_deprecated:
+            # Don't even parse children of deprecated properties
+            return output_lines
+
         if not ignored:
             if has_children and self.collapse_children:
                 # Expandable children
