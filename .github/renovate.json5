@@ -18,4 +18,5 @@
       automerge: true,
     },
   ],
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 }
