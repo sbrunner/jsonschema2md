@@ -6,33 +6,7 @@ line-length = 110
 convention = "numpy"
 
 [tool.poetry]
-name = "jsonschema2md"
 version = "0.0.0"
-description = "Convert JSON Schema to human-readable Markdown documentation"
-authors = ["Ralf Gabriels <ralfg@hotmail.be>", "Matt Graham <matthew.m.graham@gmail.com>"]
-maintainers = ["Stéphane Brunner <stephane.brunner@gmail.com>"]
-license = "Apache-2.0"
-readme = "README.md"
-repository = "https://github.com/sbrunner/jsonschema2md"
-keywords = ["JSON Schema", "Markdown", "Converter", "Parser", "Documentation"]
-classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: Apache Software License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3.13',
-    'Topic :: Documentation',
-    'Topic :: Software Development :: Documentation',
-]
-
-[tool.poetry.scripts]
-jsonschema2md = 'jsonschema2md:main'
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
@@ -66,6 +40,38 @@ format-jinja = """
 
 [tool.poetry-plugin-tweak-dependencies-version]
 default = "major"
+
+[project]
+dynamic = ["dependencies", "version"]
+name = "jsonschema2md"
+description = "Convert JSON Schema to human-readable Markdown documentation"
+readme = "README.md"
+keywords = ["JSON Schema", "Markdown", "Converter", "Parser", "Documentation"]
+license = "Apache-2.0"
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Documentation',
+    'Topic :: Software Development :: Documentation',
+]
+authors = [{name = "Ralf Gabriels",email = "ralfg@hotmail.be"}, {name = "Matt Graham",email = "matthew.m.graham@gmail.com"}]
+maintainers = [{name = "Stéphane Brunner",email = "stephane.brunner@gmail.com"}]
+
+[project.urls]
+repository = "https://github.com/sbrunner/jsonschema2md"
+"Bug Tracker" = "https://github.com/sbrunner/jsonschema2md/issues"
+
+[project.scripts]
+jsonschema2md = 'jsonschema2md:main'
 
 [build-system]
 requires = [
