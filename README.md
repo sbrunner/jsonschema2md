@@ -126,7 +126,7 @@ pre-commit install --allow-missing-config
 
 ## Showcase
 
-- [PrairieLearn's `infoCourse.json`](https://prairielearn.readthedocs.io/en/latest/schemas/infoCourse/). [Source code](https://github.com/PrairieLearn/PrairieLearn/blob/ab1e0f1fc837a8da9cde3448eb785958ac42e309/docs/scripts/gen_jsonschemas.py).
+- [PrairieLearn's `infoCourse.json`](https://prairielearn.readthedocs.io/en/latest/schemas/infoCourse/), [source code](https://github.com/PrairieLearn/PrairieLearn/blob/ab1e0f1fc837a8da9cde3448eb785958ac42e309/docs/scripts/gen_jsonschemas.py).
 
 
 ## Related projects:
