@@ -128,9 +128,8 @@ pre-commit install --allow-missing-config
 
 - [PrairieLearn's `infoCourse.json`](https://prairielearn.readthedocs.io/en/latest/schemas/infoCourse/), [source code](https://github.com/PrairieLearn/PrairieLearn/blob/ab1e0f1fc837a8da9cde3448eb785958ac42e309/docs/scripts/gen_jsonschemas.py).
 
-
 ## Related projects:
 
-- <https://github.com/coveooss/json-schema-for-humans>
-- <https://github.com/elisiariocouto/jsonschema-markdown>
-- <https://github.com/adobe/jsonschema2md>
+- [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans)
+- [jsonschema-markdown](https://github.com/elisiariocouto/jsonschema-markdown)
+- [adobe/jsonschema2md](https://github.com/adobe/jsonschema2md)
