@@ -65,6 +65,7 @@ classifiers = [
 ]
 authors = [{name = "Ralf Gabriels",email = "ralfg@hotmail.be"}, {name = "Matt Graham",email = "matthew.m.graham@gmail.com"}]
 maintainers = [{name = "Stéphane Brunner",email = "stephane.brunner@gmail.com"}]
+requires-python = ">=3.9"
 
 [project.urls]
 repository = "https://github.com/sbrunner/jsonschema2md"
