@@ -50,7 +50,7 @@ repos:
     rev: 1.4.1
     hooks:
       - id: copyright
-      - id: poetry-lock
+      - id: poetry2-lock
         additional_dependencies:
           - poetry==2.1.2 # pypi
       - id: canonicalize
