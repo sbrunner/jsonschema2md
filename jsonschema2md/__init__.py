@@ -405,8 +405,25 @@ class Parser:
 
         return output_lines
 
-    def parse_schema(self, schema_object: dict[str, Any]) -> Sequence[str]:
-        """Parse JSON Schema object to markdown text."""
+    def parse_schema(
+        self,
+        schema_object: dict[str, Any],
+        fail_on_error_in_defs: bool = True,
+    ) -> Sequence[str]:
+        """
+        Parse JSON Schema object to markdown text.
+
+        Parameters
+        ----------
+        schema_object: The JSON Schema object to parse.
+        fail_on_error_in_defs: If True, the method will raise an error when encountering issues in the
+            "definitions" section of the schema. If False, the method will attempt to continue parsing
+            despite such errors.
+
+        Returns
+        -------
+            A list of strings representing the parsed Markdown documentation.
+        """
         output_lines = []
 
         # Add title and description
@@ -472,7 +489,13 @@ class Parser:
             if name in schema_object:
                 output_lines.append(f"#{'#' * (self.header_level + 1)} Definitions\n\n")
                 for obj_name, obj in schema_object[name].items():
-                    output_lines.extend(self._parse_object(obj, path=[name, obj_name], name=obj_name))
+                    try:
+                        output_lines.extend(self._parse_object(obj, path=[name, obj_name], name=obj_name))
+                    except Exception as exception:  # pylint: disable=broad-exception-caught
+                        message = f"Error parsing {obj_name} from {name} in schema, usually it occurs when the kind of def is not supported."
+                        if fail_on_error_in_defs:
+                            raise ValueError(message) from exception
+                        print(f"WARN: {message}")
 
         # Add examples
         if "examples" in schema_object and self.show_examples in ["all", "object"]:
@@ -508,6 +531,13 @@ def main() -> None:
         default=0,
         help="Base header level for the generated markdown.",
     )
+    argparser.add_argument(
+        "--ignore_error_in_defs",
+        action="store_false",
+        dest="fail_on_error_in_defs",
+        default=True,
+        help="Ignore errors in definitions.",
+    )
     argparser.add_argument("input_json", type=Path, help="Input JSON file.")
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
@@ -523,7 +553,7 @@ def main() -> None:
         header_level=args.header_level,
     )
     with args.input_json.open(encoding="utf-8") as input_json:
-        output_md = parser.parse_schema(json.load(input_json))
+        output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs)
 
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
         output_markdown.writelines(output_md)
