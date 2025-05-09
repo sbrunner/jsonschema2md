@@ -15,7 +15,6 @@ import io
 import json
 import re
 import subprocess  # nosec
-import sys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -485,7 +484,7 @@ class Parser:
 def main() -> None:
     """Convert JSON Schema to Markdown documentation."""
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
-    argparser.add_argument("--version", action="store_true", help="Show version and exit.")
+    argparser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     argparser.add_argument(
         "--pre-commit",
         action="store_true",
@@ -512,10 +511,6 @@ def main() -> None:
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
     args = argparser.parse_args()
-
-    if args.version:
-        print(__version__)
-        sys.exit(0)
 
     parser = Parser(
         examples_as_yaml=args.examples_as_yaml,
