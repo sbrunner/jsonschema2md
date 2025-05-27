@@ -16,6 +16,7 @@ import json
 import re
 import subprocess  # nosec
 from collections.abc import Sequence
+from gettext import gettext as _
 from pathlib import Path
 from typing import Any, Optional, Union
 from urllib.parse import quote
@@ -99,93 +100,132 @@ class Parser:
             ending = "" if re.search(r"[.?!;]$", obj["description"]) else "."
             description_line.append(f"{obj['description']}{ending}")
         if add_type and "type" in obj:
-            description_line.append(f"Must be of type *{obj['type']}*.")
+            description_line.append(_("Must be of type *%(type)s*.") % {"type": obj["type"]})
         if "contentEncoding" in obj:
-            description_line.append(f"Content encoding: `{obj['contentEncoding']}`.")
+            description_line.append(
+                _("Content encoding: `%(encoding)s`.") % {"encoding": obj["contentEncoding"]}
+            )
         if "contentMediaType" in obj:
-            description_line.append(f"Content media type: `{obj['contentMediaType']}`.")
+            description_line.append(_("Content media type: `%(type)s`.") % {"type": obj["contentMediaType"]})
         if "minimum" in obj:
-            description_line.append(f"Minimum: `{obj['minimum']}`.")
+            description_line.append(_("Minimum: `%(min)d`.") % {"min": obj["minimum"]})
         if "exclusiveMinimum" in obj:
-            description_line.append(f"Exclusive minimum: `{obj['exclusiveMinimum']}`.")
+            description_line.append(_("Exclusive minimum: `%(exmin)d`.") % {"exmin": obj["exclusiveMinimum"]})
         if "maximum" in obj:
-            description_line.append(f"Maximum: `{obj['maximum']}`.")
+            description_line.append(_("Maximum: `%(max)d`.") % {"max": obj["maximum"]})
         if "exclusiveMaximum" in obj:
-            description_line.append(f"Exclusive maximum: `{obj['exclusiveMaximum']}`.")
+            description_line.append(_("Exclusive maximum: `%(exmax)d`.") % {"exmax": obj["exclusiveMaximum"]})
         if "minItems" in obj or "maxItems" in obj:
-            length_description = "Length must be "
             if "minItems" in obj and "maxItems" not in obj:
-                length_description += f"at least {obj['minItems']}."
+                length_description = _("Length must be at least %(min)d.") % {"min": obj["minItems"]}
             elif "maxItems" in obj and "minItems" not in obj:
-                length_description += f"at most {obj['maxItems']}."
+                length_description = _("Length must be at most %(max)d.") % {"max": obj["maxItems"]}
             elif obj["minItems"] == obj["maxItems"]:
-                length_description += f"equal to {obj['minItems']}."
+                length_description = _("Length must be equal to %(length)d.") % {"length": obj["minItems"]}
             else:
-                length_description += f"between {obj['minItems']} and {obj['maxItems']} (inclusive)."
+                length_description = _("Length must be between %(min)d and %(max)d (inclusive).") % {
+                    "min": obj["minItems"],
+                    "max": obj["maxItems"],
+                }
             description_line.append(length_description)
         if "multipleOf" in obj:
             if obj["multipleOf"] == 1:
-                description_line.append("Must be an integer.")
+                description_line.append(_("Must be an integer."))
             else:
-                description_line.append(f"Must be a multiple of `{obj['multipleOf']}`.")
+                description_line.append(
+                    _("Must be a multiple of `%(multiple)d`.") % {"multiple": obj["multipleOf"]}
+                )
 
         if "minLength" in obj or "maxLength" in obj:
-            length_description = "Length must be "
             if "minLength" in obj and "maxLength" not in obj:
-                length_description += f"at least {obj['minLength']}."
+                length_description = _("Length must be at least %(min)d.") % {"min": obj["minLength"]}
             elif "maxLength" in obj and "minLength" not in obj:
-                length_description += f"at most {obj['maxLength']}."
+                length_description = _("Length must be at most %(max)d.") % {"max": obj["maxLength"]}
             elif obj["minLength"] == obj["maxLength"]:
-                length_description += f"equal to {obj['minLength']}."
+                length_description = _("Length must be equal to %(length)d.") % {"length": obj["minLength"]}
             else:
-                length_description += f"between {obj['minLength']} and {obj['maxLength']} (inclusive)."
+                length_description = _("Length must be between %(min)d and %(max)d (inclusive).") % {
+                    "min": obj["minLength"],
+                    "max": obj["maxLength"],
+                }
             description_line.append(length_description)
         if "pattern" in obj:
             link = f"https://regexr.com/?expression={quote(obj['pattern'])}"
-            description_line.append(f"Must match pattern: `{obj['pattern']}` ([Test]({link})).")
+            description_line.append(
+                _("Must match pattern: `%(pattern)s` ([Test](%(link)s)).")
+                % {
+                    "pattern": obj["pattern"],
+                    "link": link,
+                }
+            )
         if obj.get("uniqueItems"):
-            description_line.append("Items must be unique.")
+            description_line.append(_("Items must be unique."))
         if "minContains" in obj or "maxContains" in obj:
-            contains_description = "Contains schema must be matched"
             if "minContains" in obj and "maxContains" not in obj:
-                contains_description += f" at least {obj['minContains']} times."
+                contains_description = _("Contains schema must be matched at least %(min)d times.") % {
+                    "min": obj["minContains"]
+                }
             elif "maxContains" in obj and "minContains" not in obj:
-                contains_description += f" at most {obj['maxContains']} times."
+                contains_description = _("Contains schema must be matched at most %(max)d times.") % {
+                    "max": obj["maxContains"]
+                }
             elif obj["minContains"] == obj["maxContains"]:
-                contains_description += f" exactly {obj['minContains']} times."
+                contains_description = _("Contains schema must be matched exactly %(count)d times.") % {
+                    "count": obj["minContains"]
+                }
             else:
-                contains_description += (
-                    f" between {obj['minContains']} and {obj['maxContains']} times (inclusive)."
-                )
-
+                contains_description = _(
+                    "Contains schema must be matched between %(min)d and %(max)d times (inclusive)."
+                ) % {
+                    "min": obj["minContains"],
+                    "max": obj["maxContains"],
+                }
             description_line.append(contains_description)
         if "maxProperties" in obj or "minProperties" in obj:
             properties_description = "Number of properties must be "
             if "minProperties" in obj and "maxProperties" not in obj:
-                properties_description += f"at least {obj['minProperties']}."
+                properties_description = _("Number of properties must be at least %(min)d.") % {
+                    "min": obj["minProperties"]
+                }
             elif "maxProperties" in obj and "minProperties" not in obj:
-                properties_description += f"at most {obj['maxProperties']}."
+                properties_description = _("Number of properties must be at most %(max)d.") % {
+                    "max": obj["maxProperties"]
+                }
             elif obj["minProperties"] == obj["maxProperties"]:
-                properties_description += f"equal to {obj['minProperties']}."
+                properties_description = _("Number of properties must be equal to %(count)d.") % {
+                    "count": obj["minProperties"]
+                }
             else:
-                properties_description += (
-                    f"between {obj['minProperties']} and {obj['maxProperties']} (inclusive)."
-                )
+                properties_description = _(
+                    "Number of properties must be between %(min)d and %(max)d (inclusive)."
+                ) % {
+                    "min": obj["minProperties"],
+                    "max": obj["maxProperties"],
+                }
             description_line.append(properties_description)
         if "enum" in obj:
-            description_line.append(f"Must be one of: `{json.dumps(obj['enum'])}`.")
+            description_line.append(_("Must be one of: `%(enum)s`.") % {"enum": json.dumps(obj["enum"])})
         if "const" in obj:
-            description_line.append(f"Must be: `{json.dumps(obj['const'])}`.")
-        for extra_props in ["additional", "unevaluated"]:
-            if f"{extra_props}Properties" in obj:
-                if obj[f"{extra_props}Properties"]:
-                    description_line.append(f"Can contain {extra_props} properties.")
-                else:
-                    description_line.append(f"Cannot contain {extra_props} properties.")
+            description_line.append(_("Must be: `%(const)s`.") % {"const": json.dumps(obj["const"])})
+        if "additionalProperties" in obj:
+            if obj["additionalProperties"]:
+                description_line.append(_("Can contain additional properties."))
+            else:
+                description_line.append(_("Cannot contain additional properties."))
+
+        if "unevaluatedProperties" in obj:
+            if obj["unevaluatedProperties"]:
+                description_line.append(_("Can contain unevaluated properties."))
+            else:
+                description_line.append(_("Cannot contain unevaluated properties."))
+
         if "$ref" in obj:
-            description_line.append(f"Refer to *[{obj['$ref']}](#{quote(obj['$ref'][2:])})*.")
+            description_line.append(
+                _("Refer to *[%(ref)s](#%(ref_link)s)*.")
+                % {"ref": obj["$ref"], "ref_link": quote(obj["$ref"][2:])}
+            )
         if "default" in obj:
-            description_line.append(f"Default: `{json.dumps(obj['default'])}`.")
+            description_line.append(_("Default: `%(default)s`.") % {"default": json.dumps(obj["default"])})
 
         # Only add start colon if items were added
         if description_line:
@@ -214,7 +254,7 @@ class Parser:
         if "examples" in obj:
             example_indentation = " " * self.tab_size * (indent_level + 1)
             if add_header:
-                example_lines.append(f"\n{example_indentation}Examples:\n")
+                example_lines.append(f"\n{example_indentation}{_('Examples:')}\n")
             for example in obj["examples"]:
                 if self.examples_as_yaml:
                     lang = "yaml"
@@ -272,21 +312,28 @@ class Parser:
 
         # Add full line to output
         description_line = " ".join(description_line_list)
-        optional_format = f", format: {obj['format']}" if "format" in obj else ""
+        optional_format = _(", format: %(format)s") % {"format": obj["format"]} if "format" in obj else ""
         if name is None:
             obj_type = f"*{obj['type']}{optional_format}*" if "type" in obj else ""
             name_formatted = ""
         else:
-            required_str = ", required" if required else ""
-            deprecated_str = ", deprecated" if obj.get("deprecated") else ""
-            readonly_str = ", read-only" if obj.get("readOnly") else ""
-            writeonly_str = ", write-only" if obj.get("writeOnly") else ""
+            required_str = _(", required") if required else ""
+            deprecated_str = _(", deprecated") if obj.get("deprecated") else ""
+            readonly_str = _(", read-only") if obj.get("readOnly") else ""
+            writeonly_str = _(", write-only") if obj.get("writeOnly") else ""
             if dependent_required and not required:
                 dependent_required_code = [f"`{k}`" for k in dependent_required]
                 if len(dependent_required_code) == 1:
-                    required_str += f", required <sub><sup>if {dependent_required_code[0]} is set</sup></sub>"
+                    required_str += _(", required <sub><sup>if %(dependent)s is set</sup></sub>") % {
+                        "dependent": dependent_required_code[0]
+                    }
                 else:
-                    required_str += f", required <sub><sup>if {', '.join(dependent_required_code[:-1])}, or {dependent_required_code[-1]} is set</sup></sub>"
+                    required_str += _(
+                        ", required <sub><sup>if %(dependent)s, or %(last_dependent)s is set</sup></sub>"
+                    ) % {
+                        "dependent": ", ".join(dependent_required_code[:-1]),
+                        "last_dependent": dependent_required_code[-1],
+                    }
             obj_type = (
                 f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
                 if "type" in obj
@@ -331,9 +378,9 @@ class Parser:
 
         # Recursively parse subschemas following schema composition keywords
         schema_composition_keyword_map = {
-            "allOf": "All of",
-            "anyOf": "Any of",
-            "oneOf": "One of",
+            "allOf": _("All of"),
+            "anyOf": _("Any of"),
+            "oneOf": _("One of"),
         }
         for key, label in schema_composition_keyword_map.items():
             if key in obj:
@@ -374,7 +421,9 @@ class Parser:
                 output_lines = self._parse_object(
                     obj[property_name],
                     path=[*path, property_name],
-                    name=f"{extra_props.capitalize()} properties",
+                    name=_("Additional properties")
+                    if extra_props == "additional"
+                    else _("Unevaluated properties"),
                     name_monospace=False,
                     output_lines=output_lines,
                     indent_level=indent_level + 1,
@@ -429,13 +478,13 @@ class Parser:
         if "title" in schema_object:
             output_lines.append(f"{'#' * (self.header_level + 1)} {schema_object['title']}\n\n")
         else:
-            output_lines.append(f"{'#' * (self.header_level + 1)} JSON Schema\n\n")
+            output_lines.append(f"{'#' * (self.header_level + 1)} {_('JSON Schema')}\n\n")
         if "description" in schema_object:
             output_lines.append(f"*{schema_object['description']}*\n\n")
 
         # Add items
         if "items" in schema_object:
-            output_lines.append(f"#{'#' * (self.header_level + 1)} Items\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Items')}\n\n")
             output_lines.extend(
                 self._parse_object(
                     schema_object["items"],
@@ -448,7 +497,9 @@ class Parser:
         # Add additional/unevaluated properties
         for extra_props in ["additional", "unevaluated"]:
             property_name = f"{extra_props}Properties"
-            title_ = f"{extra_props.capitalize()} Properties"
+            title_ = (
+                _("Additional Properties") if extra_props == "additional" else _("Unevaluated Properties")
+            )
             if property_name in schema_object and isinstance(schema_object[property_name], dict):
                 output_lines.append(f"#{'#' * (self.header_level + 1)} {title_}\n\n")
                 output_lines.extend(
@@ -462,13 +513,13 @@ class Parser:
 
         # Add pattern properties
         if "patternProperties" in schema_object:
-            output_lines.append(f"#{'#' * (self.header_level + 1)} Pattern Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Pattern Properties')}\n\n")
             for obj_name, obj in schema_object["patternProperties"].items():
                 output_lines.extend(self._parse_object(obj, path=["patternProperties"], name=obj_name))
 
         # Add properties
         if "properties" in schema_object:
-            output_lines.append(f"#{'#' * (self.header_level + 1)} Properties\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Properties')}\n\n")
             for obj_name, obj in schema_object["properties"].items():
                 required = obj_name in schema_object.get("required", [])
                 output_lines.extend(
@@ -486,7 +537,7 @@ class Parser:
         # Add definitions / $defs
         for name in ["definitions", "$defs"]:
             if name in schema_object:
-                output_lines.append(f"#{'#' * (self.header_level + 1)} Definitions\n\n")
+                output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Definitions')}\n\n")
                 for obj_name, obj in schema_object[name].items():
                     try:
                         output_lines.extend(self._parse_object(obj, path=[name, obj_name], name=obj_name))
@@ -498,7 +549,7 @@ class Parser:
 
         # Add examples
         if "examples" in schema_object and self.show_examples in ["all", "object"]:
-            output_lines.append(f"#{'#' * (self.header_level + 1)} Examples\n\n")
+            output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Examples')}\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
         return output_lines
