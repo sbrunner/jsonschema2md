@@ -18,13 +18,27 @@ import subprocess  # nosec
 from collections.abc import Sequence
 from gettext import gettext as _
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Iterable, Literal, Optional, Union
 from urllib.parse import quote
 
+import babel.lists
 import markdown
 import yaml
 
 __version__ = version("jsonschema2md")
+
+
+def _format_list(
+    iter: Iterable[str],
+    style: Literal[
+        "standard", "standard-short", "or", "or-short", "unit", "unit-short", "unit-narrow"
+    ] = "standard",
+    locale: Optional[str] = None,
+) -> str:
+    # Prune falsy values.
+    iter = filter(None, iter)
+
+    return babel.lists.format_list(tuple(iter), style, locale)
 
 
 class Parser:
@@ -182,7 +196,6 @@ class Parser:
                 }
             description_line.append(contains_description)
         if "maxProperties" in obj or "minProperties" in obj:
-            properties_description = "Number of properties must be "
             if "minProperties" in obj and "maxProperties" not in obj:
                 properties_description = _("Number of properties must be at least %(min)d.") % {
                     "min": obj["minProperties"]
@@ -204,7 +217,10 @@ class Parser:
                 }
             description_line.append(properties_description)
         if "enum" in obj:
-            description_line.append(_("Must be one of: `%(enum)s`.") % {"enum": json.dumps(obj["enum"])})
+            description_line.append(
+                _("Must be one of: %(enum)s.")
+                % {"enum": _format_list(map(json.dumps, obj["enum"]), style="or")}
+            )
         if "const" in obj:
             description_line.append(_("Must be: `%(const)s`.") % {"const": json.dumps(obj["const"])})
         if "additionalProperties" in obj:
@@ -312,33 +328,47 @@ class Parser:
 
         # Add full line to output
         description_line = " ".join(description_line_list)
+        obj_attributes = []
+        formatted_type = ""
+
+        if "type" in obj:
+            formatted_type = (
+                _format_list(obj["type"], style="or") if isinstance(obj["type"], list) else obj["type"]
+            )
+
+        # TL: I'm looking to always have a comma between (type or format) and attributes,
+        # so I'm adding them manually.
         optional_format = _(", format: %(format)s") % {"format": obj["format"]} if "format" in obj else ""
         if name is None:
-            obj_type = f"*{obj['type']}{optional_format}*" if "type" in obj else ""
+            obj_type = f"*{formatted_type}{optional_format}*" if "type" in obj else ""
             name_formatted = ""
         else:
-            required_str = _(", required") if required else ""
-            deprecated_str = _(", deprecated") if obj.get("deprecated") else ""
-            readonly_str = _(", read-only") if obj.get("readOnly") else ""
-            writeonly_str = _(", write-only") if obj.get("writeOnly") else ""
+            obj_attributes.append(_("required") if required else "")
             if dependent_required and not required:
-                dependent_required_code = [f"`{k}`" for k in dependent_required]
-                if len(dependent_required_code) == 1:
-                    required_str += _(", required <sub><sup>if %(dependent)s is set</sup></sub>") % {
-                        "dependent": dependent_required_code[0]
-                    }
-                else:
-                    required_str += _(
-                        ", required <sub><sup>if %(dependent)s, or %(last_dependent)s is set</sup></sub>"
-                    ) % {
-                        "dependent": ", ".join(dependent_required_code[:-1]),
-                        "last_dependent": dependent_required_code[-1],
-                    }
-            obj_type = (
-                f" *({obj['type']}{optional_format}{required_str}{deprecated_str}{readonly_str}{writeonly_str})*"
-                if "type" in obj
+                dependent_required_code = babel.lists.format_list(
+                    [f"`{k}`" for k in dependent_required], style="or"
+                )
+                obj_attributes.append(
+                    _("required <sub><sup>if %(dependent)s is set</sup></sub>")
+                    % {"dependent": dependent_required_code}
+                )
+
+            obj_attributes.extend(
+                (
+                    _("deprecated") if obj.get("deprecated") else "",
+                    _("read-only") if obj.get("readOnly") else "",
+                    _("write-only") if obj.get("writeOnly") else "",
+                )
+            )
+
+            attributes = (
+                _(", %(attributes)s") % {"attributes": _format_list(obj_attributes)}
+                if any(obj_attributes)
                 else ""
             )
+
+            obj_type = f" *({formatted_type}{optional_format}{attributes})*" if "type" in obj else ""
+
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
 
         has_children = any(
