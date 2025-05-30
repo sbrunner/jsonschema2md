@@ -1,5 +1,12 @@
 """Test jsonschema2md."""
 
+import os
+
+# This has to be set before our module is imported because Babel
+# gets the DEFAULT_LOCALE at it's import, therefore it needs
+# to be available then.
+os.environ["LANGUAGE"] = "en_US"
+
 import jsonschema2md
 
 
@@ -217,7 +224,7 @@ class TestParser:
                 "add_type": True,
                 "expected_output": (
                     ": The name of the vegetable. Must be of type *string*. "
-                    'Must be one of: `["eggplant", "spinach", "cabbage"]`. '
+                    'Must be one of: "eggplant", "spinach", or "cabbage". '
                     "Refer to *[#/definitions/veggies](#definitions/veggies)*. "
                     'Default: `"eggplant"`.'
                 ),
@@ -581,7 +588,7 @@ class TestParser:
             "settings. Cannot contain additional properties.\n",
             '  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** '
             "*(string)*: Pipeline to use, depending on input format. Must be one of: "
-            '`["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. '
+            '"infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". '
             'Default: `"infer"`.\n',
         ]
         assert expected_output == parser.parse_schema(test_schema)
@@ -638,8 +645,8 @@ class TestParser:
             "</summary>\n\n",
             "    - <a "
             'id="properties/general/properties/pipeline/properties/foo"></a>**`foo`** '
-            '*(string)*: Foo description. Must be one of: `["infer", "pin", "tandem", '
-            '"maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.\n',
+            '*(string)*: Foo description. Must be one of: "infer", "pin", "tandem", '
+            '"maxquant", "msgfplus", or "peptideshaker". Default: `"infer"`.\n',
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
