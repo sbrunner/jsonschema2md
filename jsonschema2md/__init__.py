@@ -40,9 +40,7 @@ def get_locales() -> tuple[str, ...]:
 
 def _(message: str) -> str:
     """Translate a message using gettext."""
-    if Parser.current_locale is None:
-        return message
-    if Parser.current_locale in (None, "en_US"):
+    if Parser.current_locale is None or Parser.current_locale == "en_US":
         return message
 
     if not _translations_cache.get(Parser.current_locale):

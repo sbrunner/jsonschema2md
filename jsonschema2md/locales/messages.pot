@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: jsonschema2md 0.0.0\n"
+"Project-Id-Version: jsonschema2md VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-06-03 22:22-0300\n"
+"POT-Creation-Date: 2025-06-04 16:49-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,243 +18,243 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: jsonschema2md/__init__.py:142
+#: jsonschema2md/__init__.py:151
 #, python-format
 msgid "Must be of type *%(type)s*."
 msgstr ""
 
-#: jsonschema2md/__init__.py:145
+#: jsonschema2md/__init__.py:154
 #, python-format
 msgid "Content encoding: `%(encoding)s`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:148
+#: jsonschema2md/__init__.py:157
 #, python-format
 msgid "Content media type: `%(type)s`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:150
+#: jsonschema2md/__init__.py:159
 #, python-format
 msgid "Minimum: `%(min)d`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:152
+#: jsonschema2md/__init__.py:161
 #, python-format
 msgid "Exclusive minimum: `%(exmin)d`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:154
+#: jsonschema2md/__init__.py:163
 #, python-format
 msgid "Maximum: `%(max)d`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:156
+#: jsonschema2md/__init__.py:165
 #, python-format
 msgid "Exclusive maximum: `%(exmax)d`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:159 jsonschema2md/__init__.py:180
+#: jsonschema2md/__init__.py:168 jsonschema2md/__init__.py:189
 #, python-format
 msgid "Length must be at least %(min)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:161 jsonschema2md/__init__.py:182
+#: jsonschema2md/__init__.py:170 jsonschema2md/__init__.py:191
 #, python-format
 msgid "Length must be at most %(max)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:163 jsonschema2md/__init__.py:184
+#: jsonschema2md/__init__.py:172 jsonschema2md/__init__.py:193
 #, python-format
 msgid "Length must be equal to %(length)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:165 jsonschema2md/__init__.py:186
+#: jsonschema2md/__init__.py:174 jsonschema2md/__init__.py:195
 #, python-format
 msgid "Length must be between %(min)d and %(max)d (inclusive)."
 msgstr ""
 
-#: jsonschema2md/__init__.py:172
+#: jsonschema2md/__init__.py:181
 msgid "Must be an integer."
 msgstr ""
 
-#: jsonschema2md/__init__.py:175
+#: jsonschema2md/__init__.py:184
 #, python-format
 msgid "Must be a multiple of `%(multiple)d`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:194
+#: jsonschema2md/__init__.py:203
 #, python-format
 msgid "Must match pattern: `%(pattern)s` ([Test](%(link)s))."
 msgstr ""
 
-#: jsonschema2md/__init__.py:201
+#: jsonschema2md/__init__.py:210
 msgid "Items must be unique."
 msgstr ""
 
-#: jsonschema2md/__init__.py:204
+#: jsonschema2md/__init__.py:213
 #, python-format
 msgid "Contains schema must be matched at least %(min)d times."
 msgstr ""
 
-#: jsonschema2md/__init__.py:208
+#: jsonschema2md/__init__.py:217
 #, python-format
 msgid "Contains schema must be matched at most %(max)d times."
 msgstr ""
 
-#: jsonschema2md/__init__.py:212
+#: jsonschema2md/__init__.py:221
 #, python-format
 msgid "Contains schema must be matched exactly %(count)d times."
 msgstr ""
 
-#: jsonschema2md/__init__.py:217
+#: jsonschema2md/__init__.py:226
 #, python-format
 msgid ""
 "Contains schema must be matched between %(min)d and %(max)d times "
 "(inclusive)."
 msgstr ""
 
-#: jsonschema2md/__init__.py:225
+#: jsonschema2md/__init__.py:234
 #, python-format
 msgid "Number of properties must be at least %(min)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:229
+#: jsonschema2md/__init__.py:238
 #, python-format
 msgid "Number of properties must be at most %(max)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:233
+#: jsonschema2md/__init__.py:242
 #, python-format
 msgid "Number of properties must be equal to %(count)d."
 msgstr ""
 
-#: jsonschema2md/__init__.py:238
+#: jsonschema2md/__init__.py:247
 #, python-format
 msgid "Number of properties must be between %(min)d and %(max)d (inclusive)."
 msgstr ""
 
-#: jsonschema2md/__init__.py:246
+#: jsonschema2md/__init__.py:255
 #, python-format
 msgid "Must be one of: %(enum)s."
 msgstr ""
 
-#: jsonschema2md/__init__.py:250
+#: jsonschema2md/__init__.py:259
 #, python-format
 msgid "Must be: `%(const)s`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:253
+#: jsonschema2md/__init__.py:262
 msgid "Can contain additional properties."
 msgstr ""
 
-#: jsonschema2md/__init__.py:255
+#: jsonschema2md/__init__.py:264
 msgid "Cannot contain additional properties."
 msgstr ""
 
-#: jsonschema2md/__init__.py:259
+#: jsonschema2md/__init__.py:268
 msgid "Can contain unevaluated properties."
 msgstr ""
 
-#: jsonschema2md/__init__.py:261
+#: jsonschema2md/__init__.py:270
 msgid "Cannot contain unevaluated properties."
 msgstr ""
 
-#: jsonschema2md/__init__.py:265
+#: jsonschema2md/__init__.py:274
 #, python-format
 msgid "Refer to *[%(ref)s](#%(ref_link)s)*."
 msgstr ""
 
-#: jsonschema2md/__init__.py:269
+#: jsonschema2md/__init__.py:278
 #, python-format
 msgid "Default: `%(default)s`."
 msgstr ""
 
-#: jsonschema2md/__init__.py:298
+#: jsonschema2md/__init__.py:307
 msgid "Examples:"
 msgstr ""
 
 #. TL: I'm looking to always have a comma between (type or format) and
 #. attributes,
 #. so I'm adding them manually.
-#: jsonschema2md/__init__.py:366
+#: jsonschema2md/__init__.py:375
 #, python-format
 msgid ", format: %(format)s"
 msgstr ""
 
-#: jsonschema2md/__init__.py:371
+#: jsonschema2md/__init__.py:380
 msgid "required"
 msgstr ""
 
-#: jsonschema2md/__init__.py:375
+#: jsonschema2md/__init__.py:384
 #, python-format
 msgid "required <sub><sup>if %(dependent)s is set</sup></sub>"
 msgstr ""
 
-#: jsonschema2md/__init__.py:381
+#: jsonschema2md/__init__.py:390
 msgid "deprecated"
 msgstr ""
 
-#: jsonschema2md/__init__.py:382
+#: jsonschema2md/__init__.py:391
 msgid "read-only"
 msgstr ""
 
-#: jsonschema2md/__init__.py:383
+#: jsonschema2md/__init__.py:392
 msgid "write-only"
 msgstr ""
 
-#: jsonschema2md/__init__.py:388
+#: jsonschema2md/__init__.py:397
 #, python-format
 msgid ", %(attributes)s"
 msgstr ""
 
-#: jsonschema2md/__init__.py:434
+#: jsonschema2md/__init__.py:443
 msgid "All of"
 msgstr ""
 
-#: jsonschema2md/__init__.py:435
+#: jsonschema2md/__init__.py:444
 msgid "Any of"
 msgstr ""
 
-#: jsonschema2md/__init__.py:436
+#: jsonschema2md/__init__.py:445
 msgid "One of"
 msgstr ""
 
-#: jsonschema2md/__init__.py:477
+#: jsonschema2md/__init__.py:486
 msgid "Additional properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:479
+#: jsonschema2md/__init__.py:488
 msgid "Unevaluated properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:535
+#: jsonschema2md/__init__.py:547
 msgid "JSON Schema"
 msgstr ""
 
-#: jsonschema2md/__init__.py:541
+#: jsonschema2md/__init__.py:553
 msgid "Items"
 msgstr ""
 
-#: jsonschema2md/__init__.py:555
+#: jsonschema2md/__init__.py:567
 msgid "Additional Properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:555
+#: jsonschema2md/__init__.py:567
 msgid "Unevaluated Properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:570
+#: jsonschema2md/__init__.py:582
 msgid "Pattern Properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:576
+#: jsonschema2md/__init__.py:588
 msgid "Properties"
 msgstr ""
 
-#: jsonschema2md/__init__.py:594
+#: jsonschema2md/__init__.py:606
 msgid "Definitions"
 msgstr ""
 
-#: jsonschema2md/__init__.py:606
+#: jsonschema2md/__init__.py:618
 msgid "Examples"
 msgstr ""
