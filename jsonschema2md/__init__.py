@@ -11,21 +11,42 @@ except ImportError:
     from importlib_metadata import version
 
 import argparse
+import gettext
 import io
 import json
 import re
 import subprocess  # nosec
 from collections.abc import Sequence
-from gettext import gettext as _
 from pathlib import Path
 from typing import Any, Iterable, Literal, Optional, Union
 from urllib.parse import quote
 
-import babel.lists
 import markdown
 import yaml
+from babel import default_locale, negotiate_locale
+from babel.lists import format_list
 
 __version__ = version("jsonschema2md")
+_translations_cache = {}
+
+
+def get_locales() -> list[str]:
+    """Get the list of available locales."""
+    return ["en_US", "pt_BR"]
+
+
+def _(message: str) -> str:
+    """Translate a message using gettext."""
+    if Parser.current_locale in (None, "en_US"):
+        return message
+
+    if not _translations_cache.get(Parser.current_locale):
+        _translations_cache[Parser.current_locale] = gettext.translation(
+            "messages",
+            localedir=str(Path(__file__) / "../../locales"),
+            languages=[Parser.current_locale],
+        )
+    return _translations_cache[Parser.current_locale].gettext(message)
 
 
 def _format_list(
@@ -35,10 +56,13 @@ def _format_list(
     ] = "standard",
     locale: Optional[str] = None,
 ) -> str:
+    if locale is None:
+        locale = Parser.current_locale
+
     # Prune falsy values.
     iter = filter(None, iter)
 
-    return babel.lists.format_list(tuple(iter), style, locale)
+    return format_list(tuple(iter), style, locale)
 
 
 class Parser:
@@ -53,6 +77,7 @@ class Parser:
     """
 
     tab_size = 2
+    current_locale: Optional[str] = None
 
     def __init__(
         self,
@@ -345,9 +370,7 @@ class Parser:
         else:
             obj_attributes.append(_("required") if required else "")
             if dependent_required and not required:
-                dependent_required_code = babel.lists.format_list(
-                    [f"`{k}`" for k in dependent_required], style="or"
-                )
+                dependent_required_code = _format_list([f"`{k}`" for k in dependent_required], style="or")
                 obj_attributes.append(
                     _("required <sub><sup>if %(dependent)s is set</sup></sub>")
                     % {"dependent": dependent_required_code}
@@ -484,9 +507,7 @@ class Parser:
         return output_lines
 
     def parse_schema(
-        self,
-        schema_object: dict[str, Any],
-        fail_on_error_in_defs: bool = True,
+        self, schema_object: dict[str, Any], fail_on_error_in_defs: bool = True, locale: Optional[str] = None
     ) -> Sequence[str]:
         """
         Parse JSON Schema object to markdown text.
@@ -502,6 +523,9 @@ class Parser:
         -------
             A list of strings representing the parsed Markdown documentation.
         """
+        if locale is not None:
+            Parser.current_locale = negotiate_locale((locale,), get_locales())
+
         output_lines = []
 
         # Add title and description
@@ -582,6 +606,8 @@ class Parser:
             output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Examples')}\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
+        Parser.current_locale = None
+
         return output_lines
 
 
@@ -618,6 +644,20 @@ def main() -> None:
         default=True,
         help="Ignore errors in definitions.",
     )
+
+    env_locale = default_locale()
+    if env_locale not in get_locales():
+        print(
+            f"WARNING: The environment's locale `{env_locale}` is not supported, defaulting to `en_US`.",
+        )
+        env_locale = "en_US"
+
+    argparser.add_argument(
+        "--locale",
+        choices=get_locales(),
+        default=env_locale,
+        help="Locale for the output Markdown. If not set, defaults to the first of $LANGUAGE, $LC_ALL, $LC_CTYPE, and $LANG.",
+    )
     argparser.add_argument("input_json", type=Path, help="Input JSON file.")
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
@@ -629,7 +669,7 @@ def main() -> None:
         header_level=args.header_level,
     )
     with args.input_json.open(encoding="utf-8") as input_json:
-        output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs)
+        output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs, locale=args.locale)
 
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
         output_markdown.writelines(output_md)
