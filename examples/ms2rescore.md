@@ -5,9 +5,9 @@ _MS²ReScore JSON configuration file._
 ## Properties
 
 - <a id="properties/general"></a>**`general`** _(object)_: General MS²ReScore settings. Cannot contain additional properties.
-  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** _(string)_: Pipeline to use, depending on input format. Must be one of: `["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.
+  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** _(string)_: Pipeline to use, depending on input format. Must be one of: "infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". Default: `"infer"`.
   - <a id="properties/general/properties/feature_sets"></a>**`feature_sets`** _(array)_: Feature sets for which to generate PIN files and optionally run Percolator. Length must be at least 1. Items must be unique. Default: `["all"]`.
-    - <a id="properties/general/properties/feature_sets/items"></a>**Items** _(string)_: Must be one of: `["all", "ms2pip_rt", "searchengine", "rt", "ms2pip"]`.
+    - <a id="properties/general/properties/feature_sets/items"></a>**Items** _(string)_: Must be one of: "all", "ms2pip_rt", "searchengine", "rt", or "ms2pip".
   - <a id="properties/general/properties/id_decoy_pattern"></a>**`id_decoy_pattern`**: Pattern used to identify the decoy PSMs in identification file. Passed to `--pattern` option of Percolator converters. Default: `null`.
     - **One of**
       - <a id="properties/general/properties/id_decoy_pattern/oneOf/0"></a>_string_
@@ -31,7 +31,7 @@ _MS²ReScore JSON configuration file._
     - **One of**
       - <a id="properties/general/properties/output_filename/oneOf/0"></a>_string_
       - <a id="properties/general/properties/output_filename/oneOf/1"></a>_null_
-  - <a id="properties/general/properties/log_level"></a>**`log_level`** _(string)_: Logging level. Must be one of: `["debug", "info", "warning", "error", "critical"]`.
+  - <a id="properties/general/properties/log_level"></a>**`log_level`** _(string)_: Logging level. Must be one of: "debug", "info", "warning", "error", or "critical".
   - <a id="properties/general/properties/const"></a>**`const`** _(string)_: Const attribute. Must be: `"value"`.
 - <a id="properties/ms2pip"></a>**`ms2pip`** _(object)_: MS²PIP settings. Cannot contain additional properties.
   - <a id="properties/ms2pip/properties/model"></a>**`model`** _(string)_: MS²PIP model to use (see MS²PIP documentation). Default: `"HCD"`.
