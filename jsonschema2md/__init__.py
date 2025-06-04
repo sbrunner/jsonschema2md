@@ -33,9 +33,9 @@ _translations_cache: dict[str, gettext.GNUTranslations] = {}
 def get_locales() -> tuple[str, ...]:
     """Get the list of available locales."""
     languages = (Path(__file__) / "../locales").glob("*/LC_MESSAGES/messages.mo")
-    languages = ((p / "../..").name for p in languages)
+    languages = ((p / "../..") for p in languages)
 
-    return ("en_US", *languages)
+    return ("en_US", *(lang.name for lang in languages))
 
 
 def _(message: str) -> str:
