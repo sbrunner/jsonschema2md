@@ -16,9 +16,9 @@ import io
 import json
 import re
 import subprocess  # nosec
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Iterable, Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 from urllib.parse import quote
 
 import markdown
@@ -27,7 +27,7 @@ from babel import default_locale, negotiate_locale
 from babel.lists import format_list
 
 __version__ = version("jsonschema2md")
-_translations_cache = {}
+_translations_cache: dict[str, gettext.GNUTranslations] = {}
 
 
 def get_locales() -> list[str]:
@@ -37,6 +37,8 @@ def get_locales() -> list[str]:
 
 def _(message: str) -> str:
     """Translate a message using gettext."""
+    if Parser.current_locale is None:
+        return message
     if Parser.current_locale in (None, "en_US"):
         return message
 
@@ -50,9 +52,15 @@ def _(message: str) -> str:
 
 
 def _format_list(
-    iter: Iterable[str],
+    iter_: Iterable[str],
     style: Literal[
-        "standard", "standard-short", "or", "or-short", "unit", "unit-short", "unit-narrow"
+        "standard",
+        "standard-short",
+        "or",
+        "or-short",
+        "unit",
+        "unit-short",
+        "unit-narrow",
     ] = "standard",
     locale: Optional[str] = None,
 ) -> str:
@@ -60,9 +68,9 @@ def _format_list(
         locale = Parser.current_locale
 
     # Prune falsy values.
-    iter = filter(None, iter)
+    iter_ = filter(None, iter_)
 
-    return format_list(tuple(iter), style, locale)
+    return format_list(tuple(iter_), style, locale)
 
 
 class Parser:
@@ -142,7 +150,7 @@ class Parser:
             description_line.append(_("Must be of type *%(type)s*.") % {"type": obj["type"]})
         if "contentEncoding" in obj:
             description_line.append(
-                _("Content encoding: `%(encoding)s`.") % {"encoding": obj["contentEncoding"]}
+                _("Content encoding: `%(encoding)s`.") % {"encoding": obj["contentEncoding"]},
             )
         if "contentMediaType" in obj:
             description_line.append(_("Content media type: `%(type)s`.") % {"type": obj["contentMediaType"]})
@@ -172,7 +180,7 @@ class Parser:
                 description_line.append(_("Must be an integer."))
             else:
                 description_line.append(
-                    _("Must be a multiple of `%(multiple)d`.") % {"multiple": obj["multipleOf"]}
+                    _("Must be a multiple of `%(multiple)d`.") % {"multiple": obj["multipleOf"]},
                 )
 
         if "minLength" in obj or "maxLength" in obj:
@@ -195,26 +203,26 @@ class Parser:
                 % {
                     "pattern": obj["pattern"],
                     "link": link,
-                }
+                },
             )
         if obj.get("uniqueItems"):
             description_line.append(_("Items must be unique."))
         if "minContains" in obj or "maxContains" in obj:
             if "minContains" in obj and "maxContains" not in obj:
                 contains_description = _("Contains schema must be matched at least %(min)d times.") % {
-                    "min": obj["minContains"]
+                    "min": obj["minContains"],
                 }
             elif "maxContains" in obj and "minContains" not in obj:
                 contains_description = _("Contains schema must be matched at most %(max)d times.") % {
-                    "max": obj["maxContains"]
+                    "max": obj["maxContains"],
                 }
             elif obj["minContains"] == obj["maxContains"]:
                 contains_description = _("Contains schema must be matched exactly %(count)d times.") % {
-                    "count": obj["minContains"]
+                    "count": obj["minContains"],
                 }
             else:
                 contains_description = _(
-                    "Contains schema must be matched between %(min)d and %(max)d times (inclusive)."
+                    "Contains schema must be matched between %(min)d and %(max)d times (inclusive).",
                 ) % {
                     "min": obj["minContains"],
                     "max": obj["maxContains"],
@@ -223,19 +231,19 @@ class Parser:
         if "maxProperties" in obj or "minProperties" in obj:
             if "minProperties" in obj and "maxProperties" not in obj:
                 properties_description = _("Number of properties must be at least %(min)d.") % {
-                    "min": obj["minProperties"]
+                    "min": obj["minProperties"],
                 }
             elif "maxProperties" in obj and "minProperties" not in obj:
                 properties_description = _("Number of properties must be at most %(max)d.") % {
-                    "max": obj["maxProperties"]
+                    "max": obj["maxProperties"],
                 }
             elif obj["minProperties"] == obj["maxProperties"]:
                 properties_description = _("Number of properties must be equal to %(count)d.") % {
-                    "count": obj["minProperties"]
+                    "count": obj["minProperties"],
                 }
             else:
                 properties_description = _(
-                    "Number of properties must be between %(min)d and %(max)d (inclusive)."
+                    "Number of properties must be between %(min)d and %(max)d (inclusive).",
                 ) % {
                     "min": obj["minProperties"],
                     "max": obj["maxProperties"],
@@ -244,7 +252,7 @@ class Parser:
         if "enum" in obj:
             description_line.append(
                 _("Must be one of: %(enum)s.")
-                % {"enum": _format_list(map(json.dumps, obj["enum"]), style="or")}
+                % {"enum": _format_list(map(json.dumps, obj["enum"]), style="or")},
             )
         if "const" in obj:
             description_line.append(_("Must be: `%(const)s`.") % {"const": json.dumps(obj["const"])})
@@ -263,7 +271,7 @@ class Parser:
         if "$ref" in obj:
             description_line.append(
                 _("Refer to *[%(ref)s](#%(ref_link)s)*.")
-                % {"ref": obj["$ref"], "ref_link": quote(obj["$ref"][2:])}
+                % {"ref": obj["$ref"], "ref_link": quote(obj["$ref"][2:])},
             )
         if "default" in obj:
             description_line.append(_("Default: `%(default)s`.") % {"default": json.dumps(obj["default"])})
@@ -373,7 +381,7 @@ class Parser:
                 dependent_required_code = _format_list([f"`{k}`" for k in dependent_required], style="or")
                 obj_attributes.append(
                     _("required <sub><sup>if %(dependent)s is set</sup></sub>")
-                    % {"dependent": dependent_required_code}
+                    % {"dependent": dependent_required_code},
                 )
 
             obj_attributes.extend(
@@ -381,7 +389,7 @@ class Parser:
                     _("deprecated") if obj.get("deprecated") else "",
                     _("read-only") if obj.get("readOnly") else "",
                     _("write-only") if obj.get("writeOnly") else "",
-                )
+                ),
             )
 
             attributes = (
@@ -507,7 +515,10 @@ class Parser:
         return output_lines
 
     def parse_schema(
-        self, schema_object: dict[str, Any], fail_on_error_in_defs: bool = True, locale: Optional[str] = None
+        self,
+        schema_object: dict[str, Any],
+        fail_on_error_in_defs: bool = True,
+        locale: Optional[str] = None,
     ) -> Sequence[str]:
         """
         Parse JSON Schema object to markdown text.
