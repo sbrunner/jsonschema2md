@@ -258,4 +258,3 @@ msgstr ""
 #: jsonschema2md/__init__.py:606
 msgid "Examples"
 msgstr ""
-
