@@ -30,9 +30,12 @@ __version__ = version("jsonschema2md")
 _translations_cache: dict[str, gettext.GNUTranslations] = {}
 
 
-def get_locales() -> list[str]:
+def get_locales() -> tuple[str, ...]:
     """Get the list of available locales."""
-    return ["en_US", "pt_BR"]
+    languages = (Path(__file__) / "../locales").glob("*/LC_MESSAGES/messages.mo")
+    languages = ((p / "../..").name for p in languages)
+
+    return ("en_US", *languages)
 
 
 def _(message: str) -> str:
