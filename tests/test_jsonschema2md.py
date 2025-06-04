@@ -1,12 +1,5 @@
 """Test jsonschema2md."""
 
-import os
-
-# This has to be set before our module is imported because Babel
-# gets the DEFAULT_LOCALE at it's import, therefore it needs
-# to be available then.
-os.environ["LANGUAGE"] = "en_US"
-
 import jsonschema2md
 
 
@@ -142,7 +135,7 @@ class TestDraft201909defs:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema)
+        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
 
 
 class TestParser:
@@ -438,7 +431,7 @@ class TestParser:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema)
+        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
@@ -465,7 +458,7 @@ class TestParser:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_parse_top_level_items(self):
         """Test."""
@@ -501,7 +494,7 @@ class TestParser:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(boolean)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_schema_composition_keywords(self):
         """Test."""
@@ -546,7 +539,7 @@ class TestParser:
             '    - <a id="properties/one_of_example/oneOf/1"></a>*array*\n',
             '      - <a id="properties/one_of_example/oneOf/1/items"></a>**Items** *(number)*\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -591,7 +584,7 @@ class TestParser:
             '"infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". '
             'Default: `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_collapse_children(self):
         test_schema = {
@@ -650,4 +643,4 @@ class TestParser:
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
