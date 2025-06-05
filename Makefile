@@ -1,6 +1,6 @@
 # Babel configuration
 DOMAIN = messages
-SOURCE_DIR = .
+SOURCE_DIR = jsonschema2md
 LOCALES_DIR = jsonschema2md/locales
 POT_FILE = $(LOCALES_DIR)/messages.pot
 
@@ -11,6 +11,7 @@ extract:
 		--sort-by-file \
 		--add-comments=TL \
 		--project=jsonschema2md \
+		--keywords=t \
 		$(SOURCE_DIR)
 
 # Initialize a new language catalog (e.g., LANG=fr)
