@@ -25,6 +25,7 @@ import markdown
 import yaml
 from babel import default_locale, negotiate_locale
 from babel.lists import format_list
+from babel.support import LazyProxy
 
 __version__ = version("jsonschema2md")
 _translations_cache: dict[str, gettext.GNUTranslations] = {}
@@ -52,6 +53,11 @@ def _(message: str) -> str:
     return _translations_cache[Parser.current_locale].gettext(message)
 
 
+def t(message: str) -> LazyProxy:
+    """Translate a message using gettext only when it's used."""
+    return LazyProxy(_, message)
+
+
 def _format_list(
     iter_: Iterable[str],
     style: Literal[
@@ -72,6 +78,24 @@ def _format_list(
     iter_ = filter(None, iter_)
 
     return format_list(tuple(iter_), style, locale)
+
+
+PROPERTY_NAMES = {
+    "items": t("Items"),
+    "contains": t("Contains"),
+    "definitions": t("Definitions"),
+    "$defs": t("$defs"),
+}
+
+TYPES = {
+    "array": t("array"),
+    "boolean": t("boolean"),
+    "null": t("null"),
+    "integer": t("integer"),
+    "number": t("number"),
+    "object": t("object"),
+    "string": t("string"),
+}
 
 
 class Parser:
@@ -367,7 +391,9 @@ class Parser:
 
         if "type" in obj:
             formatted_type = (
-                _format_list(obj["type"], style="or") if isinstance(obj["type"], list) else obj["type"]
+                _format_list((str(TYPES[t]) for t in obj["type"]), style="or")
+                if isinstance(obj["type"], list)
+                else TYPES[obj["type"]]
             )
 
         # TL: I'm looking to always have a comma between (type or format) and attributes,
@@ -470,7 +496,7 @@ class Parser:
                 output_lines = self._parse_object(
                     obj[property_name],
                     path=[*path, property_name],
-                    name=property_name.capitalize(),
+                    name=str(PROPERTY_NAMES[property_name]),
                     name_monospace=False,
                     output_lines=output_lines,
                     indent_level=indent_level + 1,
@@ -555,7 +581,7 @@ class Parser:
                 self._parse_object(
                     schema_object["items"],
                     path=["items"],
-                    name="Items",
+                    name=_("Items"),
                     name_monospace=False,
                 ),
             )
