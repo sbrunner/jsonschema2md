@@ -7,3 +7,6 @@ dist/
 
 # mypy
 .mypy_cache/
+
+# Language-specific files
+*.mo
