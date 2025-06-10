@@ -9,4 +9,5 @@ dist/
 .mypy_cache/
 
 # Language-specific files
+*.pot
 *.mo
