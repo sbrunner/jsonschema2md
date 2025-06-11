@@ -16,7 +16,7 @@ import io
 import json
 import re
 import subprocess  # nosec
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
 from urllib.parse import quote
@@ -56,6 +56,27 @@ def _(message: str) -> str:
 def t(message: str) -> LazyProxy:
     """Translate a message using gettext only when it's used."""
     return LazyProxy(_, message)
+
+
+def _maybe_list(
+    obj: Union[list[str], str],
+    style: Literal[
+        "standard",
+        "standard-short",
+        "or",
+        "or-short",
+        "unit",
+        "unit-short",
+        "unit-narrow",
+    ] = "standard",
+    mapper: Callable[[str], str] = lambda x: x,
+) -> str:
+    """Format a list of strings or a single string."""
+    if isinstance(obj, list):
+        if len(obj) == 0:
+            return "[]"
+        return _format_list((mapper(x) for x in obj), style=style)
+    return mapper(obj)
 
 
 def _format_list(
@@ -390,11 +411,7 @@ class Parser:
         formatted_type = ""
 
         if "type" in obj:
-            formatted_type = (
-                _format_list((str(TYPES[t]) for t in obj["type"]), style="or")
-                if isinstance(obj["type"], list)
-                else TYPES[obj["type"]]
-            )
+            formatted_type = _maybe_list(obj["type"], style="or", mapper=lambda x: str(TYPES[x]))
 
         # TL: I'm looking to always have a comma between (type or format) and attributes,
         # so I'm adding them manually.
