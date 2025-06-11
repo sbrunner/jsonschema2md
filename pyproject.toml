@@ -11,7 +11,7 @@ exclude = [
     "jsonschema2md/locales",
 ]
 include = [
-    "jsonschema2md/locales",
+    { path = "jsonschema2md/locales", format = "sdist" },
     { path = "jsonschema2md/locales/**/*.mo",  format = "wheel" },
 ]
 
