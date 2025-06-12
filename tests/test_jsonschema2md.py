@@ -135,7 +135,7 @@ class TestDraft201909defs:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema)
+        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
 
 
 class TestParser:
@@ -217,7 +217,7 @@ class TestParser:
                 "add_type": True,
                 "expected_output": (
                     ": The name of the vegetable. Must be of type *string*. "
-                    'Must be one of: `["eggplant", "spinach", "cabbage"]`. '
+                    'Must be one of: "eggplant", "spinach", or "cabbage". '
                     "Refer to *[#/definitions/veggies](#definitions/veggies)*. "
                     'Default: `"eggplant"`.'
                 ),
@@ -431,7 +431,7 @@ class TestParser:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema)
+        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
@@ -458,7 +458,7 @@ class TestParser:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_parse_top_level_items(self):
         """Test."""
@@ -494,7 +494,7 @@ class TestParser:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(boolean)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_schema_composition_keywords(self):
         """Test."""
@@ -539,7 +539,7 @@ class TestParser:
             '    - <a id="properties/one_of_example/oneOf/1"></a>*array*\n',
             '      - <a id="properties/one_of_example/oneOf/1/items"></a>**Items** *(number)*\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -581,10 +581,10 @@ class TestParser:
             "settings. Cannot contain additional properties.\n",
             '  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** '
             "*(string)*: Pipeline to use, depending on input format. Must be one of: "
-            '`["infer", "pin", "tandem", "maxquant", "msgfplus", "peptideshaker"]`. '
+            '"infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". '
             'Default: `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
     def test_collapse_children(self):
         test_schema = {
@@ -638,9 +638,9 @@ class TestParser:
             "</summary>\n\n",
             "    - <a "
             'id="properties/general/properties/pipeline/properties/foo"></a>**`foo`** '
-            '*(string)*: Foo description. Must be one of: `["infer", "pin", "tandem", '
-            '"maxquant", "msgfplus", "peptideshaker"]`. Default: `"infer"`.\n',
+            '*(string)*: Foo description. Must be one of: "infer", "pin", "tandem", '
+            '"maxquant", "msgfplus", or "peptideshaker". Default: `"infer"`.\n',
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema)
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
