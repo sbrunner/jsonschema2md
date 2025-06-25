@@ -105,7 +105,7 @@ PROPERTY_NAMES = {
     "items": t("Items"),
     "contains": t("Contains"),
     "definitions": t("Definitions"),
-    "$defs": t("$defs"),
+    "$defs": "$defs",
 }
 
 TYPES = {
@@ -607,7 +607,7 @@ class Parser:
         for extra_props in ["additional", "unevaluated"]:
             property_name = f"{extra_props}Properties"
             title_ = (
-                _("Additional Properties") if extra_props == "additional" else _("Unevaluated Properties")
+                _("Additional properties") if extra_props == "additional" else _("Unevaluated properties")
             )
             if property_name in schema_object and isinstance(schema_object[property_name], dict):
                 output_lines.append(f"#{'#' * (self.header_level + 1)} {title_}\n\n")
