@@ -12,6 +12,7 @@ extract:
 		--add-comments=TL \
 		--project=jsonschema2md \
 		--keywords=t \
+		--no-location \
 		$(SOURCE_DIR)
 
 # Initialize a new language catalog (e.g., LANG=fr)
@@ -28,6 +29,7 @@ update:
 		--domain=$(DOMAIN) \
 		--input-file=$(POT_FILE) \
 		--output-dir=$(LOCALES_DIR) \
+		--omit-header \
 		--ignore-obsolete
 
 # Compile the catalogs
