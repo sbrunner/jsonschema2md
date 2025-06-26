@@ -36,7 +36,7 @@ repos:
       - id: pybabel
         name: pybabel extract / update
         language: system
-        entry: bash -c 'make extract && make update'
+        entry: bash -c 'make extract update'
         files: ^jsonschema2md/.*\.py$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
