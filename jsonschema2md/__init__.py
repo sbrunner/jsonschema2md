@@ -55,7 +55,7 @@ def _(message: str) -> str:
 
 def t(message: str) -> LazyProxy:
     """Translate a message using gettext only when it's used."""
-    return LazyProxy(_, message)
+    return LazyProxy(_, message, enable_cache=False)
 
 
 def _maybe_list(
