@@ -700,16 +700,6 @@ def main() -> None:
         help="Ignore errors in definitions.",
     )
 
-    env_locale = default_locale() or "en_US"
-
-    if env_locale not in get_locales():
-        old_locale = env_locale
-        env_locale = negotiate_locale((env_locale, env_locale.split("_")[0], "en_US"), get_locales())
-
-        print(
-            f"WARNING: The environment's locale `{old_locale}` is not supported, defaulting to `{env_locale}`.",
-        )
-
     argparser.add_argument(
         "--locale",
         choices=get_locales(),
@@ -720,6 +710,19 @@ def main() -> None:
     argparser.add_argument("output_markdown", type=Path, help="Output Markdown file.")
 
     args = argparser.parse_args()
+
+    if args.locale is None:
+        env_locale = default_locale() or "en_US"
+
+        if env_locale not in get_locales():
+            old_locale = env_locale
+            env_locale = negotiate_locale((env_locale, env_locale.split("_")[0], "en_US"), get_locales())
+
+            print(
+                f"WARNING: The environment's locale `{old_locale}` is not supported, defaulting to `{env_locale}`.",
+            )
+
+        args.locale = env_locale
 
     parser = Parser(
         examples_as_yaml=args.examples_as_yaml,
