@@ -36,12 +36,12 @@ def get_locales() -> tuple[str, ...]:
     languages = (Path(__file__).parent / "locales").glob("*/LC_MESSAGES/messages.mo")
     languages = (p.parent.parent for p in languages)
 
-    return ("en_US", *(lang.name for lang in languages))
+    return ("en", "en_US", *sorted(lang.name for lang in languages))
 
 
 def _(message: str) -> str:
     """Translate a message using gettext."""
-    if Parser.current_locale is None or Parser.current_locale == "en_US":
+    if Parser.current_locale is None or Parser.current_locale in ("en", "en_US"):
         return message
 
     if not _translations_cache.get(Parser.current_locale):
@@ -700,17 +700,20 @@ def main() -> None:
         help="Ignore errors in definitions.",
     )
 
-    env_locale = default_locale()
+    env_locale = default_locale() or "en_US"
+
     if env_locale not in get_locales():
+        old_locale = env_locale
+        env_locale = negotiate_locale((env_locale, env_locale.split("_")[0], "en_US"), get_locales())
+
         print(
-            f"WARNING: The environment's locale `{env_locale}` is not supported, defaulting to `en_US`.",
+            f"WARNING: The environment's locale `{old_locale}` is not supported, defaulting to `{env_locale}`.",
         )
-        env_locale = "en_US"
 
     argparser.add_argument(
         "--locale",
         choices=get_locales(),
-        default=env_locale,
+        default=None,
         help="Locale for the output Markdown. If not set, defaults to the first of $LANGUAGE, $LC_ALL, $LC_CTYPE, and $LANG.",
     )
     argparser.add_argument("input_json", type=Path, help="Input JSON file.")
