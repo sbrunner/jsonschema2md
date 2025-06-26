@@ -33,7 +33,7 @@ $ jsonschema2md --locale <lang> schema.json out.md # You can use examples/ms2res
 $ git commit -m "Add <lang> translation."
 ```
 
-## Editing an existing translation.
+## Editing an existing translation
 
 1. Extract the messages with the following command:
 
@@ -44,7 +44,7 @@ $ make extract
 2. Update the catalog:
 
 ```sh
-make update
+$ make update
 ```
 
 3. Edit the .po file using a tool of your preference (for example, [POEdit](https://poedit.net/) or [Virtaal](https://virtaal.translatehouse.org/)).
