@@ -43,6 +43,17 @@ will be converted to:
 > - **`firstName`** _(string)_: The person's first name.
 > - **`lastName`** _(string)_: The person's last name.
 
+There's also the possibility to translate it to another language. For example, the same schema in French would result in:
+
+> # Person
+>
+> _JSON Schema for a person object._
+>
+> ## Propriétés
+>
+> - **`firstName`** _(chaîne de caractères)_: The person's first name.
+> - **`lastName`** _(chaîne de caractères)_: The person's last name.
+
 See the [examples](https://github.com/sbrunner/jsonschema2md/tree/master/examples)
 directory for more elaborate examples.
 
