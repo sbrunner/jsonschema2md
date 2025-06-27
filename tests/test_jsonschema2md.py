@@ -860,7 +860,7 @@ class TestParserFR:
             "  - <a "
             'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
             "*(booléen)*: Do I like it?\n",
-            "## Properties\n\n",
+            "## Propriétés\n\n",
             '- <a id="properties/fruits"></a>**`fruits`** *(tableau)*\n',
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
             '- <a id="properties/vegetables"></a>**`vegetables`** *(tableau)*\n',
@@ -880,7 +880,7 @@ class TestParserFR:
             "*(chaîne de caractères, format: date, obligatoire <sub><sup>si `veggieLike` est "
             "défini</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(chaîne de caractères)*: A cake.\n',
-            "## Examples\n\n",
+            "## Exemples\n\n",
             "  ```json\n"
             "  {\n"
             '      "fruits": [\n'
@@ -911,7 +911,7 @@ class TestParserFR:
             "  - <a "
             'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
             "*(booléen)*: Do I like it?\n",
-            "## Properties\n\n",
+            "## Propriétés\n\n",
             '- <a id="properties/fruits"></a>**`fruits`** *(tableau)*\n',
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
             '- <a id="properties/vegetables"></a>**`vegetables`** *(tableau)*\n',
@@ -931,7 +931,7 @@ class TestParserFR:
             "*(chaîne de caractères, format: date, obligatoire <sub><sup>si `veggieLike` est "
             "défini</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(chaîne de caractères)*: A cake.\n',
-            "## Examples\n\n",
+            "## Exemples\n\n",
             "  ```yaml\n"
             "  fruits:\n"
             "  - apple\n"
@@ -964,7 +964,7 @@ class TestParserFR:
         expected_output = [
             "# JSON Schema\n\n",
             "*Diet preferences*\n\n",
-            "## Pattern Properties\n\n",
+            "## Propriétés supplémentaires\n\n",
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(booléen)*: Do I like it?\n',
         ]
 
@@ -1035,7 +1035,7 @@ class TestParserFR:
         expected_output = [
             "# JSON Schema\n\n",
             "*Schema composition test case*\n\n",
-            "## Properties\n\n",
+            "## Propriétés\n\n",
             '- <a id="properties/all_of_example"></a>**`all_of_example`**\n',
             "  - **Tous les**\n",
             '    - <a id="properties/all_of_example/allOf/0"></a>*nombre*\n',
@@ -1088,7 +1088,7 @@ class TestParserFR:
         parser = jsonschema2md.Parser(ignore_patterns=[r".*ignoreme.*"])
         expected_output = [
             "# JSON Schema\n\n",
-            "## Properties\n\n",
+            "## Propriétés\n\n",
             '- <a id="properties/general"></a>**`general`** *(objet)*: General '
             "settings. Ne peut pas contenir des propriétés supplémentaires.\n",
             '  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** '
@@ -1134,7 +1134,7 @@ class TestParserFR:
         parser = jsonschema2md.Parser(collapse_children=True)
         expected_output = [
             "# JSON Schema\n\n",
-            "## Properties\n\n",
+            "## Propriétés\n\n",
             "- <details>",
             "<summary>",
             '<a id="properties/general"></a><strong><code>general</code></strong> '
