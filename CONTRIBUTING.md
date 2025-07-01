@@ -34,7 +34,6 @@ you are welcome to communicate it with the community by creating an issue in
 ## Development workflow
 
 - When a new version is ready to be published:
-
   1. Change the `__version__` in `pyproject.toml` following
      [semantic versioning](https://semver.org/).
   2. Update the documentation (`README.md`), if required.
