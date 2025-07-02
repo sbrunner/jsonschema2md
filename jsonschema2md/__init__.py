@@ -716,7 +716,9 @@ def main() -> None:
 
         if env_locale not in get_locales():
             old_locale = env_locale
-            env_locale = negotiate_locale((env_locale, env_locale.split("_")[0], "en_US"), get_locales())
+            env_locale = (
+                negotiate_locale((env_locale, env_locale.split("_", maxsplit=1)[0]), get_locales()) or "en_US"
+            )
 
             print(
                 f"WARNING: The environment's locale `{old_locale}` is not supported, defaulting to `{env_locale}`.",

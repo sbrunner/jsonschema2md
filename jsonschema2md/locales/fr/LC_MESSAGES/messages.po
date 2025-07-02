@@ -88,29 +88,23 @@ msgstr "Les éléments doivent être uniques."
 
 #, python-format
 msgid "Contains schema must be matched at least %(min)d times."
-msgstr ""
-"Le schéma « contains » doit correspondre au moins %(min)d "
-"fois."
+msgstr "Le schéma « contains » doit correspondre au moins %(min)d fois."
 
 #, python-format
 msgid "Contains schema must be matched at most %(max)d times."
-msgstr ""
-"Le schéma « contains » doit correspondre au maximum %(max)d "
-"fois."
+msgstr "Le schéma « contains » doit correspondre au maximum %(max)d fois."
 
 #, python-format
 msgid "Contains schema must be matched exactly %(count)d times."
-msgstr ""
-"Le schéma « contains » doit correspondre exactement %(count)d"
-" fois."
+msgstr "Le schéma « contains » doit correspondre exactement %(count)d fois."
 
 #, python-format
 msgid ""
 "Contains schema must be matched between %(min)d and %(max)d times "
 "(inclusive)."
 msgstr ""
-"Le schéma « contains » doit correspondre entre %(min)d et "
-"%(max)d fois (inclus)."
+"Le schéma « contains » doit correspondre entre %(min)d et %(max)d fois "
+"(inclus)."
 
 #, python-format
 msgid "Number of properties must be at least %(min)d."

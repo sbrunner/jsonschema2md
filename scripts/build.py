@@ -10,12 +10,12 @@ log = logging.getLogger(__name__)
 
 
 def initialize_options(compiler: CompileCatalog, **options: Any) -> None:
-    compiler.initialize_options()
+    compiler.initialize_options()  # type: ignore[no-untyped-call]
 
     for key, value in options.items():
         setattr(compiler, key, value)
 
-    compiler.ensure_finalized()
+    compiler.ensure_finalized()  # type: ignore[no-untyped-call]
 
 
 def main() -> int:
@@ -25,7 +25,7 @@ def main() -> int:
     res = 0
 
     for language in languages:
-        compiler = CompileCatalog()
+        compiler = CompileCatalog()  # type: ignore[no-untyped-call]
 
         initialize_options(
             compiler,
@@ -35,7 +35,7 @@ def main() -> int:
             log=log,
         )
 
-        res = compiler.run()
+        res = compiler.run()  # type: ignore[no-untyped-call]
 
     if not languages:
         log.info("No languages found.")
