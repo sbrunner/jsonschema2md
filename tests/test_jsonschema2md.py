@@ -725,9 +725,9 @@ class TestParserFR:
                 "add_type": True,
                 "expected_output": (
                     ": The name of the vegetable. Doit être de type *string*. "
-                    'Doit être l\'un des suivants: "eggplant", "spinach" ou "cabbage". '
+                    'Doit être l\'un des suivants : "eggplant", "spinach" ou "cabbage". '
                     "Se référer à *[#/definitions/veggies](#definitions/veggies)*. "
-                    'Par défaut: `"eggplant"`.'
+                    'Par défaut : `"eggplant"`.'
                 ),
             },
             {
@@ -741,8 +741,8 @@ class TestParserFR:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": Number of vegetables. Minimum: `0`. Maximum: `999`. "
-                    "Peut contenir des propriétés supplémentaires. Par défaut: `0`."
+                    ": Number of vegetables. Minimum : `0`. Maximum : `999`. "
+                    "Peut contenir des propriétés supplémentaires. Par défaut : `0`."
                 ),
             },
             {
@@ -755,7 +755,7 @@ class TestParserFR:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": Number of vegetables. Minimum exclusif: `0`. Maximum exclusif: `1000`. Par défaut: `1`."
+                    ": Number of vegetables. Minimum exclusif : `0`. Maximum exclusif : `1000`. Par défaut : `1`."
                 ),
             },
             {
@@ -767,7 +767,7 @@ class TestParserFR:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ": List of vegetables. Ne peut pas contenir des propriétés supplémentaires. Par défaut: `[]`."
+                    ": List of vegetables. Ne peut pas contenir des propriétés supplémentaires. Par défaut : `[]`."
                 ),
             },
             {
@@ -779,7 +779,7 @@ class TestParserFR:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ': List of vegetables. La longueur doit être d\'au moins 1. Par défaut: `["Carrot"]`.'
+                    ': List of vegetables. La longueur doit être d\'au moins 1. Par défaut : `["Carrot"]`.'
                 ),
             },
             {
@@ -791,7 +791,7 @@ class TestParserFR:
                 },
                 "add_type": False,
                 "expected_output": (
-                    ': List of vegetables. La longueur doit être au maximum de 10. Par défaut: `["Carrot"]`.'
+                    ': List of vegetables. La longueur doit être au maximum de 10. Par défaut : `["Carrot"]`.'
                 ),
             },
             {
@@ -806,7 +806,7 @@ class TestParserFR:
                 "expected_output": (
                     ": List of vegetables. "
                     "La longueur doit être comprise entre 1 et 10 (inclus). "
-                    'Par défaut: `["Carrot"]`.'
+                    'Par défaut : `["Carrot"]`.'
                 ),
             },
             {
@@ -821,7 +821,7 @@ class TestParserFR:
                 "expected_output": (
                     ": List of vegetables. "
                     "La longueur doit être égale à 5. "
-                    'Par défaut: `["Carrot", "Mushroom", "Cabbage", "Broccoli", "Leek"]`.'
+                    'Par défaut : `["Carrot", "Mushroom", "Cabbage", "Broccoli", "Leek"]`.'
                 ),
             },
         ]
@@ -866,7 +866,7 @@ class TestParserFR:
             '- <a id="properties/vegetables"></a>**`vegetables`** *(tableau)*\n',
             '  - <a id="properties/vegetables/items"></a>**Éléments**: Se référer à '
             "*[#/definitions/veggie](#definitions/veggie)*.\n",
-            "- <a id=\"properties/cakes\"></a>**`cakes`** *(tableau)*: Le schéma 'contains' "
+            '- <a id="properties/cakes"></a>**`cakes`** *(tableau)*: Le schéma « contains » '
             "doit correspondre au maximum 3 fois.\n",
             '  - <a id="properties/cakes/contains"></a>**Contient**: Se référer à '
             "*[#/definitions/cake](#definitions/cake)*.\n",
@@ -877,7 +877,7 @@ class TestParserFR:
             '  - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** '
             "*(booléen, obligatoire)*: Do I like this vegetable?\n",
             '  - <a id="definitions/veggie/properties/expiresAt"></a>**`expiresAt`** '
-            "*(chaîne de caractères, format: date, obligatoire <sub><sup>si `veggieLike` est "
+            "*(chaîne de caractères, format : date, obligatoire <sub><sup>si `veggieLike` est "
             "défini</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(chaîne de caractères)*: A cake.\n',
             "## Exemples\n\n",
@@ -917,7 +917,7 @@ class TestParserFR:
             '- <a id="properties/vegetables"></a>**`vegetables`** *(tableau)*\n',
             '  - <a id="properties/vegetables/items"></a>**Éléments**: Se référer à '
             "*[#/definitions/veggie](#definitions/veggie)*.\n",
-            "- <a id=\"properties/cakes\"></a>**`cakes`** *(tableau)*: Le schéma 'contains' "
+            '- <a id="properties/cakes"></a>**`cakes`** *(tableau)*: Le schéma « contains » '
             "doit correspondre au maximum 3 fois.\n",
             '  - <a id="properties/cakes/contains"></a>**Contient**: Se référer à '
             "*[#/definitions/cake](#definitions/cake)*.\n",
@@ -928,7 +928,7 @@ class TestParserFR:
             '  - <a id="definitions/veggie/properties/veggieLike"></a>**`veggieLike`** '
             "*(booléen, obligatoire)*: Do I like this vegetable?\n",
             '  - <a id="definitions/veggie/properties/expiresAt"></a>**`expiresAt`** '
-            "*(chaîne de caractères, format: date, obligatoire <sub><sup>si `veggieLike` est "
+            "*(chaîne de caractères, format : date, obligatoire <sub><sup>si `veggieLike` est "
             "défini</sup></sub>)*: When does the veggie expires.\n",
             '- <a id="definitions/cake"></a>**`cake`** *(chaîne de caractères)*: A cake.\n',
             "## Exemples\n\n",
@@ -1043,8 +1043,8 @@ class TestParserFR:
             '- <a id="properties/any_of_example"></a>**`any_of_example`**\n',
             "  - **Un des**\n",
             '    - <a id="properties/any_of_example/anyOf/0"></a>*chaîne de caractères*\n',
-            '    - <a id="properties/any_of_example/anyOf/1"></a>*nombre*: Minimum: `0`.\n',
-            '- <a id="properties/one_of_example"></a>**`one_of_example`**: Par défaut: `[1, 2, 3]`.\n',
+            '    - <a id="properties/any_of_example/anyOf/1"></a>*nombre*: Minimum : `0`.\n',
+            '- <a id="properties/one_of_example"></a>**`one_of_example`**: Par défaut : `[1, 2, 3]`.\n',
             "  - **L'un de**\n",
             '    - <a id="properties/one_of_example/oneOf/0"></a>*null*\n',
             '    - <a id="properties/one_of_example/oneOf/1"></a>*tableau*\n',
@@ -1093,8 +1093,8 @@ class TestParserFR:
             "settings. Ne peut pas contenir des propriétés supplémentaires.\n",
             '  - <a id="properties/general/properties/pipeline"></a>**`pipeline`** '
             "*(chaîne de caractères)*: Pipeline to use, depending on input format. "
-            'Doit être l\'un des suivants: "infer", "pin", "tandem", "maxquant", '
-            '"msgfplus" ou "peptideshaker". Par défaut: `"infer"`.\n',
+            'Doit être l\'un des suivants : "infer", "pin", "tandem", "maxquant", '
+            '"msgfplus" ou "peptideshaker". Par défaut : `"infer"`.\n',
         ]
         assert expected_output == parser.parse_schema(test_schema, locale="fr_CH")
 
@@ -1150,9 +1150,9 @@ class TestParserFR:
             "</summary>\n\n",
             "    - <a "
             'id="properties/general/properties/pipeline/properties/foo"></a>**`foo`** '
-            "*(chaîne de caractères)*: Foo description. Doit être l'un des suivants: "
+            "*(chaîne de caractères)*: Foo description. Doit être l'un des suivants : "
             '"infer", "pin", "tandem", "maxquant", "msgfplus" ou "peptideshaker". '
-            'Par défaut: `"infer"`.\n',
+            'Par défaut : `"infer"`.\n',
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
