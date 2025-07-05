@@ -1,0 +1,209 @@
+msgid "Items"
+msgstr "Éléments"
+
+msgid "Contains"
+msgstr "Contient"
+
+msgid "Definitions"
+msgstr "Définitions"
+
+msgid "array"
+msgstr "tableau"
+
+msgid "boolean"
+msgstr "booléen"
+
+msgid "null"
+msgstr "null"
+
+msgid "integer"
+msgstr "entier"
+
+msgid "number"
+msgstr "nombre"
+
+msgid "object"
+msgstr "objet"
+
+msgid "string"
+msgstr "chaîne de caractères"
+
+#, python-format
+msgid "Must be of type *%(type)s*."
+msgstr "Doit être de type *%(type)s*."
+
+#, fuzzy, python-format
+msgid "Content encoding: `%(encoding)s`."
+msgstr "Encodage du contenu : `%(encoding)s`."
+
+#, python-format
+msgid "Content media type: `%(type)s`."
+msgstr "Type de média du contenu : `%(type)s`."
+
+#, python-format
+msgid "Minimum: `%(min)d`."
+msgstr "Minimum : `%(min)d`."
+
+#, python-format
+msgid "Exclusive minimum: `%(exmin)d`."
+msgstr "Minimum exclusif : `%(exmin)d`."
+
+#, python-format
+msgid "Maximum: `%(max)d`."
+msgstr "Maximum : `%(max)d`."
+
+#, python-format
+msgid "Exclusive maximum: `%(exmax)d`."
+msgstr "Maximum exclusif : `%(exmax)d`."
+
+#, python-format
+msgid "Length must be at least %(min)d."
+msgstr "La longueur doit être d'au moins %(min)d."
+
+#, python-format
+msgid "Length must be at most %(max)d."
+msgstr "La longueur doit être au maximum de %(max)d."
+
+#, python-format
+msgid "Length must be equal to %(length)d."
+msgstr "La longueur doit être égale à %(length)d."
+
+#, python-format
+msgid "Length must be between %(min)d and %(max)d (inclusive)."
+msgstr "La longueur doit être comprise entre %(min)d et %(max)d (inclus)."
+
+msgid "Must be an integer."
+msgstr "Doit être un entier."
+
+#, python-format
+msgid "Must be a multiple of `%(multiple)d`."
+msgstr "Doit être un multiple de `%(multiple)d`."
+
+#, python-format
+msgid "Must match pattern: `%(pattern)s` ([Test](%(link)s))."
+msgstr "Doit correspondre au modèle : `%(pattern)s` ([Test](%(link)s))."
+
+msgid "Items must be unique."
+msgstr "Les éléments doivent être uniques."
+
+#, python-format
+msgid "Contains schema must be matched at least %(min)d times."
+msgstr "Le schéma « contains » doit correspondre au moins %(min)d fois."
+
+#, python-format
+msgid "Contains schema must be matched at most %(max)d times."
+msgstr "Le schéma « contains » doit correspondre au maximum %(max)d fois."
+
+#, python-format
+msgid "Contains schema must be matched exactly %(count)d times."
+msgstr "Le schéma « contains » doit correspondre exactement %(count)d fois."
+
+#, python-format
+msgid ""
+"Contains schema must be matched between %(min)d and %(max)d times "
+"(inclusive)."
+msgstr ""
+"Le schéma « contains » doit correspondre entre %(min)d et %(max)d fois "
+"(inclus)."
+
+#, python-format
+msgid "Number of properties must be at least %(min)d."
+msgstr "Le nombre de propriétés doit être d'au moins %(min)d."
+
+#, python-format
+msgid "Number of properties must be at most %(max)d."
+msgstr "Le nombre de propriétés doit être au maximum de %(max)d."
+
+#, python-format
+msgid "Number of properties must be equal to %(count)d."
+msgstr "Le nombre de propriétés doit être égal à %(count)d."
+
+#, python-format
+msgid "Number of properties must be between %(min)d and %(max)d (inclusive)."
+msgstr "Le nombre de propriétés doit être entre %(min)d et %(max)d (inclus)."
+
+#, python-format
+msgid "Must be one of: %(enum)s."
+msgstr "Doit être l'un des suivants : %(enum)s."
+
+#, python-format
+msgid "Must be: `%(const)s`."
+msgstr "Doit être : `%(const)s`."
+
+msgid "Can contain additional properties."
+msgstr "Peut contenir des propriétés supplémentaires."
+
+msgid "Cannot contain additional properties."
+msgstr "Ne peut pas contenir des propriétés supplémentaires."
+
+msgid "Can contain unevaluated properties."
+msgstr "Peut contenir des propriétés non évaluées."
+
+msgid "Cannot contain unevaluated properties."
+msgstr "Ne peut pas contenir des propriétés non évaluées."
+
+#, python-format
+msgid "Refer to *[%(ref)s](#%(ref_link)s)*."
+msgstr "Se référer à *[%(ref)s](#%(ref_link)s)*."
+
+#, python-format
+msgid "Default: `%(default)s`."
+msgstr "Par défaut : `%(default)s`."
+
+msgid "Examples:"
+msgstr "Exemples :"
+
+#. TL: I'm looking to always have a comma between (type or format) and
+#. attributes,
+#. so I'm adding them manually.
+#, python-format
+msgid ", format: %(format)s"
+msgstr ", format : %(format)s"
+
+msgid "required"
+msgstr "obligatoire"
+
+#, python-format
+msgid "required <sub><sup>if %(dependent)s is set</sup></sub>"
+msgstr "obligatoire <sub><sup>si %(dependent)s est défini</sup></sub>"
+
+msgid "deprecated"
+msgstr "déprécié"
+
+msgid "read-only"
+msgstr "lecture seule"
+
+msgid "write-only"
+msgstr "écriture seule"
+
+#, python-format
+msgid ", %(attributes)s"
+msgstr ", %(attributes)s"
+
+msgid "All of"
+msgstr "Tous les"
+
+msgid "Any of"
+msgstr "Un des"
+
+msgid "One of"
+msgstr "L'un de"
+
+msgid "Additional properties"
+msgstr "Propriétés supplémentaires"
+
+msgid "Unevaluated properties"
+msgstr "Propriétés non évaluées"
+
+msgid "JSON Schema"
+msgstr ""
+
+msgid "Pattern Properties"
+msgstr "Propriétés supplémentaires"
+
+msgid "Properties"
+msgstr "Propriétés"
+
+msgid "Examples"
+msgstr "Exemples"
+
