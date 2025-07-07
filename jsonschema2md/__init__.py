@@ -442,7 +442,11 @@ class Parser:
                 else ""
             )
 
-            obj_type = f" *({formatted_type}{optional_format}{attributes})*" if "type" in obj else ""
+            obj_type = ""
+            if "type" in obj:
+                obj_type = f" *({formatted_type}{optional_format}{attributes})*"
+            elif "$ref" in obj and any(obj_attributes):
+                obj_type = f" *({_format_list(obj_attributes)})*"
 
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
 
