@@ -127,8 +127,10 @@ jobs:
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: |
           sed --in-place 's/jsonschema2md/jsonschema2md2/g' pyproject.toml
+          sed --in-place 's@jsonschema2md/locales@jsonschema2md2/locales@g' pyproject.toml
           sed --in-place 's@sbrunner/jsonschema2md2@sbrunner/jsonschema2md@g' pyproject.toml
           sed --in-place 's/jsonschema2md/jsonschema2md2/g' jsonschema2md/__init__.py
+          sed --in-place 's/jsonschema2md/jsonschema2md2/g' scripts/build.py
           git diff
           mv jsonschema2md jsonschema2md2
       - name: Publish
@@ -137,11 +139,3 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - run: git diff --exit-code --patch > /tmp/dpkg-versions.patch; git diff --color; git reset --hard || true
-        if: failure()
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Update dpkg versions list.patch
-          path: /tmp/dpkg-versions.patch
-          retention-days: 1
-        if: failure()
