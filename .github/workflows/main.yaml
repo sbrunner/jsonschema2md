@@ -127,8 +127,10 @@ jobs:
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: |
           sed --in-place 's/jsonschema2md/jsonschema2md2/g' pyproject.toml
+          sed --in-place 's@jsonschema2md/locales@jsonschema2md2/locales@g' pyproject.toml
           sed --in-place 's@sbrunner/jsonschema2md2@sbrunner/jsonschema2md@g' pyproject.toml
           sed --in-place 's/jsonschema2md/jsonschema2md2/g' jsonschema2md/__init__.py
+          sed --in-place 's/jsonschema2md/jsonschema2md2/g' scripts/build.py
           git diff
           mv jsonschema2md jsonschema2md2
       - name: Publish
