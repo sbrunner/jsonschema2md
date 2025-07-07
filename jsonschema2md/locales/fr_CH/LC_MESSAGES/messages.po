@@ -34,27 +34,27 @@ msgstr "Doit être de type *%(type)s*."
 
 #, fuzzy, python-format
 msgid "Content encoding: `%(encoding)s`."
-msgstr "Encodage du contenu : `%(encoding)s`."
+msgstr "Encodage du contenu: `%(encoding)s`."
 
 #, python-format
 msgid "Content media type: `%(type)s`."
-msgstr "Type de média du contenu : `%(type)s`."
+msgstr "Type de média du contenu: `%(type)s`."
 
 #, python-format
 msgid "Minimum: `%(min)d`."
-msgstr "Minimum : `%(min)d`."
+msgstr "Minimum: `%(min)d`."
 
 #, python-format
 msgid "Exclusive minimum: `%(exmin)d`."
-msgstr "Minimum exclusif : `%(exmin)d`."
+msgstr "Minimum exclusif: `%(exmin)d`."
 
 #, python-format
 msgid "Maximum: `%(max)d`."
-msgstr "Maximum : `%(max)d`."
+msgstr "Maximum: `%(max)d`."
 
 #, python-format
 msgid "Exclusive maximum: `%(exmax)d`."
-msgstr "Maximum exclusif : `%(exmax)d`."
+msgstr "Maximum exclusif: `%(exmax)d`."
 
 #, python-format
 msgid "Length must be at least %(min)d."
@@ -81,7 +81,7 @@ msgstr "Doit être un multiple de `%(multiple)d`."
 
 #, python-format
 msgid "Must match pattern: `%(pattern)s` ([Test](%(link)s))."
-msgstr "Doit correspondre au modèle : `%(pattern)s` ([Test](%(link)s))."
+msgstr "Doit correspondre au modèle: `%(pattern)s` ([Test](%(link)s))."
 
 msgid "Items must be unique."
 msgstr "Les éléments doivent être uniques."
@@ -124,11 +124,11 @@ msgstr "Le nombre de propriétés doit être entre %(min)d et %(max)d (inclus)."
 
 #, python-format
 msgid "Must be one of: %(enum)s."
-msgstr "Doit être l'un des suivants : %(enum)s."
+msgstr "Doit être l'un des suivants: %(enum)s."
 
 #, python-format
 msgid "Must be: `%(const)s`."
-msgstr "Doit être : `%(const)s`."
+msgstr "Doit être: `%(const)s`."
 
 msgid "Can contain additional properties."
 msgstr "Peut contenir des propriétés supplémentaires."
@@ -148,17 +148,17 @@ msgstr "Se référer à *[%(ref)s](#%(ref_link)s)*."
 
 #, python-format
 msgid "Default: `%(default)s`."
-msgstr "Par défaut : `%(default)s`."
+msgstr "Par défaut: `%(default)s`."
 
 msgid "Examples:"
-msgstr "Exemples :"
+msgstr "Exemples:"
 
 #. TL: I'm looking to always have a comma between (type or format) and
 #. attributes,
 #. so I'm adding them manually.
 #, python-format
 msgid ", format: %(format)s"
-msgstr ", format : %(format)s"
+msgstr ", format: %(format)s"
 
 msgid "required"
 msgstr "obligatoire"
