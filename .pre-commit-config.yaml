@@ -33,6 +33,11 @@ repos:
           - --pre-commit
           - examples/vegetables.json
           - examples/vegetables.md
+      - id: pybabel
+        name: pybabel extract / update
+        language: system
+        entry: bash -c 'make extract update'
+        files: ^jsonschema2md/.*\.py$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -44,6 +49,10 @@ repos:
       - id: check-yaml
       - id: check-json
       - id: end-of-file-fixer
+        exclude: |-
+          (?x)^(
+            (.*)\.po
+          )$
       - id: trailing-whitespace
       - id: mixed-line-ending
   - repo: https://github.com/sbrunner/hooks
@@ -58,7 +67,12 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        exclude: ^(.*/)?poetry\.lock$
+        exclude: |-
+          (?x)^(
+            (.*/)?poetry\.lock
+            |.*\.po
+            |(.*?)?test_.*\.py
+          )$
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
