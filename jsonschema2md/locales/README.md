@@ -67,7 +67,7 @@ $ jsonschema2md --locale <lang> schema.json out.md # You can use examples/ms2res
 $ git commit -m "Update <lang> translation."
 ```
 
-> **NOTE:** When editing the Swiss French locale (fr_CH), make sure the [tests](https://github.com/sbrunner/jsonschema2md/blob/master/tests/test_jsonschema2md.py) (TestParserFR class) reflect your changes. You can verify your changes with the command:
+> **NOTE:** When editing the French (fr) or the Swiss French (fr_CH) locales, make sure the [tests](https://github.com/sbrunner/jsonschema2md/blob/master/tests/test_jsonschema2md.py) (TestParserFR class) reflect your changes. You can verify your changes with the command:
 >
 > ```sh
 > $ pytest -vv -k "TestParserFR"
