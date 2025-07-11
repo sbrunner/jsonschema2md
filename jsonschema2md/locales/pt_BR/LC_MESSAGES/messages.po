@@ -34,11 +34,11 @@ msgstr "Deve ser do tipo *%(type)s*."
 
 #, python-format
 msgid "Content encoding: `%(encoding)s`."
-msgstr "Codificação de conteúdo: `%(encoding)s`."
+msgstr "Codificação do conteúdo: `%(encoding)s`."
 
 #, python-format
 msgid "Content media type: `%(type)s`."
-msgstr "Tipo de conteúdo de mídia: `%(type)s`."
+msgstr "Tipo de mídia do conteúdo: `%(type)s`."
 
 #, python-format
 msgid "Minimum: `%(min)d`."
@@ -103,7 +103,7 @@ msgid ""
 "Contains schema must be matched between %(min)d and %(max)d times "
 "(inclusive)."
 msgstr ""
-"O esquema contains deve corresponder entre %(min)d e %(max)d vezes "
+"O esquema \"contains\" deve corresponder entre %(min)d e %(max)d vezes "
 "(inclusivo)."
 
 #, python-format
@@ -120,8 +120,7 @@ msgstr "O número de propriedades deve ser igual a %(count)d."
 
 #, python-format
 msgid "Number of properties must be between %(min)d and %(max)d (inclusive)."
-msgstr ""
-"O número de propriedades deve estar entre %(min)d e %(max)d (inclusivo)."
+msgstr "O número de propriedades deve estar entre %(min)d e %(max)d (inclusivo)."
 
 #, python-format
 msgid "Must be one of: %(enum)s."
@@ -138,10 +137,10 @@ msgid "Cannot contain additional properties."
 msgstr "Não pode conter propriedades adicionais."
 
 msgid "Can contain unevaluated properties."
-msgstr "Pode conter propriedades não avaliadas."
+msgstr "Pode conter propriedades não correspondidas."
 
 msgid "Cannot contain unevaluated properties."
-msgstr "Não pode conter propriedades não avaliadas."
+msgstr "Não pode conter propriedades não correspondidas."
 
 #, python-format
 msgid "Refer to *[%(ref)s](#%(ref_link)s)*."
@@ -194,7 +193,7 @@ msgid "Additional properties"
 msgstr "Propriedades adicionais"
 
 msgid "Unevaluated properties"
-msgstr "Propriedades não avaliadas"
+msgstr "Propriedades não correspondidas"
 
 msgid "JSON Schema"
 msgstr "Esquema JSON"
