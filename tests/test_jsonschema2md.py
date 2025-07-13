@@ -316,6 +316,33 @@ class TestParser:
                     'Default: `["Carrot", "Mushroom", "Cabbage", "Broccoli", "Leek"]`.'
                 ),
             },
+            {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Can contain additional properties.",
+            },
+            {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": {"type": "string"},
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Can contain additional properties.",
+            },
+                        {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Cannot contain additional properties.",
+            },
         ]
 
         parser = jsonschema2md.Parser()
@@ -519,6 +546,44 @@ class TestParser:
                         {"type": "array", "items": {"type": "number"}},
                     ],
                 },
+                "all_of_merged_example": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                },
+                "any_of_merged_example": {
+                    "anyOf": [
+                        {"type": "string"},
+                    ],
+                },
+                "one_of_merged_example": {
+                    "oneOf": [
+                        {"type": "number"},
+                    ],
+                },
+                # Multiple composition keywords
+                "bad_merged_example_1": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "oneOf": [
+                        {"type": "string"},
+                    ],
+                },
+                # A merge is possible, but would conflict
+                "bad_merged_example_2": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "type": "string",
+                },
+                # A merge is possible, and doesn't conflict
+                "good_merged_example": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "type": "number",
+                },
             },
         }
         expected_output = [
@@ -538,6 +603,18 @@ class TestParser:
             '    - <a id="properties/one_of_example/oneOf/0"></a>*null*\n',
             '    - <a id="properties/one_of_example/oneOf/1"></a>*array*\n',
             '      - <a id="properties/one_of_example/oneOf/1/items"></a>**Items** *(number)*\n',
+            '- <a id="properties/all_of_merged_example"></a>**`all_of_merged_example`** *(number)*\n',
+            '- <a id="properties/any_of_merged_example"></a>**`any_of_merged_example`** *(string)*\n',
+            '- <a id="properties/one_of_merged_example"></a>**`one_of_merged_example`** *(number)*\n',
+            '- <a id="properties/bad_merged_example_1"></a>**`bad_merged_example_1`**\n',
+            "  - **All of**\n",
+            '    - <a id="properties/bad_merged_example_1/allOf/0"></a>*number*\n',
+            '  - **One of**\n',
+            '    - <a id="properties/bad_merged_example_1/oneOf/0"></a>*string*\n',
+            '- <a id="properties/bad_merged_example_2"></a>**`bad_merged_example_2`** *(string)*\n',
+            "  - **All of**\n",
+            '    - <a id="properties/bad_merged_example_2/allOf/0"></a>*number*\n',
+            '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(number)*\n',
         ]
         assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
@@ -645,6 +722,43 @@ class TestParser:
         ]
         assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
+    def test_hide_empty_description(self):
+        test_schema = {
+            "description": "Arbitrary comment for reference purposes.",
+            "id": "CommentJsonSchema",
+            "properties": {
+                "comment": {
+                    "anyOf": [
+                {
+                "type": "string"
+                },
+                {
+                "type": "array",
+                "items": {}
+                },
+                {
+                "type": "object",
+                "additionalProperties": {},
+                "properties": {}
+                }
+            ]
+    }
+    },
+
+        }
+        parser = jsonschema2md.Parser()
+        expected_output = [
+            "# JSON Schema\n\n",
+            '*Arbitrary comment for reference purposes.*\n\n',
+                   '## Properties\n\n',
+                   '- <a id="properties/comment"></a>**`comment`**\n',
+                   '  - **Any of**\n',
+                   '    - <a id="properties/comment/anyOf/0"></a>*string*\n',
+                   '    - <a id="properties/comment/anyOf/1"></a>*array*\n',
+                   '    - <a id="properties/comment/anyOf/2"></a>*object*: Can contain '
+                   'additional properties.\n'
+        ]
+        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
 
 class TestParserFR:
     """Test."""

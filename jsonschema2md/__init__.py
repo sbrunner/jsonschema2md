@@ -468,13 +468,20 @@ class Parser:
 
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
 
-        has_children = any(
+        has_collapsible_children = any(
             prop in obj and isinstance(obj[prop], dict)
             for prop in [
                 "additionalProperties",
                 "unevaluatedProperties",
                 "properties",
                 "patternProperties",
+            ]
+        )
+
+        has_children = has_collapsible_children or any(
+            prop in obj
+            for prop in [
+                "items", "contains", "definitions", "$defs", "anyOf", "oneOf", "allOf"
             ]
         )
 
@@ -488,10 +495,10 @@ class Parser:
         # e.g. for `items: {}` or `additionalProperties: {}`.
         # If the description is empty, don't add it.
         description_content = obj_type + description_line.strip()
-        has_description_content = len(description_content) > 0
+        show_description = len(description_content) > 0 or has_children
 
-        if not ignored and has_description_content:
-            if has_children and self.collapse_children:
+        if not ignored and show_description:
+            if has_collapsible_children and self.collapse_children:
                 # Expandable children
                 output_lines.extend(
                     [
@@ -578,7 +585,7 @@ class Parser:
                         ],
                     )
 
-        if not ignored and has_children and self.collapse_children and has_description_content:
+        if not ignored and has_collapsible_children and self.collapse_children and show_description:
             output_lines.append(f"\n{indentation_items}</details>\n\n")
         # Add examples
         if self.show_examples in ["all", "properties"]:
