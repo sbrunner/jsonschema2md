@@ -334,7 +334,7 @@ class TestParser:
                 "add_type": False,
                 "expected_output": ": Can contain additional properties.",
             },
-                        {
+            {
                 "input": {
                     "type": "object",
                     "additionalProperties": False,
@@ -609,7 +609,7 @@ class TestParser:
             '- <a id="properties/bad_merged_example_1"></a>**`bad_merged_example_1`**\n',
             "  - **All of**\n",
             '    - <a id="properties/bad_merged_example_1/allOf/0"></a>*number*\n',
-            '  - **One of**\n',
+            "  - **One of**\n",
             '    - <a id="properties/bad_merged_example_1/oneOf/0"></a>*string*\n',
             '- <a id="properties/bad_merged_example_2"></a>**`bad_merged_example_2`** *(string)*\n',
             "  - **All of**\n",
@@ -729,36 +729,26 @@ class TestParser:
             "properties": {
                 "comment": {
                     "anyOf": [
-                {
-                "type": "string"
-                },
-                {
-                "type": "array",
-                "items": {}
-                },
-                {
-                "type": "object",
-                "additionalProperties": {},
-                "properties": {}
+                        {"type": "string"},
+                        {"type": "array", "items": {}},
+                        {"type": "object", "additionalProperties": {}, "properties": {}},
+                    ]
                 }
-            ]
-    }
-    },
-
+            },
         }
         parser = jsonschema2md.Parser()
         expected_output = [
             "# JSON Schema\n\n",
-            '*Arbitrary comment for reference purposes.*\n\n',
-                   '## Properties\n\n',
-                   '- <a id="properties/comment"></a>**`comment`**\n',
-                   '  - **Any of**\n',
-                   '    - <a id="properties/comment/anyOf/0"></a>*string*\n',
-                   '    - <a id="properties/comment/anyOf/1"></a>*array*\n',
-                   '    - <a id="properties/comment/anyOf/2"></a>*object*: Can contain '
-                   'additional properties.\n'
+            "*Arbitrary comment for reference purposes.*\n\n",
+            "## Properties\n\n",
+            '- <a id="properties/comment"></a>**`comment`**\n',
+            "  - **Any of**\n",
+            '    - <a id="properties/comment/anyOf/0"></a>*string*\n',
+            '    - <a id="properties/comment/anyOf/1"></a>*array*\n',
+            '    - <a id="properties/comment/anyOf/2"></a>*object*: Can contain additional properties.\n',
         ]
         assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+
 
 class TestParserFR:
     """Test."""

@@ -479,10 +479,7 @@ class Parser:
         )
 
         has_children = has_collapsible_children or any(
-            prop in obj
-            for prop in [
-                "items", "contains", "definitions", "$defs", "anyOf", "oneOf", "allOf"
-            ]
+            prop in obj for prop in ["items", "contains", "definitions", "$defs", "anyOf", "oneOf", "allOf"]
         )
 
         anchor = f'<a id="{quote("/".join(path))}"></a>'
