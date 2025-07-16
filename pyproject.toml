@@ -7,9 +7,6 @@ convention = "numpy"
 
 [tool.poetry]
 version = "0.0.0"
-exclude = [
-    "jsonschema2md/locales",
-]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
@@ -73,6 +70,9 @@ authors = [{name = "Ralf Gabriels",email = "ralfg@hotmail.be"}, {name = "Matt Gr
 maintainers = [{name = "Stéphane Brunner",email = "stephane.brunner@gmail.com"}]
 requires-python = ">=3.9"
 dependencies = ["PyYAML<7,>=6", "markdown<4,>=3", "babel<3,>=2"]
+exclude = [
+    "jsonschema2md/locales",
+]
 include = [
     { path = "jsonschema2md/locales", format = "sdist" },
     { path = "jsonschema2md/locales/**/*.mo",  format = "wheel" },
