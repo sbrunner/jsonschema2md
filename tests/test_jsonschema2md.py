@@ -928,6 +928,33 @@ class TestParserFR:
                     'Par défaut : `["Carrot", "Mushroom", "Cabbage", "Broccoli", "Leek"]`.'
                 ),
             },
+            {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Peut contenir des propriétés supplémentaires.",
+            },
+            {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": {"type": "string"},
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Peut contenir des propriétés supplémentaires.",
+            },
+            {
+                "input": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {},
+                },
+                "add_type": False,
+                "expected_output": ": Ne peut pas contenir des propriétés supplémentaires.",
+            },
         ]
 
         parser = jsonschema2md.Parser()
@@ -1110,7 +1137,7 @@ class TestParserFR:
 
         assert expected_output == parser.parse_schema(test_schema, locale="fr")
 
-    def test_schema_composition_keywords_2(self):
+    def test_schema_composition_keywords(self):
         """Test."""
         parser = jsonschema2md.Parser()
         test_schema = {
@@ -1133,6 +1160,44 @@ class TestParserFR:
                         {"type": "array", "items": {"type": "number"}},
                     ],
                 },
+                "all_of_merged_example": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                },
+                "any_of_merged_example": {
+                    "anyOf": [
+                        {"type": "string"},
+                    ],
+                },
+                "one_of_merged_example": {
+                    "oneOf": [
+                        {"type": "number"},
+                    ],
+                },
+                # Multiple composition keywords
+                "bad_merged_example_1": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "oneOf": [
+                        {"type": "string"},
+                    ],
+                },
+                # A merge is possible, but would conflict
+                "bad_merged_example_2": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "type": "string",
+                },
+                # A merge is possible, and doesn't conflict
+                "good_merged_example": {
+                    "allOf": [
+                        {"type": "number"},
+                    ],
+                    "type": "number",
+                },
             },
         }
 
@@ -1153,6 +1218,18 @@ class TestParserFR:
             '    - <a id="properties/one_of_example/oneOf/0"></a>*null*\n',
             '    - <a id="properties/one_of_example/oneOf/1"></a>*tableau*\n',
             '      - <a id="properties/one_of_example/oneOf/1/items"></a>**Éléments** *(nombre)*\n',
+            '- <a id="properties/all_of_merged_example"></a>**`all_of_merged_example`** *(nombre)*\n',
+            '- <a id="properties/any_of_merged_example"></a>**`any_of_merged_example`** *(chaîne de caractères)*\n',
+            '- <a id="properties/one_of_merged_example"></a>**`one_of_merged_example`** *(nombre)*\n',
+            '- <a id="properties/bad_merged_example_1"></a>**`bad_merged_example_1`**\n',
+            "  - **Tous les**\n",
+            '    - <a id="properties/bad_merged_example_1/allOf/0"></a>*nombre*\n',
+            "  - **L'un de**\n",
+            '    - <a id="properties/bad_merged_example_1/oneOf/0"></a>*chaîne de caractères*\n',
+            '- <a id="properties/bad_merged_example_2"></a>**`bad_merged_example_2`** *(chaîne de caractères)*\n',
+            "  - **Tous les**\n",
+            '    - <a id="properties/bad_merged_example_2/allOf/0"></a>*nombre*\n',
+            '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(nombre)*\n',
         ]
 
         assert expected_output == parser.parse_schema(test_schema, locale="fr")
@@ -1254,10 +1331,38 @@ class TestParserFR:
             "</summary>\n\n",
             "    - <a "
             'id="properties/general/properties/pipeline/properties/foo"></a>**`foo`** '
-            "*(chaîne de caractères)*: Foo description. Doit être l'un des suivants: "
+            "*(chaîne de caractères)*: Foo description. Doit être l'un des suivants : "
             '"infer", "pin", "tandem", "maxquant", "msgfplus" ou "peptideshaker". '
-            'Par défaut: `"infer"`.\n',
+            'Par défaut : `"infer"`.\n',
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="fr_CH")
+        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+
+    def test_hide_empty_description(self):
+        test_schema = {
+            "description": "Arbitrary comment for reference purposes.",
+            "id": "CommentJsonSchema",
+            "properties": {
+                "comment": {
+                    "anyOf": [
+                        {"type": "string"},
+                        {"type": "array", "items": {}},
+                        {"type": "object", "additionalProperties": {}, "properties": {}},
+                    ]
+                }
+            },
+        }
+        parser = jsonschema2md.Parser()
+        expected_output = [
+            "# JSON Schema\n\n",
+            "*Arbitrary comment for reference purposes.*\n\n",
+            "## Propriétés\n\n",
+            '- <a id="properties/comment"></a>**`comment`**\n',
+            "  - **Un des**\n",
+            '    - <a id="properties/comment/anyOf/0"></a>*chaîne de caractères*\n',
+            '    - <a id="properties/comment/anyOf/1"></a>*tableau*\n',
+            '    - <a id="properties/comment/anyOf/2"></a>*objet*: Peut contenir des propriétés supplémentaires.\n',
+        ]
+
+        assert expected_output == parser.parse_schema(test_schema, locale="fr")
