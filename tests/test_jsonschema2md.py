@@ -361,7 +361,7 @@ class TestParser:
             '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"]
+            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -689,11 +689,11 @@ class TestParser:
                                         "peptideshaker",
                                     ],
                                     "default": "infer",
-                                }
+                                },
                             },
                         },
                     },
-                }
+                },
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
@@ -732,8 +732,8 @@ class TestParser:
                         {"type": "string"},
                         {"type": "array", "items": {}},
                         {"type": "object", "additionalProperties": {}, "properties": {}},
-                    ]
-                }
+                    ],
+                },
             },
         }
         parser = jsonschema2md.Parser()
@@ -976,7 +976,7 @@ class TestParserFR:
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"]
+            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -1305,11 +1305,11 @@ class TestParserFR:
                                         "peptideshaker",
                                     ],
                                     "default": "infer",
-                                }
+                                },
                             },
                         },
                     },
-                }
+                },
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
@@ -1349,8 +1349,8 @@ class TestParserFR:
                         {"type": "string"},
                         {"type": "array", "items": {}},
                         {"type": "object", "additionalProperties": {}, "properties": {}},
-                    ]
-                }
+                    ],
+                },
             },
         }
         parser = jsonschema2md.Parser()
