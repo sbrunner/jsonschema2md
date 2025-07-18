@@ -361,7 +361,9 @@ class TestParser:
             '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
+            self.test_schema["properties"]["fruits"],
+            "fruits",
+            path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -976,7 +978,9 @@ class TestParserFR:
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
+            self.test_schema["properties"]["fruits"],
+            "fruits",
+            path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
