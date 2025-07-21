@@ -19,7 +19,7 @@ import subprocess  # nosec
 from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 import markdown
 import yaml
@@ -141,6 +141,8 @@ class Parser:
         collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
+        base: Optional[str] = None,
+        relative: bool = True,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -166,13 +168,20 @@ class Parser:
             to skip certain properties or definitions that are not relevant for the
             documentation. The patterns are matched against the full path of the
             property or definition (e.g., `properties/name`, `definitions/Person`).
-
+        base : str, default None
+            Base URL for the internal links in the root schema.
+        relative : bool, default True
+            If set, the links will be relative ("./...").
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
         self.header_level = header_level
         self.collapse_children = collapse_children
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
+        self.base = base
+        self.seen_refs: set[str] = set()
+        self.parsed_refs: set[str] = set()
+        self.relative = relative
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -316,9 +325,20 @@ class Parser:
                 description_line.append(_("Cannot contain unevaluated properties."))
 
         if "$ref" in obj:
+            url = urlsplit(obj["$ref"])
+            if url.fragment and not url.path:
+                ref_link = f"#{quote(url.fragment[1:])}"
+            elif self.base and (url.netloc == self.base or url.path.startswith(self.base)):
+                ref_file = url.path.removeprefix(self.base).removesuffix(".json")
+                self.seen_refs.add(url.path.removeprefix(self.base))
+                if self.relative:
+                    ref_link = f"./{ref_file}.md#{quote(url.fragment)}"
+                else:
+                    ref_link = f"{url.scheme}://{self.base}/{ref_file}.md#{quote(url.fragment)}"
+            else:
+                ref_link = f"{url.scheme}://{url.netloc}/{quote(url.path)}#{quote(url.fragment)}"
             description_line.append(
-                _("Refer to *[%(ref)s](#%(ref_link)s)*.")
-                % {"ref": obj["$ref"], "ref_link": quote(obj["$ref"][2:])},
+                _("Refer to *[%(ref)s](%(ref_link)s)*.") % {"ref": obj["$ref"], "ref_link": ref_link},
             )
         if "default" in obj:
             description_line.append(_("Default: `%(default)s`.") % {"default": json.dumps(obj["default"])})
@@ -590,11 +610,72 @@ class Parser:
 
         return output_lines
 
+    def parse_file(
+        self,
+        file: Path,
+        fail_on_error_in_defs: bool = True,
+        locale: Optional[str] = None,
+    ) -> dict[str, Sequence[str]]:
+        """
+        Parse JSON Schema file and its references to Markdown text.
+
+        Parameters
+        ----------
+        file: Path
+            The Path to the JSON Schema file to parse.
+        fail_on_error_in_defs: bool
+            If True, the method will raise an error when encountering issues in the
+            "definitions" section of the schemas. If False, the method will attempt to continue parsing
+            despite such errors.
+        locale: Optional[str]
+            The locale to use for translations. If None, the default locale will be used.
+
+        Returns
+        -------
+        dict[str, Sequence[str]]
+            A dictionary where keys are file names (without `.json` extension) and values are lists of strings
+            representing the parsed Markdown documentation for each file.
+        """
+        if locale is not None:
+            Parser.current_locale = negotiate_locale((locale,), get_locales())
+
+        with file.open(encoding="utf-8") as input_file:
+            schema_obj = json.load(input_file)
+
+        root = self.parse_schema(schema_obj, fail_on_error_in_defs)
+        parsed_files = {"_js2md_root_": root}
+
+        # Parse 3 levels deep
+        for _ in range(3):
+            to_parse = self.seen_refs - self.parsed_refs
+            if not to_parse:
+                break
+
+            for ref in to_parse:
+                ref_file = Path(f"{file}/../{ref}.json").resolve()
+
+                if not ref_file.exists():
+                    print(f'WARN: Referenced file "{ref}" does not exist, skipping.')
+                    self.parsed_refs.add(ref)
+                    continue
+
+                with ref_file.open(encoding="utf-8") as ref_file:
+                    ref_obj = json.load(ref_file)
+
+                parsed_files[ref] = self.parse_schema(ref_obj, fail_on_error_in_defs)
+                self.parsed_refs.add(ref)
+        remaining = len(self.seen_refs - self.parsed_refs)
+        if remaining > 0:
+            print(f"WARN: Reached maximum depth. Refusing to parse {remaining} remaining references!")
+
+        Parser.current_locale = None
+
+        return parsed_files
+
     def parse_schema(
         self,
         schema_object: dict[str, Any],
         fail_on_error_in_defs: bool = True,
-        locale: Optional[str] = None,
     ) -> Sequence[str]:
         """
         Parse JSON Schema object to markdown text.
@@ -610,9 +691,6 @@ class Parser:
         -------
             A list of strings representing the parsed Markdown documentation.
         """
-        if locale is not None:
-            Parser.current_locale = negotiate_locale((locale,), get_locales())
-
         output_lines = []
 
         # Add title and description
@@ -693,8 +771,6 @@ class Parser:
             output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Examples')}\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
-        Parser.current_locale = None
-
         return output_lines
 
 
@@ -736,6 +812,14 @@ def main() -> None:
         action="store_true",
         help="Collapse children of properties.",
     )
+    argparser.add_argument("--base", default=None, help="Base URL for the internal links.")
+    argparser.add_argument(
+        "--no-relative",
+        action="store_false",
+        help="Use relative links for the internal links.",
+        dest="relative",
+        default=True,
+    )
 
     argparser.add_argument(
         "--locale",
@@ -768,12 +852,19 @@ def main() -> None:
         show_examples=args.show_examples,
         header_level=args.header_level,
         collapse_children=args.collapse_children,
+        base=args.base,
+        relative=args.relative,
     )
-    with args.input_json.open(encoding="utf-8") as input_json:
-        output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs, locale=args.locale)
+    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, locale=args.locale)
 
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
-        output_markdown.writelines(output_md)
+        output_markdown.writelines(files["_js2md_root_"])
+
+    for file_name, file_content in files.items():
+        if file_name == "_js2md_root_":
+            pass
+        with Path(f"{file_name}.md").open("w", encoding="utf-8") as output_file:
+            output_file.writelines(file_content)
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec
