@@ -101,6 +101,28 @@ def _format_list(
     return format_list(tuple(iter_), style, locale)
 
 
+def normalize_file_name(domain: str, file_name: str) -> tuple[str, str]:
+    """
+    Normalize a file name to be used as an ID in Markdown links.
+
+    Parameters
+    ----------
+    domain : str
+        The domain that holds local schemas.
+    file_name : str
+        The file name to normalize.
+
+    Returns
+    -------
+    tuple[str, str]
+        [0] The normalized file name and [1] the extension.
+    """
+    file_name = file_name.removeprefix(domain)
+    parts = file_name.split(".", maxsplit=1)
+
+    return (parts[0], f".{parts[1]}" if len(parts) == 2 else "")
+
+
 PROPERTY_NAMES = {
     "items": t("Items"),
     "contains": t("Contains"),
@@ -141,7 +163,7 @@ class Parser:
         collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
-        base: Optional[str] = None,
+        domain: Optional[str] = None,
         relative: bool = True,
     ) -> None:
         """
@@ -168,20 +190,20 @@ class Parser:
             to skip certain properties or definitions that are not relevant for the
             documentation. The patterns are matched against the full path of the
             property or definition (e.g., `properties/name`, `definitions/Person`).
-        base : str, default None
-            Base URL for the internal links in the root schema.
+        domain : str, default None
+            The domain that holds local schemas.
         relative : bool, default True
-            If set, the links will be relative ("./...").
+            If set, the reference links will be relative ("./...").
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
         self.header_level = header_level
         self.collapse_children = collapse_children
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
-        self.base = base
+        self.domain = domain
+        self.relative = relative
         self.seen_refs: set[str] = set()
         self.parsed_refs: set[str] = set()
-        self.relative = relative
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -328,13 +350,13 @@ class Parser:
             url = urlsplit(obj["$ref"])
             if url.fragment and not url.path:
                 ref_link = f"#{quote(url.fragment[1:])}"
-            elif self.base and (url.netloc == self.base or url.path.startswith(self.base)):
-                ref_file = url.path.removeprefix(self.base).removesuffix(".json")
-                self.seen_refs.add(url.path.removeprefix(self.base))
+            elif self.domain and (url.netloc == self.domain or url.path.startswith(self.domain)):
+                ref_name, ext = normalize_file_name(self.domain, url.path)
+                self.seen_refs.add(f"{ref_name}{ext}")
                 if self.relative:
-                    ref_link = f"./{ref_file}.md#{quote(url.fragment)}"
+                    ref_link = f"./{ref_name}.md#{quote(url.fragment)}"
                 else:
-                    ref_link = f"{url.scheme}://{self.base}/{ref_file}.md#{quote(url.fragment)}"
+                    ref_link = f"{url.scheme}://{self.domain}/{quote(ref_name)}.md#{quote(url.fragment)}"
             else:
                 ref_link = f"{url.scheme}://{url.netloc}/{quote(url.path)}#{quote(url.fragment)}"
             description_line.append(
@@ -645,28 +667,32 @@ class Parser:
         root = self.parse_schema(schema_obj, fail_on_error_in_defs)
         parsed_files = {"_js2md_root_": root}
 
-        # Parse 3 levels deep
-        for _ in range(3):
-            to_parse = self.seen_refs - self.parsed_refs
-            if not to_parse:
-                break
+        if self.domain:
+            for _ in range(3):
+                to_parse = self.seen_refs - self.parsed_refs
+                if not to_parse:
+                    break
 
-            for ref in to_parse:
-                ref_file = Path(f"{file}/../{ref}.json").resolve()
+                for ref in to_parse:
+                    ref_file = Path(f"{file}/../{ref}").resolve()
 
-                if not ref_file.exists():
-                    print(f'WARN: Referenced file "{ref}" does not exist, skipping.')
+                    if not ref_file.exists():
+                        print(f'WARN: Referenced file "{ref}" does not exist, skipping.')
+                        self.parsed_refs.add(ref)
+                        continue
+
+                    with ref_file.open(encoding="utf-8") as ref_file:
+                        ref_obj = json.load(ref_file)
+
+                    ref_name = normalize_file_name(self.domain, ref_file.name)[0]
+
+                    parsed_files[ref_name] = self.parse_schema(ref_obj, fail_on_error_in_defs)
+
                     self.parsed_refs.add(ref)
-                    continue
 
-                with ref_file.open(encoding="utf-8") as ref_file:
-                    ref_obj = json.load(ref_file)
-
-                parsed_files[ref] = self.parse_schema(ref_obj, fail_on_error_in_defs)
-                self.parsed_refs.add(ref)
-        remaining = len(self.seen_refs - self.parsed_refs)
-        if remaining > 0:
-            print(f"WARN: Reached maximum depth. Refusing to parse {remaining} remaining references!")
+            remaining = len(self.seen_refs - self.parsed_refs)
+            if remaining > 0:
+                print(f"WARN: Reached maximum depth. Refusing to parse {remaining} remaining references!")
 
         Parser.current_locale = None
 
@@ -812,7 +838,7 @@ def main() -> None:
         action="store_true",
         help="Collapse children of properties.",
     )
-    argparser.add_argument("--base", default=None, help="Base URL for the internal links.")
+    argparser.add_argument("--domain", default=None, help="The domain holding local schemas.")
     argparser.add_argument(
         "--no-relative",
         action="store_false",
@@ -852,7 +878,7 @@ def main() -> None:
         show_examples=args.show_examples,
         header_level=args.header_level,
         collapse_children=args.collapse_children,
-        base=args.base,
+        domain=args.domain,
         relative=args.relative,
     )
     files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, locale=args.locale)
