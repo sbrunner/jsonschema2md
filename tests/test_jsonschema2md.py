@@ -135,7 +135,7 @@ class TestDraft201909defs:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
 
 class TestParser:
@@ -458,7 +458,7 @@ class TestParser:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
@@ -485,7 +485,7 @@ class TestParser:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_parse_top_level_items(self):
         """Test."""
@@ -521,7 +521,7 @@ class TestParser:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(boolean)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_schema_composition_keywords(self):
         """Test."""
@@ -616,7 +616,7 @@ class TestParser:
             '    - <a id="properties/bad_merged_example_2/allOf/0"></a>*number*\n',
             '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(number)*\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -661,7 +661,7 @@ class TestParser:
             '"infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". '
             'Default: `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_collapse_children(self):
         test_schema = {
@@ -720,7 +720,7 @@ class TestParser:
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_hide_empty_description(self):
         test_schema = {
@@ -747,7 +747,7 @@ class TestParser:
             '    - <a id="properties/comment/anyOf/1"></a>*array*\n',
             '    - <a id="properties/comment/anyOf/2"></a>*object*: Can contain additional properties.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
 
 class TestParserFR:
@@ -957,8 +957,8 @@ class TestParserFR:
             },
         ]
 
-        parser = jsonschema2md.Parser()
         jsonschema2md.Parser.current_locale = "fr"
+        parser = jsonschema2md.Parser()
 
         for case in test_cases:
             observed_output = " ".join(
@@ -982,6 +982,8 @@ class TestParserFR:
     def test_parse_schema(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
@@ -1028,11 +1030,13 @@ class TestParserFR:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_schema_examples_yaml(self):
         """Test."""
         parser = jsonschema2md.Parser(examples_as_yaml=True)
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
@@ -1073,11 +1077,12 @@ class TestParserFR:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
 
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
@@ -1099,11 +1104,12 @@ class TestParserFR:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(booléen)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_parse_top_level_items(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
 
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
@@ -1135,11 +1141,13 @@ class TestParserFR:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(booléen)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_schema_composition_keywords(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1232,7 +1240,7 @@ class TestParserFR:
             '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(nombre)*\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -1267,6 +1275,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser(ignore_patterns=[r".*ignoreme.*"])
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "## Propriétés\n\n",
@@ -1277,7 +1287,7 @@ class TestParserFR:
             'Doit être l\'un des suivants : "infer", "pin", "tandem", "maxquant", '
             '"msgfplus" ou "peptideshaker". Par défaut : `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_collapse_children(self):
         test_schema = {
@@ -1313,6 +1323,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "## Propriétés\n\n",
@@ -1337,7 +1349,7 @@ class TestParserFR:
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_hide_empty_description(self):
         test_schema = {
@@ -1354,6 +1366,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Arbitrary comment for reference purposes.*\n\n",
@@ -1365,4 +1379,4 @@ class TestParserFR:
             '    - <a id="properties/comment/anyOf/2"></a>*objet*: Peut contenir des propriétés supplémentaires.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)

@@ -143,8 +143,8 @@ msgid "Cannot contain unevaluated properties."
 msgstr "Não pode conter propriedades não correspondidas."
 
 #, python-format
-msgid "Refer to *[%(ref)s](#%(ref_link)s)*."
-msgstr "Consulte *[%(ref)s](#%(ref_link)s)*."
+msgid "Refer to *[%(ref)s](%(ref_link)s)*."
+msgstr "Consulte *[%(ref)s](%(ref_link)s)*."
 
 #, python-format
 msgid "Default: `%(default)s`."
