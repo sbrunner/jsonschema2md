@@ -665,7 +665,9 @@ class Parser:
             schema_obj = json.load(input_file)
 
         root = self.parse_schema(schema_obj, fail_on_error_in_defs)
-        parsed_files = {"_js2md_root_": root}
+
+        root_name = normalize_file_name(self.domain or "", file.name)[0]
+        parsed_files = {root_name: root}
 
         if self.domain:
             for _ in range(3):
@@ -674,7 +676,7 @@ class Parser:
                     break
 
                 for ref in to_parse:
-                    ref_file = Path(f"{file}/../{ref}").resolve()
+                    ref_file = file.parent / ref
 
                     if not ref_file.exists():
                         print(f'WARN: Referenced file "{ref}" does not exist, skipping.')
@@ -883,12 +885,11 @@ def main() -> None:
     )
     files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, locale=args.locale)
 
+    root_name = normalize_file_name(args.domain or "", args.input_json.name)[0]
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
-        output_markdown.writelines(files["_js2md_root_"])
+        output_markdown.writelines(files.pop(root_name))
 
     for file_name, file_content in files.items():
-        if file_name == "_js2md_root_":
-            pass
         with Path(f"{file_name}.md").open("w", encoding="utf-8") as output_file:
             output_file.writelines(file_content)
 
