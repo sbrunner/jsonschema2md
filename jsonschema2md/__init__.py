@@ -165,6 +165,7 @@ class Parser:
         ignore_patterns: Optional[Sequence[str]] = None,
         domain: Optional[str] = None,
         relative: bool = True,
+        ref_depth: int = 10,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -194,6 +195,8 @@ class Parser:
             The domain that holds local schemas.
         relative : bool, default True
             If set, the reference links will be relative ("./...").
+        ref_depth : int, default 10
+            The maximum depth to follow references.
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
@@ -202,6 +205,7 @@ class Parser:
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
         self.domain = domain
         self.relative = relative
+        self.ref_depth = ref_depth
         self.seen_refs: set[str] = set()
         self.parsed_refs: set[str] = set()
 
@@ -670,7 +674,7 @@ class Parser:
         parsed_files = {root_name: root}
 
         if self.domain:
-            for _ in range(3):
+            for _ in range(self.ref_depth):
                 to_parse = self.seen_refs - self.parsed_refs
                 if not to_parse:
                     break
@@ -844,9 +848,15 @@ def main() -> None:
     argparser.add_argument(
         "--no-relative",
         action="store_false",
-        help="Use relative links for the internal links.",
+        help="Don't use relative links for the local references.",
         dest="relative",
         default=True,
+    )
+    argparser.add_argument(
+        "--ref-depth",
+        type=int,
+        default=10,
+        help="The maximum depth to follow references.",
     )
 
     argparser.add_argument(
@@ -882,6 +892,7 @@ def main() -> None:
         collapse_children=args.collapse_children,
         domain=args.domain,
         relative=args.relative,
+        ref_depth=args.ref_depth,
     )
     files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, locale=args.locale)
 
