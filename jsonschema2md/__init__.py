@@ -165,7 +165,6 @@ class Parser:
         ignore_patterns: Optional[Sequence[str]] = None,
         domain: Optional[str] = None,
         relative: bool = True,
-        ref_depth: int = 10,
         schema_mapping: Optional[Mapping[str, str]] = None,
     ) -> None:
         """
@@ -196,8 +195,6 @@ class Parser:
             The domain that holds local schemas.
         relative : bool, default True
             If set, the reference links will be relative ("./...").
-        ref_depth : int, default 10
-            The maximum depth to follow references.
         schema_mapping : Mapping[str, str], optional
             A mapping of schema ids (everything up to the first `.`) to file names (with extension).
         """
@@ -208,7 +205,6 @@ class Parser:
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
         self.domain = domain
         self.relative = relative
-        self.ref_depth = ref_depth
         self.schema_mapping = schema_mapping if schema_mapping else {}
         self.seen_refs: set[str] = set()
         self.parsed_refs: set[str] = set()
@@ -645,6 +641,7 @@ class Parser:
         self,
         file: Path,
         fail_on_error_in_defs: bool = True,
+        ref_depth: int = 10,
         locale: Optional[str] = None,
     ) -> dict[str, Sequence[str]]:
         """
@@ -658,6 +655,8 @@ class Parser:
             If True, the method will raise an error when encountering issues in the
             "definitions" section of the schemas. If False, the method will attempt to continue parsing
             despite such errors.
+        ref_depth : int, default 10
+            The maximum depth to follow references.
         locale: Optional[str]
             The locale to use for translations. If None, the default locale will be used.
 
@@ -679,7 +678,7 @@ class Parser:
         parsed_files = {root_name: root}
 
         if self.domain:
-            for _ in range(self.ref_depth):
+            for _ in range(ref_depth):
                 to_parse = self.seen_refs - self.parsed_refs
                 if not to_parse:
                     break
@@ -912,10 +911,9 @@ def main() -> None:
         collapse_children=args.collapse_children,
         domain=args.domain,
         relative=args.relative,
-        ref_depth=args.ref_depth,
         schema_mapping=schema_mapping,
     )
-    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, args.locale)
+    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, args.ref_depth, args.locale)
 
     root_name = normalize_file_name(args.domain or "", args.input_json.name)[0]
 
