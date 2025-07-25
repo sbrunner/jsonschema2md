@@ -16,7 +16,7 @@ import io
 import json
 import re
 import subprocess  # nosec
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
 from urllib.parse import quote, urlsplit
@@ -166,6 +166,7 @@ class Parser:
         domain: Optional[str] = None,
         relative: bool = True,
         ref_depth: int = 10,
+        schema_mapping: Optional[Mapping[str, str]] = None,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -197,6 +198,8 @@ class Parser:
             If set, the reference links will be relative ("./...").
         ref_depth : int, default 10
             The maximum depth to follow references.
+        schema_mapping : Mapping[str, str], optional
+            A mapping of schema ids (everything up to the first `.`) to file names (with extension).
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
@@ -206,6 +209,7 @@ class Parser:
         self.domain = domain
         self.relative = relative
         self.ref_depth = ref_depth
+        self.schema_mapping = schema_mapping if schema_mapping else {}
         self.seen_refs: set[str] = set()
         self.parsed_refs: set[str] = set()
 
@@ -356,11 +360,12 @@ class Parser:
                 ref_link = f"#{quote(url.fragment[1:])}"
             elif self.domain and (url.netloc == self.domain or url.path.startswith(self.domain)):
                 ref_name, ext = normalize_file_name(self.domain, url.path)
+                file_name = self.schema_mapping.get(ref_name, f"{ref_name}.md")
                 self.seen_refs.add(f"{ref_name}{ext}")
                 if self.relative:
-                    ref_link = f"./{ref_name}.md#{quote(url.fragment)}"
+                    ref_link = f"./{quote(file_name)}#{quote(url.fragment)}"
                 else:
-                    ref_link = f"{url.scheme}://{self.domain}/{quote(ref_name)}.md#{quote(url.fragment)}"
+                    ref_link = f"{url.scheme}://{self.domain}/{quote(file_name)}#{quote(url.fragment)}"
             else:
                 ref_link = f"{url.scheme}://{url.netloc}/{quote(url.path)}#{quote(url.fragment)}"
             description_line.append(
@@ -691,7 +696,6 @@ class Parser:
                         ref_obj = json.load(ref_file)
 
                     ref_name = normalize_file_name(self.domain, ref_file.name)[0]
-
                     parsed_files[ref_name] = self.parse_schema(ref_obj, fail_on_error_in_defs)
 
                     self.parsed_refs.add(ref)
@@ -858,6 +862,17 @@ def main() -> None:
         default=10,
         help="The maximum depth to follow references.",
     )
+    argparser.add_argument(
+        "--schema-mapping",
+        type=Path,
+        default=None,
+        help=(
+            "Path to the mapping file for schema to markdown. "
+            "YAML file where the keys are the schema id "
+            "(everything up to the first dot) and values are "
+            "markdown file names."
+        ),
+    )
 
     argparser.add_argument(
         "--locale",
@@ -885,6 +900,11 @@ def main() -> None:
 
         args.locale = env_locale
 
+    schema_mapping = None
+    if args.schema_mapping:
+        with args.schema_mapping.open(encoding="utf-8") as mapping_file:
+            schema_mapping = yaml.safe_load(mapping_file)
+
     parser = Parser(
         examples_as_yaml=args.examples_as_yaml,
         show_examples=args.show_examples,
@@ -893,15 +913,20 @@ def main() -> None:
         domain=args.domain,
         relative=args.relative,
         ref_depth=args.ref_depth,
+        schema_mapping=schema_mapping,
     )
-    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, locale=args.locale)
+    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, args.locale)
 
     root_name = normalize_file_name(args.domain or "", args.input_json.name)[0]
+
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
         output_markdown.writelines(files.pop(root_name))
 
-    for file_name, file_content in files.items():
-        with Path(f"{file_name}.md").open("w", encoding="utf-8") as output_file:
+    schema_mapping = schema_mapping or {}
+    for schema_id, file_content in files.items():
+        file_name = schema_mapping.get(schema_id, f"{schema_id}.md")
+
+        with Path(file_name).open("w", encoding="utf-8") as output_file:
             output_file.writelines(file_content)
 
     if args.pre_commit:
