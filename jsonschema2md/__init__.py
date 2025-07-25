@@ -120,7 +120,7 @@ def normalize_file_name(domain: str, file_name: str) -> tuple[str, str]:
     file_name = file_name.removeprefix(domain)
     parts = file_name.split(".", maxsplit=1)
 
-    return (parts[0], f".{parts[1]}" if len(parts) == 2 else "")
+    return (parts[0].strip("/"), f".{parts[1]}" if len(parts) == 2 else "")
 
 
 PROPERTY_NAMES = {
