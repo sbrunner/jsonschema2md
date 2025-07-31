@@ -1315,14 +1315,14 @@ files = [
 
 [[package]]
 name = "types-markdown"
-version = "3.8.0.20250415"
+version = "3.8.0.20250708"
 description = "Typing stubs for Markdown"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "types_markdown-3.8.0.20250415-py3-none-any.whl", hash = "sha256:b41abed474a303ba300e3a4cf6f27eda339219124a59d529a158203570007776"},
-    {file = "types_markdown-3.8.0.20250415.tar.gz", hash = "sha256:98ab13587d1177769d93e55586d3dc97047df75bc6e37ce4074666f5dd4212ba"},
+    {file = "types_markdown-3.8.0.20250708-py3-none-any.whl", hash = "sha256:d1f634931b463adf7603c012724b7e9e5eff976eb517dc700ebece2d6189b1ce"},
+    {file = "types_markdown-3.8.0.20250708.tar.gz", hash = "sha256:28690251fe90757f5a99cd671c79502bc2de07aef2d35fe54117c3b1c799804a"},
 ]
 
 [[package]]
@@ -1391,4 +1391,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "a9743cc78854c759a756f6940db1e509df94c95ea527c8da411e18e9361aa01f"
+content-hash = "ab0394f916691b29881de53b4de2fcec9702abf2db30c87b8d2401e0a4a78254"

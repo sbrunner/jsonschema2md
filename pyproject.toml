@@ -24,7 +24,7 @@ prospector-profile-utils = "1.25.0"
 types-PyYAML = "6.0.12.20250516"
 pytest = "8.4.1"
 pytest-cov = "6.2.1"
-types-markdown = "3.8.0.20250415"
+types-markdown = "3.8.0.20250708"
 
 [tool.poetry-dynamic-versioning]
 enable = true
