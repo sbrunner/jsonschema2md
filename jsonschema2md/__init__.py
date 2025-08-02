@@ -469,7 +469,7 @@ class Parser:
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
 
         has_collapsible_children = any(
-            prop in obj and isinstance(obj[prop], dict)
+            prop in obj and isinstance(obj[prop], dict) and len(obj[prop]) > 0
             for prop in [
                 "additionalProperties",
                 "unevaluatedProperties",
@@ -731,6 +731,11 @@ def main() -> None:
         default=True,
         help="Ignore errors in definitions.",
     )
+    argparser.add_argument(
+        "--collapse-children",
+        action="store_true",
+        help="Collapse children of properties.",
+    )
 
     argparser.add_argument(
         "--locale",
@@ -762,6 +767,7 @@ def main() -> None:
         examples_as_yaml=args.examples_as_yaml,
         show_examples=args.show_examples,
         header_level=args.header_level,
+        collapse_children=args.collapse_children,
     )
     with args.input_json.open(encoding="utf-8") as input_json:
         output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs, locale=args.locale)
