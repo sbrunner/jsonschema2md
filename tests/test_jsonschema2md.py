@@ -1605,3 +1605,52 @@ class TestExternalRefs:
                 '- <a id="properties/bar"></a>**`bar`** *(string)*: A string property.\n',
             ],
         }
+
+    def test_nested_references(self):
+        content = {
+            "root.json": self.content["root.json"],
+            "definitions.json": json.dumps(
+                {
+                    "$id": "https://example.com/definitions.json",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Definitions schema.",
+                    "type": "object",
+                    "properties": {"bar": {"$ref": "https://example.com/nested.json"}},
+                }
+            ),
+            "nested.json": json.dumps(
+                {
+                    "$id": "https://example.com/nested.json",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Nested schema.",
+                    "type": "object",
+                    "properties": {"baz": {"type": "string", "description": "A nested string property."}},
+                }
+            ),
+        }
+
+        parser = jsonschema2md.Parser(domain="example.com", relative=True)
+
+        with open_mock(content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`**: Refer to *[https://example.com/nested.json](./nested.md#)*.\n',
+            ],
+            "nested": [
+                "# JSON Schema\n\n",
+                "*Nested schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/baz"></a>**`baz`** *(string)*: A nested string property.\n',
+            ],
+        }
