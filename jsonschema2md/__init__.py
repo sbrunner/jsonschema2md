@@ -691,8 +691,8 @@ class Parser:
                         self.parsed_refs.add(ref)
                         continue
 
-                    with ref_file.open(encoding="utf-8") as ref_file:
-                        ref_obj = json.load(ref_file)
+                    with ref_file.open(encoding="utf-8") as f:
+                        ref_obj = json.load(f)
 
                     ref_name = normalize_file_name(self.domain, ref_file.name)[0]
                     parsed_files[ref_name] = self.parse_schema(ref_obj, fail_on_error_in_defs)
