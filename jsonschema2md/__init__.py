@@ -194,9 +194,9 @@ class Parser:
         domain : str, default None
             The domain that holds local schemas.
         relative : bool, default True
-            If set, the reference links will be relative ("./...").
+            If set, the reference links will be relative ("./<path>").
         schema_mapping : Mapping[str, str], optional
-            A mapping of schema ids (everything up to the first `.`) to file names (with extension).
+            A mapping of schema ids (everything up to the first `.`) to markdown file names (with extension).
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
@@ -704,6 +704,8 @@ class Parser:
                 print(f"WARN: Reached maximum depth. Refusing to parse {remaining} remaining references!")
 
         Parser.current_locale = None
+        self.seen_refs = set()
+        self.parsed_refs = set()
 
         return parsed_files
 
@@ -869,7 +871,7 @@ def main() -> None:
             "Path to the mapping file for schema to markdown. "
             "YAML file where the keys are the schema id "
             "(everything up to the first dot) and values are "
-            "markdown file names."
+            "markdown file names (with extension)."
         ),
     )
 
