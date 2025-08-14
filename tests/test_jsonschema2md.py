@@ -3,9 +3,12 @@
 import contextlib
 import io
 import json
+import sys
 from collections.abc import Generator
 from pathlib import Path
 from unittest import mock
+
+import pytest
 
 import jsonschema2md
 
@@ -1417,6 +1420,9 @@ def open_mock(content: dict[str, str]) -> Generator[dict[str, mock.MagicMock]]:
         patch.stop()
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 11), reason="pathlib from 3.10 and below uses accessors which are awkward to mock."
+)
 class TestExternalRefs:
     """Test external references."""
 
