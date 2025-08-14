@@ -16,10 +16,10 @@ import io
 import json
 import re
 import subprocess  # nosec
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 import markdown
 import yaml
@@ -101,6 +101,28 @@ def _format_list(
     return format_list(tuple(iter_), style, locale)
 
 
+def normalize_file_name(domain: str, file_name: str) -> tuple[str, str]:
+    """
+    Normalize a file name to be used as an ID in Markdown links.
+
+    Parameters
+    ----------
+    domain : str
+        The domain that holds local schemas.
+    file_name : str
+        The file name to normalize.
+
+    Returns
+    -------
+    tuple[str, str]
+        [0] The normalized file name and [1] the extension.
+    """
+    file_name = file_name.removeprefix(domain)
+    parts = file_name.split(".", maxsplit=1)
+
+    return (parts[0].strip("/"), f".{parts[1]}" if len(parts) == 2 else "")
+
+
 PROPERTY_NAMES = {
     "items": t("Items"),
     "contains": t("Contains"),
@@ -141,6 +163,9 @@ class Parser:
         collapse_children: bool = False,
         header_level: int = 0,
         ignore_patterns: Optional[Sequence[str]] = None,
+        domain: Optional[str] = None,
+        relative: bool = True,
+        schema_mapping: Optional[Mapping[str, str]] = None,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -166,13 +191,23 @@ class Parser:
             to skip certain properties or definitions that are not relevant for the
             documentation. The patterns are matched against the full path of the
             property or definition (e.g., `properties/name`, `definitions/Person`).
-
+        domain : str, default None
+            The domain that holds local schemas.
+        relative : bool, default True
+            If set, the reference links will be relative ("./<path>").
+        schema_mapping : Mapping[str, str], optional
+            A mapping of schema ids (everything up to the first `.`) to markdown file names (with extension).
         """
         self.examples_as_yaml = examples_as_yaml
         self.show_deprecated = show_deprecated
         self.header_level = header_level
         self.collapse_children = collapse_children
         self.ignore_patterns = ignore_patterns if ignore_patterns else []
+        self.domain = domain
+        self.relative = relative
+        self.schema_mapping = schema_mapping if schema_mapping else {}
+        self.seen_refs: set[str] = set()
+        self.parsed_refs: set[str] = set()
 
         valid_show_examples_options = ["all", "object", "properties"]
         show_examples = show_examples.lower()
@@ -316,9 +351,21 @@ class Parser:
                 description_line.append(_("Cannot contain unevaluated properties."))
 
         if "$ref" in obj:
+            url = urlsplit(obj["$ref"])
+            if url.fragment and not url.path:
+                ref_link = f"#{quote(url.fragment[1:])}"
+            elif self.domain and (url.netloc == self.domain or url.path.startswith(self.domain)):
+                ref_name, ext = normalize_file_name(self.domain, url.path)
+                file_name = self.schema_mapping.get(ref_name, f"{ref_name}.md")
+                self.seen_refs.add(f"{ref_name}{ext}")
+                if self.relative:
+                    ref_link = f"./{quote(file_name)}#{quote(url.fragment)}"
+                else:
+                    ref_link = f"{url.scheme}://{self.domain}/{quote(file_name)}#{quote(url.fragment)}"
+            else:
+                ref_link = f"{url.scheme}://{url.netloc}/{quote(url.path)}#{quote(url.fragment)}"
             description_line.append(
-                _("Refer to *[%(ref)s](#%(ref_link)s)*.")
-                % {"ref": obj["$ref"], "ref_link": quote(obj["$ref"][2:])},
+                _("Refer to *[%(ref)s](%(ref_link)s)*.") % {"ref": obj["$ref"], "ref_link": ref_link},
             )
         if "default" in obj:
             description_line.append(_("Default: `%(default)s`.") % {"default": json.dumps(obj["default"])})
@@ -590,11 +637,82 @@ class Parser:
 
         return output_lines
 
+    def parse_file(
+        self,
+        file: Path,
+        fail_on_error_in_defs: bool = True,
+        ref_depth: int = 10,
+        locale: Optional[str] = None,
+    ) -> dict[str, Sequence[str]]:
+        """
+        Parse JSON Schema file and its references to Markdown text.
+
+        Parameters
+        ----------
+        file: Path
+            The Path to the JSON Schema file to parse.
+        fail_on_error_in_defs: bool
+            If True, the method will raise an error when encountering issues in the
+            "definitions" section of the schemas. If False, the method will attempt to continue parsing
+            despite such errors.
+        ref_depth : int, default 10
+            The maximum depth to follow references.
+        locale: Optional[str]
+            The locale to use for translations. If None, the default locale will be used.
+
+        Returns
+        -------
+        dict[str, Sequence[str]]
+            A dictionary where keys are file names (without `.json` extension) and values are lists of strings
+            representing the parsed Markdown documentation for each file.
+        """
+        if locale is not None:
+            Parser.current_locale = negotiate_locale((locale,), get_locales())
+
+        with file.open(encoding="utf-8") as input_file:
+            schema_obj = json.load(input_file)
+
+        root = self.parse_schema(schema_obj, fail_on_error_in_defs)
+
+        root_name = normalize_file_name(self.domain or "", file.name)[0]
+        parsed_files = {root_name: root}
+
+        if self.domain:
+            for _ in range(ref_depth):
+                to_parse = self.seen_refs - self.parsed_refs
+                if not to_parse:
+                    break
+
+                for ref in to_parse:
+                    ref_file = file.parent / ref
+
+                    if not ref_file.exists():
+                        print(f'WARN: Referenced file "{ref}" does not exist, skipping.')
+                        self.parsed_refs.add(ref)
+                        continue
+
+                    with ref_file.open(encoding="utf-8") as f:
+                        ref_obj = json.load(f)
+
+                    ref_name = normalize_file_name(self.domain, ref_file.name)[0]
+                    parsed_files[ref_name] = self.parse_schema(ref_obj, fail_on_error_in_defs)
+
+                    self.parsed_refs.add(ref)
+
+            remaining = len(self.seen_refs - self.parsed_refs)
+            if remaining > 0:
+                print(f"WARN: Reached maximum depth. Refusing to parse {remaining} remaining references!")
+
+        Parser.current_locale = None
+        self.seen_refs = set()
+        self.parsed_refs = set()
+
+        return parsed_files
+
     def parse_schema(
         self,
         schema_object: dict[str, Any],
         fail_on_error_in_defs: bool = True,
-        locale: Optional[str] = None,
     ) -> Sequence[str]:
         """
         Parse JSON Schema object to markdown text.
@@ -610,9 +728,6 @@ class Parser:
         -------
             A list of strings representing the parsed Markdown documentation.
         """
-        if locale is not None:
-            Parser.current_locale = negotiate_locale((locale,), get_locales())
-
         output_lines = []
 
         # Add title and description
@@ -693,8 +808,6 @@ class Parser:
             output_lines.append(f"#{'#' * (self.header_level + 1)} {_('Examples')}\n\n")
             output_lines.extend(self._construct_examples(schema_object, indent_level=0, add_header=False))
 
-        Parser.current_locale = None
-
         return output_lines
 
 
@@ -736,6 +849,31 @@ def main() -> None:
         action="store_true",
         help="Collapse children of properties.",
     )
+    argparser.add_argument("--domain", default=None, help="The domain holding local schemas.")
+    argparser.add_argument(
+        "--no-relative",
+        action="store_false",
+        help="Don't use relative links for the local references.",
+        dest="relative",
+        default=True,
+    )
+    argparser.add_argument(
+        "--ref-depth",
+        type=int,
+        default=10,
+        help="The maximum depth to follow references.",
+    )
+    argparser.add_argument(
+        "--schema-mapping",
+        type=Path,
+        default=None,
+        help=(
+            "Path to the mapping file for schema to markdown. "
+            "YAML file where the keys are the schema id "
+            "(everything up to the first dot) and values are "
+            "markdown file names (with extension)."
+        ),
+    )
 
     argparser.add_argument(
         "--locale",
@@ -763,17 +901,33 @@ def main() -> None:
 
         args.locale = env_locale
 
+    schema_mapping = None
+    if args.schema_mapping:
+        with args.schema_mapping.open(encoding="utf-8") as mapping_file:
+            schema_mapping = yaml.safe_load(mapping_file)
+
     parser = Parser(
         examples_as_yaml=args.examples_as_yaml,
         show_examples=args.show_examples,
         header_level=args.header_level,
         collapse_children=args.collapse_children,
+        domain=args.domain,
+        relative=args.relative,
+        schema_mapping=schema_mapping,
     )
-    with args.input_json.open(encoding="utf-8") as input_json:
-        output_md = parser.parse_schema(json.load(input_json), args.fail_on_error_in_defs, locale=args.locale)
+    files = parser.parse_file(args.input_json, args.fail_on_error_in_defs, args.ref_depth, args.locale)
+
+    root_name = normalize_file_name(args.domain or "", args.input_json.name)[0]
 
     with args.output_markdown.open("w", encoding="utf-8") as output_markdown:
-        output_markdown.writelines(output_md)
+        output_markdown.writelines(files.pop(root_name))
+
+    schema_mapping = schema_mapping or {}
+    for schema_id, file_content in files.items():
+        file_name = schema_mapping.get(schema_id, f"{schema_id}.md")
+
+        with Path(file_name).open("w", encoding="utf-8") as output_file:
+            output_file.writelines(file_content)
 
     if args.pre_commit:
         subprocess.run(  # pylint: disable=subprocess-run-check # nosec

@@ -1,5 +1,15 @@
 """Test jsonschema2md."""
 
+import contextlib
+import io
+import json
+import sys
+from collections.abc import Generator
+from pathlib import Path
+from unittest import mock
+
+import pytest
+
 import jsonschema2md
 
 
@@ -135,7 +145,7 @@ class TestDraft201909defs:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
 
 class TestParser:
@@ -458,7 +468,7 @@ class TestParser:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
@@ -485,7 +495,7 @@ class TestParser:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(boolean)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_parse_top_level_items(self):
         """Test."""
@@ -521,7 +531,7 @@ class TestParser:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(boolean)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_schema_composition_keywords(self):
         """Test."""
@@ -616,7 +626,7 @@ class TestParser:
             '    - <a id="properties/bad_merged_example_2/allOf/0"></a>*number*\n',
             '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(number)*\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -661,7 +671,7 @@ class TestParser:
             '"infer", "pin", "tandem", "maxquant", "msgfplus", or "peptideshaker". '
             'Default: `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_collapse_children(self):
         test_schema = {
@@ -720,7 +730,7 @@ class TestParser:
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_hide_empty_description(self):
         test_schema = {
@@ -747,7 +757,7 @@ class TestParser:
             '    - <a id="properties/comment/anyOf/1"></a>*array*\n',
             '    - <a id="properties/comment/anyOf/2"></a>*object*: Can contain additional properties.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="en_US")
+        assert expected_output == parser.parse_schema(test_schema)
 
 
 class TestParserFR:
@@ -957,8 +967,8 @@ class TestParserFR:
             },
         ]
 
-        parser = jsonschema2md.Parser()
         jsonschema2md.Parser.current_locale = "fr"
+        parser = jsonschema2md.Parser()
 
         for case in test_cases:
             observed_output = " ".join(
@@ -982,6 +992,8 @@ class TestParserFR:
     def test_parse_schema(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
@@ -1028,11 +1040,13 @@ class TestParserFR:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_schema_examples_yaml(self):
         """Test."""
         parser = jsonschema2md.Parser(examples_as_yaml=True)
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
@@ -1073,11 +1087,12 @@ class TestParserFR:
             "  ```\n"
             "\n",
         ]
-        assert expected_output == parser.parse_schema(self.test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(self.test_schema)
 
     def test_parse_top_level_pattern_properties(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
 
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
@@ -1099,11 +1114,12 @@ class TestParserFR:
             '- <a id="patternProperties"></a>**`^iLike(Meat|Drinks)$`** *(booléen)*: Do I like it?\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_parse_top_level_items(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
 
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
@@ -1135,11 +1151,13 @@ class TestParserFR:
             '  - <a id="items/properties/sweet"></a>**`sweet`** *(booléen)*: Whether it is sweet or not.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_schema_composition_keywords(self):
         """Test."""
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         test_schema = {
             "$id": "https://example.com/arrays.schema.json",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1232,7 +1250,7 @@ class TestParserFR:
             '- <a id="properties/good_merged_example"></a>**`good_merged_example`** *(nombre)*\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_pattern_ignore(self):
         test_schema = {
@@ -1267,6 +1285,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser(ignore_patterns=[r".*ignoreme.*"])
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "## Propriétés\n\n",
@@ -1277,7 +1297,7 @@ class TestParserFR:
             'Doit être l\'un des suivants : "infer", "pin", "tandem", "maxquant", '
             '"msgfplus" ou "peptideshaker". Par défaut : `"infer"`.\n',
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_collapse_children(self):
         test_schema = {
@@ -1313,6 +1333,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "## Propriétés\n\n",
@@ -1337,7 +1359,7 @@ class TestParserFR:
             "\n    </details>\n\n",
             "\n  </details>\n\n",
         ]
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
 
     def test_hide_empty_description(self):
         test_schema = {
@@ -1354,6 +1376,8 @@ class TestParserFR:
             },
         }
         parser = jsonschema2md.Parser()
+        jsonschema2md.Parser.current_locale = "fr"
+
         expected_output = [
             "# JSON Schema\n\n",
             "*Arbitrary comment for reference purposes.*\n\n",
@@ -1365,4 +1389,274 @@ class TestParserFR:
             '    - <a id="properties/comment/anyOf/2"></a>*objet*: Peut contenir des propriétés supplémentaires.\n',
         ]
 
-        assert expected_output == parser.parse_schema(test_schema, locale="fr")
+        assert expected_output == parser.parse_schema(test_schema)
+
+
+@contextlib.contextmanager
+def open_mock(content: dict[str, str]) -> Generator[dict[str, mock.MagicMock]]:
+    """Mocks io.open and os.stat."""
+    mapped_content: dict[str, mock.MagicMock] = {k: mock.mock_open(read_data=v) for k, v in content.items()}
+    for key, m in mapped_content.items():
+        m().name = key
+
+    def side_effect(filename: str, mode: str = "r", *args, **kwargs):
+        filename = str(filename)  # pathlib passes Path objects
+        if "r" in mode:
+            return mapped_content[filename]()
+
+    def stat_side_effect(filename: str, follow_symlinks: bool = True):
+        filename = str(filename)
+        if filename not in mapped_content:
+            raise FileNotFoundError(2, "File not found in mocked content.", filename)
+
+    patch = mock.patch("io.open", side_effect=side_effect)
+    stat_patch = mock.patch("os.stat", side_effect=stat_side_effect)
+    try:
+        stat_patch.start()
+        patch.start()
+        yield mapped_content
+    finally:
+        stat_patch.stop()
+        patch.stop()
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 11), reason="pathlib from 3.10 and below uses accessors which are awkward to mock."
+)
+class TestExternalRefs:
+    """Test external references."""
+
+    content = {
+        "root.json": json.dumps(
+            {
+                "$id": "https://example.com/root.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "description": "Root schema with external reference.",
+                "type": "object",
+                "properties": {"foo": {"$ref": "https://example.com/definitions.json"}},
+            }
+        ),
+        "definitions.json": json.dumps(
+            {
+                "$id": "https://example.com/definitions.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "description": "Definitions schema.",
+                "type": "object",
+                "properties": {"bar": {"type": "string", "description": "A string property."}},
+            }
+        ),
+    }
+
+    def test_no_domain(self):
+        parser = jsonschema2md.Parser()
+
+        with open_mock(self.content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](https://example.com//definitions.json#)*.\n',
+            ]
+        }
+
+    def test_relative(self):
+        parser = jsonschema2md.Parser(domain="example.com", relative=True)
+
+        with open_mock(self.content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`** *(string)*: A string property.\n',
+            ],
+        }
+
+    def test_no_relative(self):
+        parser = jsonschema2md.Parser(domain="example.com", relative=False)
+
+        with open_mock(self.content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](https://example.com/definitions.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`** *(string)*: A string property.\n',
+            ],
+        }
+
+    def test_max_depth(self):
+        content = {
+            "root.json": self.content["root.json"],
+            "definitions.json": json.dumps(
+                {
+                    "$id": "https://example.com/definitions.json",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Definitions schema with external reference.",
+                    "type": "object",
+                    "properties": {
+                        "baz": {"$ref": "https://example.com/definitions2.json#"},
+                    },
+                }
+            ),
+            # we don't need definitions2 here.
+        }
+
+        parser = jsonschema2md.Parser(domain="example.com")
+
+        f = io.StringIO()
+
+        with open_mock(content), contextlib.redirect_stdout(f):
+            output = parser.parse_file(Path("root.json"), ref_depth=1, locale="en_US")
+
+        assert (
+            f.getvalue().strip() == "WARN: Reached maximum depth. Refusing to parse 1 remaining references!"
+        )
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/baz"></a>**`baz`**: Refer to *[https://example.com/definitions2.json#](./definitions2.md#)*.\n',
+            ],
+        }
+
+    def test_not_found(self):
+        parser = jsonschema2md.Parser(domain="example.com", relative=True)
+
+        content = {"root.json": self.content["root.json"]}
+
+        f = io.StringIO()
+        with open_mock(content), contextlib.redirect_stdout(f):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert f.getvalue().strip() == 'WARN: Referenced file "definitions.json" does not exist, skipping.'
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
+            ]
+        }
+
+    def test_mapping_relative(self):
+        schema_mapping = {"definitions": "defs.md"}
+
+        parser = jsonschema2md.Parser(domain="example.com", schema_mapping=schema_mapping, relative=True)
+
+        with open_mock(self.content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./defs.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`** *(string)*: A string property.\n',
+            ],
+        }
+
+    def test_mapping_no_relative(self):
+        schema_mapping = {"definitions": "defs.md"}
+
+        parser = jsonschema2md.Parser(domain="example.com", schema_mapping=schema_mapping, relative=False)
+
+        with open_mock(self.content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](https://example.com/defs.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`** *(string)*: A string property.\n',
+            ],
+        }
+
+    def test_nested_references(self):
+        content = {
+            "root.json": self.content["root.json"],
+            "definitions.json": json.dumps(
+                {
+                    "$id": "https://example.com/definitions.json",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Definitions schema.",
+                    "type": "object",
+                    "properties": {"bar": {"$ref": "https://example.com/nested.json"}},
+                }
+            ),
+            "nested.json": json.dumps(
+                {
+                    "$id": "https://example.com/nested.json",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Nested schema.",
+                    "type": "object",
+                    "properties": {"baz": {"type": "string", "description": "A nested string property."}},
+                }
+            ),
+        }
+
+        parser = jsonschema2md.Parser(domain="example.com", relative=True)
+
+        with open_mock(content):
+            output = parser.parse_file(Path("root.json"), locale="en_US")
+
+        assert output == {
+            "root": [
+                "# JSON Schema\n\n",
+                "*Root schema with external reference.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
+            ],
+            "definitions": [
+                "# JSON Schema\n\n",
+                "*Definitions schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/bar"></a>**`bar`**: Refer to *[https://example.com/nested.json](./nested.md#)*.\n',
+            ],
+            "nested": [
+                "# JSON Schema\n\n",
+                "*Nested schema.*\n\n",
+                "## Properties\n\n",
+                '- <a id="properties/baz"></a>**`baz`** *(string)*: A nested string property.\n',
+            ],
+        }
