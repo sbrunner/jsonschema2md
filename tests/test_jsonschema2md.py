@@ -371,7 +371,7 @@ class TestParser:
             '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"]
+            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -699,11 +699,11 @@ class TestParser:
                                         "peptideshaker",
                                     ],
                                     "default": "infer",
-                                }
+                                },
                             },
                         },
                     },
-                }
+                },
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
@@ -742,8 +742,8 @@ class TestParser:
                         {"type": "string"},
                         {"type": "array", "items": {}},
                         {"type": "object", "additionalProperties": {}, "properties": {}},
-                    ]
-                }
+                    ],
+                },
             },
         }
         parser = jsonschema2md.Parser()
@@ -986,7 +986,7 @@ class TestParserFR:
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"]
+            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -1325,11 +1325,11 @@ class TestParserFR:
                                         "peptideshaker",
                                     ],
                                     "default": "infer",
-                                }
+                                },
                             },
                         },
                     },
-                }
+                },
             },
         }
         parser = jsonschema2md.Parser(collapse_children=True)
@@ -1371,8 +1371,8 @@ class TestParserFR:
                         {"type": "string"},
                         {"type": "array", "items": {}},
                         {"type": "object", "additionalProperties": {}, "properties": {}},
-                    ]
-                }
+                    ],
+                },
             },
         }
         parser = jsonschema2md.Parser()
@@ -1421,7 +1421,7 @@ def open_mock(content: dict[str, str]) -> Generator[dict[str, mock.MagicMock]]:
 
 
 @pytest.mark.skipif(
-    sys.version_info < (3, 11), reason="pathlib from 3.10 and below uses accessors which are awkward to mock."
+    sys.version_info < (3, 11), reason="pathlib from 3.10 and below uses accessors which are awkward to mock.",
 )
 class TestExternalRefs:
     """Test external references."""
@@ -1434,7 +1434,7 @@ class TestExternalRefs:
                 "description": "Root schema with external reference.",
                 "type": "object",
                 "properties": {"foo": {"$ref": "https://example.com/definitions.json"}},
-            }
+            },
         ),
         "definitions.json": json.dumps(
             {
@@ -1443,7 +1443,7 @@ class TestExternalRefs:
                 "description": "Definitions schema.",
                 "type": "object",
                 "properties": {"bar": {"type": "string", "description": "A string property."}},
-            }
+            },
         ),
     }
 
@@ -1459,7 +1459,7 @@ class TestExternalRefs:
                 "*Root schema with external reference.*\n\n",
                 "## Properties\n\n",
                 '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](https://example.com//definitions.json#)*.\n',
-            ]
+            ],
         }
 
     def test_relative(self):
@@ -1516,7 +1516,7 @@ class TestExternalRefs:
                     "properties": {
                         "baz": {"$ref": "https://example.com/definitions2.json#"},
                     },
-                }
+                },
             ),
             # we don't need definitions2 here.
         }
@@ -1563,7 +1563,7 @@ class TestExternalRefs:
                 "*Root schema with external reference.*\n\n",
                 "## Properties\n\n",
                 '- <a id="properties/foo"></a>**`foo`**: Refer to *[https://example.com/definitions.json](./definitions.md#)*.\n',
-            ]
+            ],
         }
 
     def test_mapping_relative(self):
@@ -1622,7 +1622,7 @@ class TestExternalRefs:
                     "description": "Definitions schema.",
                     "type": "object",
                     "properties": {"bar": {"$ref": "https://example.com/nested.json"}},
-                }
+                },
             ),
             "nested.json": json.dumps(
                 {
@@ -1631,7 +1631,7 @@ class TestExternalRefs:
                     "description": "Nested schema.",
                     "type": "object",
                     "properties": {"baz": {"type": "string", "description": "A nested string property."}},
-                }
+                },
             ),
         }
 
