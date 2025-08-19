@@ -371,7 +371,9 @@ class TestParser:
             '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
+            self.test_schema["properties"]["fruits"],
+            "fruits",
+            path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -986,7 +988,9 @@ class TestParserFR:
             '  - <a id="properties/fruits/items"></a>**Éléments** *(chaîne de caractères)*\n',
         ]
         assert expected_output == parser._parse_object(
-            self.test_schema["properties"]["fruits"], "fruits", path=["properties", "fruits"],
+            self.test_schema["properties"]["fruits"],
+            "fruits",
+            path=["properties", "fruits"],
         )
 
     def test_parse_schema(self):
@@ -1421,7 +1425,8 @@ def open_mock(content: dict[str, str]) -> Generator[dict[str, mock.MagicMock]]:
 
 
 @pytest.mark.skipif(
-    sys.version_info < (3, 11), reason="pathlib from 3.10 and below uses accessors which are awkward to mock.",
+    sys.version_info < (3, 11),
+    reason="pathlib from 3.10 and below uses accessors which are awkward to mock.",
 )
 class TestExternalRefs:
     """Test external references."""
