@@ -930,7 +930,7 @@ def main() -> None:
             output_file.writelines(file_content)
 
     if args.pre_commit:
-        subprocess.run(  # pylint: disable=subprocess-run-check # nosec
+        subprocess.run(  # pylint: disable=subprocess-run-check # nosec # noqa: S603
             ["pre-commit", "run", "--color=never", f"--files={args.output_markdown}"],  # noqa: S607,RUF100
             check=False,
         )
