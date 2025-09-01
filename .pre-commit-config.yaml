@@ -39,7 +39,7 @@ repos:
         entry: bash -c 'make extract update'
         files: ^jsonschema2md/.*\.py$
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: detect-private-key
       - id: check-merge-conflict
