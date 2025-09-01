@@ -32,10 +32,10 @@ script = "scripts/build.py"
 prospector = { version = "1.17.3", extras = ["with_bandit", "with_mypy", "with_pyroma", "with_ruff"] }
 prospector-profile-duplicated = "1.10.5"
 prospector-profile-utils = "1.26.5"
-types-PyYAML = "6.0.12.20250516"
+types-PyYAML = "6.0.12.20250822"
 pytest = "8.4.1"
 pytest-cov = "6.2.1"
-types-markdown = "3.8.0.20250708"
+types-markdown = "3.8.0.20250809"
 
 [tool.poetry-dynamic-versioning]
 enable = true
