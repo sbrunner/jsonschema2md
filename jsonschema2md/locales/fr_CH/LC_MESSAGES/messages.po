@@ -151,7 +151,7 @@ msgid "Default: `%(default)s`."
 msgstr "Par défaut: `%(default)s`."
 
 msgid "Examples:"
-msgstr "Exemples:"
+msgstr ""
 
 #. TL: I'm looking to always have a comma between (type or format) and
 #. attributes,
@@ -198,12 +198,14 @@ msgstr "Propriétés non évaluées"
 msgid "JSON Schema"
 msgstr ""
 
+#, fuzzy
 msgid "Pattern Properties"
 msgstr "Propriétés supplémentaires"
 
+#, fuzzy
 msgid "Properties"
-msgstr "Propriétés"
+msgstr "Propriétés supplémentaires"
 
 msgid "Examples"
-msgstr "Exemples"
+msgstr ""
 
