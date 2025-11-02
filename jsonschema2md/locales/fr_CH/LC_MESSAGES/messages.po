@@ -150,9 +150,6 @@ msgstr "Se référer à *[%(ref)s](%(ref_link)s)*."
 msgid "Default: `%(default)s`."
 msgstr "Par défaut: `%(default)s`."
 
-msgid "Examples:"
-msgstr "Exemples:"
-
 #. TL: I'm looking to always have a comma between (type or format) and
 #. attributes,
 #. so I'm adding them manually.
@@ -194,16 +191,4 @@ msgstr "Propriétés supplémentaires"
 
 msgid "Unevaluated properties"
 msgstr "Propriétés non évaluées"
-
-msgid "JSON Schema"
-msgstr ""
-
-msgid "Pattern Properties"
-msgstr "Propriétés supplémentaires"
-
-msgid "Properties"
-msgstr "Propriétés"
-
-msgid "Examples"
-msgstr "Exemples"
 
