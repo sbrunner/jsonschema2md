@@ -18,7 +18,7 @@ import re
 import subprocess  # nosec
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal
 from urllib.parse import quote, urlsplit
 
 import markdown
