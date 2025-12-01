@@ -59,7 +59,7 @@ def t(message: str) -> LazyProxy:
 
 
 def _maybe_list(
-    obj: Union[list[str], str],
+    obj: list[str] | str,
     style: Literal[
         "standard",
         "standard-short",
@@ -90,7 +90,7 @@ def _format_list(
         "unit-short",
         "unit-narrow",
     ] = "standard",
-    locale: Optional[str] = None,
+    locale: str | None = None,
 ) -> str:
     if locale is None:
         locale = Parser.current_locale
@@ -153,7 +153,7 @@ class Parser:
     """
 
     tab_size = 2
-    current_locale: Optional[str] = None
+    current_locale: str | None = None
 
     def __init__(
         self,
@@ -162,10 +162,10 @@ class Parser:
         show_deprecated: bool = False,
         collapse_children: bool = False,
         header_level: int = 0,
-        ignore_patterns: Optional[Sequence[str]] = None,
-        domain: Optional[str] = None,
+        ignore_patterns: Sequence[str] | None = None,
+        domain: str | None = None,
         relative: bool = True,
-        schema_mapping: Optional[Mapping[str, str]] = None,
+        schema_mapping: Mapping[str, str] | None = None,
     ) -> None:
         """
         Initialize JSON Schema to Markdown parser.
@@ -413,14 +413,14 @@ class Parser:
 
     def _parse_object(
         self,
-        obj: Union[dict[str, Any], list[Any]],
-        name: Optional[str],
+        obj: dict[str, Any] | list[Any],
+        name: str | None,
         path: list[str],
         name_monospace: bool = True,
-        output_lines: Optional[list[str]] = None,
+        output_lines: list[str] | None = None,
         indent_level: int = 0,
         required: bool = False,
-        dependent_required: Optional[list[str]] = None,
+        dependent_required: list[str] | None = None,
     ) -> list[str]:
         """Parse JSON object and its items, definitions, and properties recursively."""
         if not output_lines:
@@ -642,7 +642,7 @@ class Parser:
         file: Path,
         fail_on_error_in_defs: bool = True,
         ref_depth: int = 10,
-        locale: Optional[str] = None,
+        locale: str | None = None,
     ) -> dict[str, Sequence[str]]:
         """
         Parse JSON Schema file and its references to Markdown text.
