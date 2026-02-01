@@ -22,7 +22,7 @@ version = "0.0.0"
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 PyYAML = "6.0.3"
-markdown = "3.10"
+markdown = "3.10.1"
 babel = "2.17.0"
 
 [tool.poetry.build]
