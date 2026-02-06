@@ -202,10 +202,10 @@ class Parser:
         self.show_deprecated = show_deprecated
         self.header_level = header_level
         self.collapse_children = collapse_children
-        self.ignore_patterns = ignore_patterns if ignore_patterns else []
+        self.ignore_patterns = ignore_patterns or []
         self.domain = domain
         self.relative = relative
-        self.schema_mapping = schema_mapping if schema_mapping else {}
+        self.schema_mapping = schema_mapping or {}
         self.seen_refs: set[str] = set()
         self.parsed_refs: set[str] = set()
 
