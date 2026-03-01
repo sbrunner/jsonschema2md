@@ -22,7 +22,7 @@ version = "0.0.0"
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 PyYAML = "6.0.3"
-markdown = "3.10.1"
+markdown = "3.10.2"
 babel = "2.18.0"
 
 [tool.poetry.build]
@@ -31,11 +31,11 @@ script = "scripts/build.py"
 [tool.poetry.group.dev.dependencies]
 prospector = { version = "1.18.0", extras = ["with_bandit", "with_mypy", "with_pyroma", "with_ruff"] }
 prospector-profile-duplicated = "1.12.0"
-prospector-profile-utils = "1.26.5"
+prospector-profile-utils = "1.27.0"
 types-PyYAML = "6.0.12.20250915"
 pytest = "9.0.2"
 pytest-cov = "7.0.0"
-types-markdown = "3.10.0.20251106"
+types-markdown = "3.10.2.20260211"
 
 [tool.poetry-dynamic-versioning]
 enable = true
