@@ -1,52 +1,3 @@
-
-[build-system]
-requires = [
-    "poetry-core>=1.0.0",
-    "poetry-dynamic-versioning[plugin]>=0.19.0",
-    "poetry-dynamic-versioning",
-    "babel==2.17.0",
-]
-build-backend = "poetry.core.masonry.api"
-
-[project]
-dynamic = ["dependencies", "version"]
-name = "jsonschema2md"
-description = "Convert JSON Schema to human-readable Markdown documentation"
-readme = "README.md"
-keywords = ["JSON Schema", "Markdown", "Converter", "Parser", "Documentation"]
-license = "Apache-2.0"
-classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3.13',
-    'Topic :: Documentation',
-    'Topic :: Software Development :: Documentation',
-]
-authors = [{name = "Ralf Gabriels",email = "ralfg@hotmail.be"}, {name = "Matt Graham",email = "matthew.m.graham@gmail.com"}]
-maintainers = [{name = "Stéphane Brunner",email = "stephane.brunner@gmail.com"}]
-requires-python = ">=3.10"
-dependencies = ["PyYAML<7,>=6", "markdown<4,>=3", "babel<3,>=2"]
-exclude = [
-    "jsonschema2md/locales",
-]
-include = [
-    { path = "jsonschema2md/locales", format = "sdist" },
-    { path = "jsonschema2md/locales/**/*.mo",  format = "wheel" },
-]
-
-[project.urls]
-repository = "https://github.com/sbrunner/jsonschema2md"
-"Bug Tracker" = "https://github.com/sbrunner/jsonschema2md/issues"
-
-[project.scripts]
-jsonschema2md = 'jsonschema2md:main'
-
 [tool.ruff]
 target-version = "py310"
 line-length = 110
@@ -104,3 +55,51 @@ format-jinja = """
 
 [tool.poetry-plugin-tweak-dependencies-version]
 default = "major"
+
+[project]
+dynamic = ["dependencies", "version"]
+name = "jsonschema2md"
+description = "Convert JSON Schema to human-readable Markdown documentation"
+readme = "README.md"
+keywords = ["JSON Schema", "Markdown", "Converter", "Parser", "Documentation"]
+license = "Apache-2.0"
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Documentation',
+    'Topic :: Software Development :: Documentation',
+]
+authors = [{name = "Ralf Gabriels",email = "ralfg@hotmail.be"}, {name = "Matt Graham",email = "matthew.m.graham@gmail.com"}]
+maintainers = [{name = "Stéphane Brunner",email = "stephane.brunner@gmail.com"}]
+requires-python = ">=3.10"
+dependencies = ["PyYAML<7,>=6", "markdown<4,>=3", "babel<3,>=2"]
+exclude = [
+    "jsonschema2md/locales",
+]
+include = [
+    { path = "jsonschema2md/locales", format = "sdist" },
+    { path = "jsonschema2md/locales/**/*.mo",  format = "wheel" },
+]
+
+[project.urls]
+repository = "https://github.com/sbrunner/jsonschema2md"
+"Bug Tracker" = "https://github.com/sbrunner/jsonschema2md/issues"
+
+[project.scripts]
+jsonschema2md = 'jsonschema2md:main'
+
+[build-system]
+requires = [
+    "poetry-core>=1.0.0",
+    "poetry-dynamic-versioning[plugin]>=0.19.0",
+    "poetry-dynamic-versioning",
+    "babel==2.17.0",
+]
+build-backend = "poetry.core.masonry.api"
