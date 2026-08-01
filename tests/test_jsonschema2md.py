@@ -133,6 +133,7 @@ class TestDraft201909defs:
                 '`"good"`.\n'
             ),
             "## Definitions\n\n",
+            '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
             (
                 '  - <a id="%24defs/veggie/properties/veggieName"></a>**`veggieName`** '
                 "*(string, required)*: The name of the vegetable. Length must be between 1 "
