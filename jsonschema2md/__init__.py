@@ -216,8 +216,8 @@ class Parser:
             self.show_examples = show_examples
         else:
             message = (
-                f"`show_examples` option should be one of "
-                + f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
+                "`show_examples` option should be one of "
+                f"`{valid_show_examples_options}`; `{show_examples}` was passed."
             )
             raise ValueError(message)
 
