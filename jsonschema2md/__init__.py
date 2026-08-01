@@ -1,3 +1,4 @@
+# Copyright (c) 2026, Stéphane Brunner
 """Convert JSON Schema to Markdown documentation."""
 
 __author__ = "Stéphane Brunner"
@@ -215,8 +216,7 @@ class Parser:
             self.show_examples = show_examples
         else:
             message = (
-                f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
+                f"`show_examples` option should be one of `{valid_show_examples_options}`; `{show_examples}` was passed.",
             )
             raise ValueError(message)
 
