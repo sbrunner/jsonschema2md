@@ -1,3 +1,4 @@
+# Copyright (c) 2026, Stéphane Brunner
 """Test jsonschema2md."""
 
 import contextlib
@@ -97,37 +98,36 @@ class TestDraft201909defs:
             "# JSON Schema\n\n",
             "*Food preferences*\n\n",
             "## Additional properties\n\n",
-            '- <a id="additionalProperties"></a>**Additional properties** *(object)*: '
-            "Additional info about foods you may like.\n",
-            "  - <a "
-            'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
-            "*(boolean)*: Do I like it?\n",
+            (  '- <a id="additionalProperties"></a>**Additional properties** *(object)*: '
+               "Additional info about foods you may like.\n"),
+            (  "  - <a "
+               'id="additionalProperties/patternProperties/%5EiLike%28Meat%7CDrinks%29%24"></a>**`^iLike(Meat|Drinks)$`** '
+               "*(boolean)*: Do I like it?\n"),
             "## Unevaluated properties\n\n",
-            '- <a id="unevaluatedProperties"></a>**Unevaluated properties** '
-            "*(object)*: Anything else you want to add. Cannot contain additional "
-            "properties.\n",
-            "  - <a "
-            'id="unevaluatedProperties/patternProperties/%5EextraInfo%5B%5Cw%5D%2A%24"></a>**`^extraInfo[\\w]*$`** '
-            "*(string)*: Anything else I might like to say.\n",
+            (  '- <a id="unevaluatedProperties"></a>**Unevaluated properties** '
+               "*(object)*: Anything else you want to add. Cannot contain additional "
+               "properties.\n"),
+            (  "  - <a "
+               'id="unevaluatedProperties/patternProperties/%5EextraInfo%5B%5Cw%5D%2A%24"></a>**`^extraInfo[\\w]*$`** '
+               "*(string)*: Anything else I might like to say.\n"),
             "## Properties\n\n",
             '- <a id="properties/fruits"></a>**`fruits`** *(array, required)*\n',
             '  - <a id="properties/fruits/items"></a>**Items** *(string)*\n',
             '- <a id="properties/vegetables"></a>**`vegetables`** *(array)*: Items must be unique.\n',
-            '  - <a id="properties/vegetables/items"></a>**Items**: Refer to '
-            "*[#/$defs/veggie](#%24defs/veggie)*.\n",
-            '- <a id="properties/taste"></a>**`taste`** *(string)*: How does it taste? '
-            "Must match pattern: `^[a-z]*$` "
-            "([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: "
-            '`"good"`.\n',
+            (  '  - <a id="properties/vegetables/items"></a>**Items**: Refer to '
+               "*[#/$defs/veggie](#%24defs/veggie)*.\n"),
+            (  '- <a id="properties/taste"></a>**`taste`** *(string)*: How does it taste? '
+               "Must match pattern: `^[a-z]*$` "
+               "([Test](https://regexr.com/?expression=%5E%5Ba-z%5D%2A%24)). Default: "
+               '`"good"`.\n'),
             "## Definitions\n\n",
-            '- <a id="%24defs/veggie"></a>**`veggie`** *(object)*\n',
-            '  - <a id="%24defs/veggie/properties/veggieName"></a>**`veggieName`** '
-            "*(string, required)*: The name of the vegetable. Length must be between 1 "
-            "and 100 (inclusive).\n",
-            '  - <a id="%24defs/veggie/properties/veggieLike"></a>**`veggieLike`** '
-            "*(boolean, required)*: Do I like this vegetable?\n",
-            '  - <a id="%24defs/veggie/properties/expiresAt"></a>**`expiresAt`** '
-            "*(string, format: date)*: When does the veggie expires.\n",
+            (  '  - <a id="%24defs/veggie/properties/veggieName"></a>**`veggieName`** '
+               "*(string, required)*: The name of the vegetable. Length must be between 1 "
+               "and 100 (inclusive).\n"),
+            (  '  - <a id="%24defs/veggie/properties/veggieLike"></a>**`veggieLike`** '
+               "*(boolean, required)*: Do I like this vegetable?\n"),
+            (  '  - <a id="%24defs/veggie/properties/expiresAt"></a>**`expiresAt`** '
+               "*(string, format: date)*: When does the veggie expires.\n"),
             "## Examples\n\n",
             "  ```json\n"
             "  {\n"
