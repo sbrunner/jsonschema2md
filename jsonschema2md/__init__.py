@@ -1,3 +1,4 @@
+# Copyright (c) 2026, Stéphane Brunner
 """Convert JSON Schema to Markdown documentation."""
 
 __author__ = "Stéphane Brunner"
@@ -812,8 +813,7 @@ class Parser:
 
 
 def main() -> None:
-# Copyright (c) 2026, Stéphane Brunner
-"""Convert JSON Schema to Markdown documentation."""
+    """Convert JSON Schema to Markdown documentation."""
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
     argparser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     argparser.add_argument(
