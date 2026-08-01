@@ -216,7 +216,7 @@ class Parser:
         else:
             message = (
                 f"`show_examples` option should be one of "
-                f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
+                + f"`{valid_show_examples_options}`; `{show_examples}` was passed.",
             )
             raise ValueError(message)
 
@@ -812,7 +812,8 @@ class Parser:
 
 
 def main() -> None:
-    """Convert JSON Schema to Markdown documentation."""
+# Copyright (c) 2026, Stéphane Brunner
+"""Convert JSON Schema to Markdown documentation."""
     argparser = argparse.ArgumentParser("Convert JSON Schema to Markdown documentation.")
     argparser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     argparser.add_argument(
