@@ -34,7 +34,6 @@ jobs:
           python-version: '3.13'
       - run: python3 -m pip install --requirement=ci/requirements.txt
       - run: pip install --editable=.
-      - run: python3 scripts/build.py
 
       - uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
