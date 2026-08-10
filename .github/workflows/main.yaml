@@ -81,6 +81,8 @@ jobs:
 
       - name: Install with Poetry
         run: poetry install
+      - name: Compile translations
+        run: poetry run python3 scripts/build.py
 
       - name: Prospector
         run: |
@@ -119,6 +121,10 @@ jobs:
           echo "username = ${{ secrets.PYPI_USERNAME }}" >> ~/.pypirc
           echo "password = ${{ secrets.PYPI_PASSWORD }}" >> ~/.pypirc
         if: env.HAS_SECRETS == 'HAS_SECRETS'
+      - name: Compile translations
+        run: |
+          poetry install --only main --no-root
+          poetry run python3 scripts/build.py
       - name: Publish
         run: tag-publish
         env:
