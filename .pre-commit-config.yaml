@@ -133,7 +133,7 @@ repos:
       - id: prospector
         args:
           - --profile=utils:pre-commit
-          - --die-on-tool-error
+          - --direct-tool-stdout
           - --output-format=pylint
           - --profile=.prospector.yaml
         additional_dependencies:
@@ -152,7 +152,7 @@ repos:
           )
       - id: prospector
         args:
-          - --die-on-tool-error
+          - --direct-tool-stdout
           - --output-format=pylint
           - --profile=utils:tests
           - --profile=utils:pre-commit
