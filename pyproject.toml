@@ -96,7 +96,7 @@ jsonschema2md = 'jsonschema2md:main'
 
 [build-system]
 requires = [
-    "poetry-core==2.4.1",
+    "poetry-core==2.4.0",
     "poetry-dynamic-versioning[plugin]==1.10.0",
     "babel==2.17.0",
 ]
