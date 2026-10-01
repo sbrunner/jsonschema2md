@@ -87,7 +87,7 @@ parser = jsonschema2md.Parser(
 )
 with open("./examples/food.json", "r") as json_file:
     md_lines = parser.parse_schema(json.load(json_file))
-print(''.join(md_lines))
+print("".join(md_lines))
 ```
 
 ### Options
