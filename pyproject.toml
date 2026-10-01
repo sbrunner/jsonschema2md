@@ -33,7 +33,7 @@ types-PyYAML = "6.0.12.20260906"
 pytest = "9.1.1"
 pytest-cov = "7.1.0"
 types-markdown = "3.10.2.20260712"
-ruff = "0.16.8"
+ruff = "0.16.9"
 pylint = "4.0.9"
 
 [tool.poetry-dynamic-versioning]
